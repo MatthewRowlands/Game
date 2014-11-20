@@ -13,14 +13,25 @@ import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.*;
+
+import sun.audio.*;
+
 import java.util.ArrayList;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
 import javax.swing.JFrame;
 
 import Connection.Client;
 import Entity.Enemy;
 import Entity.Objects;
 import Graphics.Screen;
+import Graphics.Texture;
 import Input.Controller;
 import Input.InputHandler;
 import Launcher.Launcher;
@@ -98,13 +109,28 @@ public class Display extends Canvas implements Runnable {
 
 	public static double startaccuracy = 0.05;
 	public static double accuracy = startaccuracy;
+
+	public static int activebullets = 0;
+
+	public static boolean Reload = false;
 	
 	boolean SemiAuto = false;
 	boolean FullAuto = true;
-	double firerate = 100;
+	double firerate = 20;
+	
+	public int sFlashAmmo = 3;
+	public static int sWeaponAmmo = 30;
+	public int FlashAmmo = 3;
+	public static int WeaponAmmo = 30;
 	
 	long guntime = System.currentTimeMillis();
+	long flashtime = System.currentTimeMillis();
+	public static long reloadtime = System.currentTimeMillis();
+	static double reloadspeed = 3000.0;
+	public static boolean reloading = false;
+	public static boolean donereloadsound = false;
 	
+
 	public Display() {
 		Dimension size = new Dimension(WIDTH, HEIGHT);
 		setPreferredSize(size);
@@ -121,6 +147,7 @@ public class Display extends Canvas implements Runnable {
 		addFocusListener(input);
 		addMouseListener(input);
 		addMouseMotionListener(input);
+
 	}
 
 	public static Launcher getLauncherInstance() {
@@ -257,25 +284,66 @@ public class Display extends Canvas implements Runnable {
 			r.mouseMove((w / 2), h / 2);
 			}	
 		}
-		if(MousePressed && SemiAuto){
-			SemiAutoFire(1/firerate);
+		if(WeaponAmmo > 0 && !reloading){
+			if(MousePressed && SemiAuto && input.MouseButton == 1){
+				SemiAutoFire(1/firerate);
+			}
+			if(MousePressed && FullAuto && input.MouseButton == 1){
+				FullAutoFire(1/firerate);
+			}
+		}else{
+			WeaponAmmo = 0;
+			Reload();
 		}
-		if(MousePressed && FullAuto){
-			FullAutoFire(1/firerate);
+		if(FlashAmmo > 0){
+			if(MousePressed && input.MouseButton == 3 && FlashAmmo > 0){
+				ThrowFlashBang();
+			}
 		}
 		if(!MousePressed){
 			canfire = true;
 			if(accuracy > startaccuracy){
-				accuracy-= 0.1;
+				accuracy-= 0.05;
 			}else{
 				accuracy = startaccuracy;
 			}
 		}	
+		if(accuracy > 0.25){
+			accuracy-= startaccuracy/2;
+		}
 		if(input.MouseButton == 0){
 			MousePressed = false;
 		}
 
 		screen.tick();
+	}
+
+	public static void Reload() {
+		if(!reloading){
+			reloadtime = System.currentTimeMillis();
+			reloading = true;
+		}
+		if(reloading){
+			if((System.currentTimeMillis()-reloadtime) > (reloadspeed-1000) && !donereloadsound){
+				PlaySound("/audio/Reload.wav");
+				donereloadsound = true;
+			}
+			if((System.currentTimeMillis()-reloadtime) > reloadspeed){
+				reloading = false;
+				donereloadsound = false;
+				WeaponAmmo = sWeaponAmmo;
+			}
+		}
+	}
+
+	private void ThrowFlashBang() {
+		long checktime = System.currentTimeMillis();
+		if((checktime - flashtime) > (5000)){
+		screen.bullets.add(new Objects(x,y,z));
+		screen.bullets.get(screen.bullets.size()-1).UseFlashMechanism(rotationsin, rotationcos);
+		flashtime = System.currentTimeMillis();
+		FlashAmmo--;
+		}
 	}
 
 	private void SemiAutoFire(double timedelay) {
@@ -284,6 +352,8 @@ public class Display extends Canvas implements Runnable {
 			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos);
 			canfire = false;
 			accuracy += startaccuracy/2;
+			PlaySound("/audio/M4A1.wav");
+			WeaponAmmo--;
 		}
 	}
 	
@@ -293,10 +363,23 @@ public class Display extends Canvas implements Runnable {
 			screen.bullets.add(new Objects(x,y,z));
 			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos);
 			guntime = System.currentTimeMillis();
-			accuracy += startaccuracy/8;
+			accuracy += startaccuracy/4;
+			PlaySound("/audio/SMG.wav");
+			WeaponAmmo--;
 		}
 	}
 
+	public static void PlaySound(String file){
+	    try {
+	        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(Display.class.getResource(file));
+	        Clip clip = AudioSystem.getClip();
+	        clip.open(audioInputStream);
+	        clip.start();
+	    } catch(Exception ex) {
+	        System.out.println("Error with playing sound.");
+	        ex.printStackTrace();
+	    }
+	}
 	public void render() {
 		frames++;
 		BufferStrategy bufferStrategy = this.getBufferStrategy();
@@ -323,7 +406,11 @@ public class Display extends Canvas implements Runnable {
 		g.drawString("X/Y/Z: "+x+","+y+","+z+" Rotation C/S: "+rotationsin+"/"+rotationcos, 20, 30);
 		g.drawString("Textures: "+blockcount, 20, 40);
 		g.drawString("VSYNC: "+WINDOW_USE_VSYNC, 20, 50);
-		g.drawString("Weapong Firerate: "+firerate, 20, 60);
+		g.drawString("Weapong Firerate: "+firerate, 20, 80);
+		g.drawString("Active Bullets: "+activebullets, 20, 90);
+		g.drawString("Flash Grenades: "+FlashAmmo, 20, 100);
+		g.drawString("Weapon Ammo: "+WeaponAmmo, 20, 110);
+		g.drawString("Reloading: "+reloading, 20, 120);
 
 		for(int i = 0; i < screen.positions.size(); i++){
 			double[] v3f = new double[4];
@@ -353,6 +440,29 @@ public class Display extends Canvas implements Runnable {
 		/ 2 + accuracy * 10), 2, 10); g.fillRect((int) (width / 2 - 10 -
 		accuracy * 10), height / 2 - 1, 10, 2); g.fillRect(width / 2 - 1,
 		(int) (height / 2 - 10 - accuracy * 10), 2, 10);
+		
+		
+		int centrex = width - 100;
+		int centrey = height - 100;
+		int minimapscale = 4;
+		
+		g.setColor(Color.BLACK);
+		g.fillRect(centrex - 100, centrey - 100, 200, 200);
+		
+		g.setColor(Color.GREEN);
+		g.fillRect(centrex, centrey, (16+y)/minimapscale, (16+y)/minimapscale);
+		
+		//g.drawLine(centrex, centrey, -(int)(1000000*rotationcos), -(int)(1000000*rotationsin));
+		
+		for(Enemy e : screen.enemies){
+			int posx = (int)(x-e.x)/minimapscale+centrex;
+			int posy = (int)(z-e.z)/minimapscale+centrey;
+			
+			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100){
+			g.setColor(Color.RED);
+			g.fillRect(posx, posy, (16+(int)e.y)/minimapscale, (16+(int)e.y)/minimapscale);
+			}
+		}
 		}
 		
 		if (Pause)

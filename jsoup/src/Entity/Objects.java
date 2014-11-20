@@ -9,10 +9,11 @@ public class Objects {
 	public double x;
 	public double y;
 	public double z;
-	public double speed = 20;
+	public double speed = 2;
 	public double maxdistance = 1000;
 	public double heightstep = 0.15;
 	public boolean bullet = false;
+	public boolean flash = false;
 	double rotationsin=0;
 	double rotationcos=0;
 	double accuracy = Display.accuracy;
@@ -33,7 +34,6 @@ public class Objects {
 		x+=rotationsin*speed;
 		y+=randomheightstep*speed;
 		z+=rotationcos*speed;
-		}
 		if(x - initialx > maxdistance){
 			bullet = false;
 			maxdistreached = true;
@@ -50,14 +50,33 @@ public class Objects {
 			bullet = false;
 			maxdistreached = true;
 		}
-		if(y <= -1){
+		if(y <= -4){
 			bullet = false;
 			maxdistreached = true;
+		}
+		}
+		if(flash){
+			x+=rotationsin*speed;
+			y+=randomheightstep*speed;
+			z+=rotationcos*speed;
+			y-=0.1;
+			if(y < -4){
+				Display.PlaySound("/audio/Flashbang.wav");
+				flash = false;
+			}
 		}
 	}
 	
 	public void UseBulletMechanism(double rotationsin, double rotationcos){
 		this.bullet = true;
+		this.accuracy = Display.accuracy;
+		this.rotationsin = rotationsin+(Math.random()*accuracy)-accuracy/2;
+		this.rotationcos = rotationcos+(Math.random()*accuracy)-accuracy/2;
+		this.randomheightstep  = (Math.random()*accuracy/2)-accuracy/4;
+	}
+
+	public void UseFlashMechanism(double rotationsin, double rotationcos) {
+		this.flash = true;
 		this.accuracy = Display.accuracy;
 		this.rotationsin = rotationsin+(Math.random()*accuracy)-accuracy/2;
 		this.rotationcos = rotationcos+(Math.random()*accuracy)-accuracy/2;

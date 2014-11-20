@@ -23,7 +23,7 @@ public class Controller {
 	double zMove = 0;
 	
 	public void tick(boolean forward, boolean back, boolean left,
-			boolean right, boolean jump, boolean crouch, boolean sprint, boolean F1, boolean MEGARUN, boolean prone) {
+			boolean right, boolean jump, boolean crouch, boolean sprint, boolean F1, boolean MEGARUN, boolean prone, boolean reload) {
 		
 		if(!Display.Pause){
 		rotationSpeed = 0.0025 * Display.MouseChange;
@@ -97,6 +97,10 @@ public class Controller {
 		
 		if (F1) {
 			System.exit(0);
+		}
+		
+		if(reload){
+			Display.Reload();
 		}
 		
 		if (MEGARUN) {

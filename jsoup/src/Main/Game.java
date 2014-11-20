@@ -32,8 +32,9 @@ public class Game {
 		boolean F1 = key[KeyEvent.VK_F1];
 		boolean MEGARUN = key[KeyEvent.VK_V];
 		boolean prone = key[KeyEvent.VK_BACK_SLASH];
+		boolean reload = key[KeyEvent.VK_R];
 
-		controls.tick(forward, back, left, right, jump, crouch, sprint, F1, MEGARUN, prone);
+		controls.tick(forward, back, left, right, jump, crouch, sprint, F1, MEGARUN, prone, reload);
 		}
 	}
 }

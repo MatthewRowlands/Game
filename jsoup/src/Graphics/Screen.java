@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import Connection.Client;
 import Entity.Enemy;
 import Entity.Objects;
+import Main.Display;
 import Main.Game;
 
 public class Screen extends Render {
@@ -26,7 +27,7 @@ public class Screen extends Render {
 		for (int i = 0; i < width * height; i++) {
 			pixels[i] = 0;
 		}
-		
+		Display.activebullets = 0;
 		render.floor(game);
 		
 		for(double[] v3f : positions){
@@ -41,10 +42,14 @@ public class Screen extends Render {
 			renderBlock(e.x/8,e.y/8,e.z/8, 1, 0.5, 1, 1);
 		}
 		for(Objects e : bullets){
+			Display.activebullets++;
 			if(e.maxdistreached){
-				
+			Display.activebullets--;
 			}else{
-			renderBlock(e.x/8,e.y/8,e.z/8, 0.05, 0.025, 0.05, 0);
+				if(e.bullet)
+					renderBlock(e.x/8,e.y/8,e.z/8, 0.05, 0.025, 0.05, 0);
+				else if(e.flash)
+					renderBlock(e.x/8,e.y/8,e.z/8, 0.1, 0.1, 0.1, 0);
 			}
 		}
 		render.renderDistanceLimiter();
@@ -80,7 +85,7 @@ public class Screen extends Render {
 	}
 
 	public void tick(){
-		CheckCollision();
+		//CheckCollision();
 		for(Enemy e : enemies){
 			e.tick();
 		}
