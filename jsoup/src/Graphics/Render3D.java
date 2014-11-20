@@ -11,7 +11,7 @@ public class Render3D extends Render {
 	public double[] zBuffer;
 	public double[] zBufferWall;
 	public double renderDistance = Display.RenderDist;
-	int bob = (int)((int)(Math.random() * 3) * 8);
+	int bob = 24;
 	double forward, right, up, cosine, sine, walking, rotation;
 
 	public Render3D(int width, int height) {
@@ -20,9 +20,7 @@ public class Render3D extends Render {
 		zBufferWall = new double[width];
 	}
 
-	public void floor(Game game) {
-			bob = 0;//(int)((int)(Math.random() * 4) * 8);
-		
+	public void floor(Game game) {	
 		for(int x = 0; x < width; x++){
 			zBufferWall[x] = 0;
 		}
@@ -97,17 +95,17 @@ public class Render3D extends Render {
 				
 				if(block.solid){
 					if(!east.solid){
-						renderWall(xBlock + 1, xBlock + 1, zBlock, zBlock + 1, 0, 1);
+						renderWall(xBlock + 1, xBlock + 1, zBlock, zBlock + 1,0.5, 0, 1);
 					}
 					if(!south.solid){
-						renderWall(xBlock + 1, xBlock, zBlock + 1, zBlock + 1, 0, 3);
+						renderWall(xBlock + 1, xBlock, zBlock + 1, zBlock + 1,0.5, 0, 3);
 					}
 				}else{
 					if(east.solid){
-						renderWall(xBlock + 1, xBlock + 1, zBlock + 1, zBlock, 0, 2);
+						renderWall(xBlock + 1, xBlock + 1, zBlock + 1, zBlock,0.5, 0, 2);
 					}
 					if(south.solid){
-						renderWall(xBlock, xBlock + 1, zBlock + 1, zBlock + 1, 0, 4);
+						renderWall(xBlock, xBlock + 1, zBlock + 1, zBlock + 1,0.5, 0, 4);
 					}
 				}
 			}
@@ -121,24 +119,24 @@ public class Render3D extends Render {
 				
 				if(block.solid){
 					if(!east.solid){
-						renderWall(xBlock + 1, xBlock + 1, zBlock, zBlock + 1, 0.5, 2);
+						renderWall(xBlock + 1, xBlock + 1, zBlock, zBlock + 1,0.5, 0.5, 2);
 					}
 					if(!south.solid){
-						renderWall(xBlock + 1, xBlock, zBlock + 1, zBlock + 1, 0.5, 3);
+						renderWall(xBlock + 1, xBlock, zBlock + 1, zBlock + 1,0.5, 0.5, 3);
 					}
 				}else{
 					if(east.solid){
-						renderWall(xBlock + 1, xBlock + 1, zBlock + 1, zBlock, 0.5, 1);
+						renderWall(xBlock + 1, xBlock + 1, zBlock + 1, zBlock,0.5, 0.5, 1);
 					}
 					if(south.solid){
-						renderWall(xBlock, xBlock + 1, zBlock + 1, zBlock + 1, 0.5, 4);
+						renderWall(xBlock, xBlock + 1, zBlock + 1, zBlock + 1,0.5, 0.5, 4);
 					}
 				}
 			}
 		}
 	}
 
-	public void renderWall(double xLeft, double xRight, double zDistanceLeft, double zDistanceRight, double yHeight, int texture) {
+	public void renderWall(double xLeft, double xRight, double zDistanceLeft, double zDistanceRight, double ySize, double yPos, int texture) {
 
 		double upCorrect = 0.0625;
 		double rightCorrect = 0.0625;
@@ -149,16 +147,16 @@ public class Render3D extends Render {
 		double zcLeft = ((zDistanceLeft / 2) - (forward * forwardCorrect)) * 2;
 
 		double rotLeftSideX = xcLeft * cosine - zcLeft * sine;
-		double yCornerTL = ((-yHeight) - (-up * upCorrect  + (walking * walkCorrect))) * 2;
-		double yCornerBL = (( + 0.5 - yHeight) - (-up * upCorrect + (walking * walkCorrect))) * 2;
+		double yCornerTL = ((-yPos) - (-up * upCorrect  + (walking * walkCorrect))) * 2;
+		double yCornerBL = (( + ySize - yPos) - (-up * upCorrect + (walking * walkCorrect))) * 2;
 		double rotLeftSideZ = zcLeft * cosine + xcLeft * sine;
 
 		double xcRight = ((xRight / 2) - (right * rightCorrect)) * 2;
 		double zcRight = ((zDistanceRight / 2) - (forward * forwardCorrect)) * 2;
 
 		double rotRightSideX = xcRight * cosine - zcRight * sine;
-		double yCornerTR = ((-yHeight) - (-up * upCorrect + (walking * walkCorrect))) * 2;
-		double yCornerBR = (( + 0.5 - yHeight) - (-up * upCorrect + (walking * walkCorrect))) * 2;
+		double yCornerTR = ((-yPos) - (-up * upCorrect + (walking * walkCorrect))) * 2;
+		double yCornerBR = (( + ySize - yPos) - (-up * upCorrect + (walking * walkCorrect))) * 2;
 		double rotRightSideZ = zcRight * cosine + xcRight * sine;
 
 		double tex30 = 0;

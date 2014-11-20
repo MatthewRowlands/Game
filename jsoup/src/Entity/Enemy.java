@@ -9,6 +9,7 @@ public class Enemy {
 	public double y;
 	public double z;
 	public double speed = 1;
+	public boolean chase = true;
 	
 	public Enemy(double x, double y, double z){
 		this.x = x;
@@ -17,6 +18,7 @@ public class Enemy {
 	}
 
 	public void tick() {
+		if(chase)
 		chasePlayer();
 	}
 

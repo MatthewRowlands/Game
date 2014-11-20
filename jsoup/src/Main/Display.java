@@ -33,7 +33,7 @@ public class Display extends Canvas implements Runnable {
 	public static double WINDOW_TEST_MODE = 0.0;
 	public static double WINDOW_TICK_RATE = 60.0;
 	public static double WINDOW_NETWORK_TICK_RATE = 2.0;
-	public static boolean WINDOW_USE_VSYNC = false;
+	public static boolean WINDOW_USE_VSYNC = true;
 	public static String DEFAULT_PORT = "12500";
 	public static boolean WINDOW_FIX_MOUSE = false;
 	public static int PING = 0;
@@ -95,8 +95,13 @@ public class Display extends Canvas implements Runnable {
 
 	public static double rotationcos = 0;
 	public static double rotationsin = 0;
+
+	public static double startaccuracy = 0.05;
+	public static double accuracy = startaccuracy;
+	
 	boolean SemiAuto = false;
 	boolean FullAuto = true;
+	double firerate = 100;
 	
 	long guntime = System.currentTimeMillis();
 	
@@ -198,7 +203,7 @@ public class Display extends Canvas implements Runnable {
 				}
 				
 				if (tickCount % WINDOW_TICK_RATE == 0) {
-					//screen.enemies.add(new Enemy((int)(Math.random()*500),0,(int)(Math.random()*500)));
+					screen.enemies.add(new Enemy((int)(Math.random()*500)+x,0,(int)(Math.random()*500)+z));
 					PING = ping;
 					fps = frames;
 					previousTime += 1000;
@@ -253,14 +258,23 @@ public class Display extends Canvas implements Runnable {
 			}	
 		}
 		if(MousePressed && SemiAuto){
-			SemiAutoFire(0);
+			SemiAutoFire(1/firerate);
 		}
 		if(MousePressed && FullAuto){
-			FullAutoFire(0.01);
+			FullAutoFire(1/firerate);
 		}
 		if(!MousePressed){
 			canfire = true;
+			if(accuracy > startaccuracy){
+				accuracy-= 0.1;
+			}else{
+				accuracy = startaccuracy;
+			}
 		}	
+		if(input.MouseButton == 0){
+			MousePressed = false;
+		}
+
 		screen.tick();
 	}
 
@@ -269,6 +283,7 @@ public class Display extends Canvas implements Runnable {
 			screen.bullets.add(new Objects(x,y,z));
 			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos);
 			canfire = false;
+			accuracy += startaccuracy/2;
 		}
 	}
 	
@@ -278,6 +293,7 @@ public class Display extends Canvas implements Runnable {
 			screen.bullets.add(new Objects(x,y,z));
 			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos);
 			guntime = System.currentTimeMillis();
+			accuracy += startaccuracy/8;
 		}
 	}
 
@@ -306,7 +322,8 @@ public class Display extends Canvas implements Runnable {
 		g.drawString("FPS: " + fps+" Ping: "+PING, 20, 20);
 		g.drawString("X/Y/Z: "+x+","+y+","+z+" Rotation C/S: "+rotationsin+"/"+rotationcos, 20, 30);
 		g.drawString("Textures: "+blockcount, 20, 40);
-		g.drawString("VSYNC: "+MousePressed, 20, 50);
+		g.drawString("VSYNC: "+WINDOW_USE_VSYNC, 20, 50);
+		g.drawString("Weapong Firerate: "+firerate, 20, 60);
 
 		for(int i = 0; i < screen.positions.size(); i++){
 			double[] v3f = new double[4];
@@ -323,7 +340,8 @@ public class Display extends Canvas implements Runnable {
 		}
 		
 		if(!Pause){
-		double accuracy = 2; g.setColor(Color.BLACK); g.fillRect((int) (width
+			double accuracy = this.accuracy * 30;
+		g.setColor(Color.BLACK); g.fillRect((int) (width
 		/ 2 + accuracy * 10) - 1, height / 2 - 2, 12, 4); g.fillRect(width /
 		2 - 2, (int) (height / 2 + accuracy * 10) - 1, 4, 12);
 		g.fillRect((int) (width / 2 - 11 - accuracy * 10), height / 2 - 2,
