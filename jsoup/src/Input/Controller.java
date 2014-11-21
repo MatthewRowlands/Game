@@ -88,11 +88,13 @@ public class Controller {
 			y += bumheight;
 			pronewalk=true;
 		}
-		
-		if (sprint && !crouch && !jump) {
+		if (sprint && !crouch && !jump && !prone) {
 			walkSpeed = 1 * Display.MoveSpeed;
 			walk = true;
 			sprintwalk = true;
+			Display.startaccuracy=Display.initialaccuracy*2;
+		}else{
+			Display.startaccuracy=Display.initialaccuracy;
 		}
 		
 		if (F1) {

@@ -8,7 +8,7 @@ public class Enemy {
 	public double x;
 	public double y;
 	public double z;
-	public double speed = 0.01;
+	public double speed = 0.5;
 	public boolean chase = true;
 	public boolean dead = false;
 	public boolean attacking = false;

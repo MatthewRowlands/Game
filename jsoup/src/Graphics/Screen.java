@@ -32,7 +32,7 @@ public class Screen extends Render {
 		
 		for(double[] v3f : positions){
 			if(positions.indexOf(v3f) != Client.clientnumber-1){
-			renderBlock(v3f[0]/8,v3f[1]/8,v3f[2]/8, 1, 0.5, 1, 3);
+			renderBlock(v3f[0]/8,v3f[1]/8,v3f[2]/8, 1, 0.5, 1, 1);
 			}
 		}
 		for(Enemy e : enemies){
@@ -41,10 +41,12 @@ public class Screen extends Render {
 			}
 		}
 		for(Objects e : objects){
-			renderBlock(e.x/8,e.y/8,e.z/8, 1, 0.5, 1, 1);
+			renderBlock(e.x/8,e.y/8,e.z/8, 1, 0.5, 1, 4);
 		}
 		for(Objects e : bullets){
+			if(!e.flash){
 			Display.activebullets++;
+			}
 			if(e.maxdistreached){
 			Display.activebullets--;
 			}else{

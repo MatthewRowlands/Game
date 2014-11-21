@@ -43,7 +43,7 @@ public class Display extends Canvas implements Runnable {
 	public static double WINDOW_FAST_JOIN = 0.0;
 	public static double WINDOW_TEST_MODE = 0.0;
 	public static double WINDOW_TICK_RATE = 60.0;
-	public static double WINDOW_NETWORK_TICK_RATE = 2.0;
+	public static double WINDOW_NETWORK_TICK_RATE = 5.0;
 	public static boolean WINDOW_USE_VSYNC = false;
 	public static String DEFAULT_PORT = "12500";
 	public static boolean WINDOW_FIX_MOUSE = false;
@@ -107,6 +107,7 @@ public class Display extends Canvas implements Runnable {
 	public static double rotationcos = 0;
 	public static double rotationsin = 0;
 
+	public static double initialaccuracy = 0.05;
 	public static double startaccuracy = 0.05;
 	public static double accuracy = startaccuracy;
 
@@ -126,7 +127,7 @@ public class Display extends Canvas implements Runnable {
 	long guntime = System.currentTimeMillis();
 	long flashtime = System.currentTimeMillis();
 	public static long reloadtime = System.currentTimeMillis();
-	static double reloadspeed = 30.0;
+	static double reloadspeed = 3000.0;
 	public static boolean reloading = false;
 	public static boolean donereloadsound = false;
 
@@ -428,7 +429,6 @@ public class Display extends Canvas implements Runnable {
 		g.drawString("Reloading: "+reloading, 20, 120);
 		g.drawString("Enemies Attacking: "+enemiesattacking, 20, 130);
 		g.drawString("Right: "+collisionright+" Left: "+collisionleft+" Front: "+collisionfront+" Back: "+collisionback, 20, 140);
-
 		for(int i = 0; i < screen.positions.size(); i++){
 			double[] v3f = new double[4];
 			v3f[0] = screen.positions.get(i)[0];	
@@ -440,7 +440,7 @@ public class Display extends Canvas implements Runnable {
 			+v3f[0]+" y:"
 			+v3f[1]+" z:"
 			+v3f[2]+" Ping: "+PING, 
-			20, 60+(i*10));
+			20, 150+(i*10));
 		}
 		
 		if(!Pause){
