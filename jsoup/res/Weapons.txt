@@ -1,10 +1,4 @@
-s
-adf
-a
-wf
-awf
-awf
-awf
-aw
-f
-awf
+0 GUN FR DM ACCUR MAG FA RT
+1 MP5 16 28 0.05 30 true 2.1
+2 M4A1 12 40 0.025 30 true 2.6
+3 P250 1 29 0.015 13 false 1.8

@@ -30,6 +30,7 @@ import javax.swing.JFrame;
 import Connection.Client;
 import Entity.Enemy;
 import Entity.Objects;
+import Entity.Weapon;
 import Graphics.Screen;
 import Graphics.Texture;
 import Input.Controller;
@@ -107,22 +108,27 @@ public class Display extends Canvas implements Runnable {
 	public static double rotationcos = 0;
 	public static double rotationsin = 0;
 
-	public static double initialaccuracy = 0.05;
-	public static double startaccuracy = 0.05;
+	public static double StartHEALTH = 300;
+	public static double HEALTH = 300;
+	
+	static Weapon w1 = new Weapon(1);
+	static Weapon w2 = new Weapon(3);
+	static int wep = 1;
+	
+	public static double initialaccuracy = w1.accuracy;
+	public static double startaccuracy = initialaccuracy;
 	public static double accuracy = startaccuracy;
-
-	public static int activebullets = 0;
-
-	public static boolean Reload = false;
-	
-	boolean SemiAuto = false;
-	boolean FullAuto = !SemiAuto;
-	double firerate = 20;
-	
-	public int sFlashAmmo = 3;
-	public static int sWeaponAmmo = 30;
-	public int FlashAmmo = sFlashAmmo;
+	public static double firerate = w1.firerate;
+	public static boolean SemiAuto = w1.SemiAuto;
+	public static boolean FullAuto = !SemiAuto;
+	public static int sFlashAmmo = 3;
+	public static int sWeaponAmmo = w1.WeaponAmmo;
+	public static int FlashAmmo = sFlashAmmo;
 	public static int WeaponAmmo = sWeaponAmmo;
+	
+	public static int activebullets = 0;
+	public static boolean Reload = false;
+
 	
 	long guntime = System.currentTimeMillis();
 	long flashtime = System.currentTimeMillis();
@@ -131,8 +137,6 @@ public class Display extends Canvas implements Runnable {
 	public static boolean reloading = false;
 	public static boolean donereloadsound = false;
 
-	public static double StartHEALTH = 300;
-	public static double HEALTH = 300;
 	public static int enemiesattacking = 0;
 	
 	public static boolean collisionleft = false;
@@ -156,6 +160,9 @@ public class Display extends Canvas implements Runnable {
 		addFocusListener(input);
 		addMouseListener(input);
 		addMouseMotionListener(input);
+		
+		System.out.println("Current wep:"+w1.ID);
+		System.out.println("Current wep:"+w2.ID);
 
 	}
 
@@ -382,7 +389,7 @@ public class Display extends Canvas implements Runnable {
 			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos);
 			guntime = System.currentTimeMillis();
 			accuracy += startaccuracy/4;
-			PlaySound("/audio/SMG.wav");
+			PlaySound("/audio/M4A1.wav");
 			WeaponAmmo--;
 		}
 	}
@@ -396,6 +403,48 @@ public class Display extends Canvas implements Runnable {
 	    } catch(Exception ex) {
 	    }
 	}
+	
+	public static void ChangeWeapon(int weaponnum){
+		if(weaponnum == 1){
+			wep = 1;
+		}else if(weaponnum == 2){
+			wep = 2;
+		}else{
+			if(wep == 1){
+				wep = 2;
+			}else if(wep == 2){
+				wep = 1;
+			}else{
+				wep = 1;
+			}
+		}
+		
+		Weapon w = getCurrentWeapon();
+		initialaccuracy = w.accuracy;
+		startaccuracy = initialaccuracy;
+		accuracy = startaccuracy;
+		firerate = w.firerate;
+		SemiAuto = w.SemiAuto;
+		FullAuto = !SemiAuto;
+		sWeaponAmmo = w.WeaponAmmo;
+		WeaponAmmo = sWeaponAmmo;
+		reloadspeed = w.reloadspeed * 1000;
+		
+		Reload();
+	}
+	
+	public static Weapon getCurrentWeapon(){
+		if(wep == 1){
+			return w1;
+		}
+		else if(wep == 2){
+			return w2;
+		}
+		else{
+			return null;
+		}
+	}
+	
 	public void render() {
 		frames++;
 		BufferStrategy bufferStrategy = this.getBufferStrategy();
@@ -461,13 +510,13 @@ public class Display extends Canvas implements Runnable {
 		
 		int centrex = width - 100;
 		int centrey = height - 100;
-		int minimapscale = 4;
+		int minimapscale = 5;
 		
 		g.setColor(Color.BLACK);
 		g.fillRect(centrex - 100, centrey - 100, 200, 200);
 		
 		g.setColor(Color.GREEN);
-		g.fillRect(centrex, centrey, (16+y)/minimapscale, (16+y)/minimapscale);
+		g.fillRect(centrex, centrey, (16+y)/minimapscale+3, (16+y)/minimapscale+3);
 		
 		g.drawLine(centrex, centrey, -(int)(1000000*rotationcos), -(int)(1000000*rotationsin));
 		
@@ -477,7 +526,7 @@ public class Display extends Canvas implements Runnable {
 			
 			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100 && !e.dead){
 			g.setColor(Color.RED);
-			g.fillRect(posx, posy, (16+(int)e.y)/minimapscale, (16+(int)e.y)/minimapscale);
+			g.fillRect(posx, posy, (16+(int)e.y)/minimapscale+3, (16+(int)e.y)/minimapscale+3);
 			}
 		}
 		

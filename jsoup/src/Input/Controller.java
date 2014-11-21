@@ -23,7 +23,7 @@ public class Controller {
 	double zMove = 0;
 	
 	public void tick(boolean forward, boolean back, boolean left,
-			boolean right, boolean jump, boolean crouch, boolean sprint, boolean F1, boolean MEGARUN, boolean prone, boolean reload) {
+			boolean right, boolean jump, boolean crouch, boolean sprint, boolean F1, boolean MEGARUN, boolean prone, boolean reload, boolean changewep1, boolean changewep2) {
 		
 		if(!Display.Pause){
 		rotationSpeed = 0.0025 * Display.MouseChange;
@@ -105,6 +105,12 @@ public class Controller {
 			Display.Reload();
 		}
 		
+		if(changewep1){
+			Display.ChangeWeapon(1);
+		}
+		if(changewep2){
+			Display.ChangeWeapon(2);
+		}
 		if (MEGARUN) {
 			walkSpeed = 5 * Display.MoveSpeed;
 		}
