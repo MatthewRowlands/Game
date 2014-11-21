@@ -8,8 +8,10 @@ public class Enemy {
 	public double x;
 	public double y;
 	public double z;
-	public double speed = 1;
+	public double speed = 0.01;
 	public boolean chase = true;
+	public boolean dead = false;
+	public boolean attacking = false;
 	
 	public Enemy(double x, double y, double z){
 		this.x = x;

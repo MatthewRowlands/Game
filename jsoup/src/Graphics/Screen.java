@@ -36,7 +36,9 @@ public class Screen extends Render {
 			}
 		}
 		for(Enemy e : enemies){
+			if(!e.dead){
 			renderBlock(e.x/8,e.y/8,e.z/8, 1, 1, 1, 2);
+			}
 		}
 		for(Objects e : objects){
 			renderBlock(e.x/8,e.y/8,e.z/8, 1, 0.5, 1, 1);
@@ -57,35 +59,63 @@ public class Screen extends Render {
 	}
 	
 	private void CheckCollision() {
+		Display.enemiesattacking = 0;
+		Display.collisionright = false;
+		Display.collisionback = false;
+		Display.collisionfront = false;
+		Display.collisionleft = false;
+		
 		for(Enemy e : enemies){
-			for(Objects e2 : bullets){
-				for(Objects e3 : objects){
-					double x1, y1, z1;
-					double x2, y2, z2;
-					double x3, y3, z3;
+			double x1, y1, z1;
+			x1 = e.x;
+			y1 = e.y;
+			z1 = e.z;
+			
+			if(!e.dead){		
+				if(x1 >= Display.x - 16 && x1 <= Display.x + 8 && z1 >= Display.z - 16 && z1 <= Display.z + 8){
+					e.chase = false;
+					e.attacking = true;
+					Display.HEALTH --;
+					Display.enemiesattacking++;
 					
-					x1 = e.x;
-					y1 = e.y;
-					z1 = e.z;
-					
-					x2 = e2.x;
-					y2 = e2.y;
-					z2 = e2.z;
-					
-					x3 = e3.x;
-					y3 = e3.y;
-					z3 = e3.z;
-					
-					if(x2 >= x1 && x2 <= x1 + 8 && z2 >= z1 && z2 <= z1 + 8){
-						e.chase = false;
+					//TODO: needs fixing ->
+					/* Not relative to direction facing
+					 * Use sine/cosine? 
+					 * Remake but using xMove and yMove?
+					 */
+					if(x1 >= Display.x){
+						Display.collisionright = true;
 					}
+					if(x1 <= Display.x){
+						Display.collisionleft = true;
+					}
+					if(z1 >= Display.z){
+						Display.collisionfront = true;
+					}
+					if(z1 <= Display.z){
+						Display.collisionback = true;
+					}
+				}else{
+					e.chase = true;
+					e.attacking = false;
+				}
+			}
+			
+			for(Objects e2 : bullets){
+				double x2, y2, z2;	
+				x2 = e2.x;
+				y2 = e2.y;
+				z2 = e2.z;
+					
+				if(x2 >= x1 - 4 && x2 <= x1 + 4 && z2 >= z1 - 4 && z2 <= z1 + 4){
+					e.dead = true;
 				}
 			}
 		}
 	}
 
 	public void tick(){
-		//CheckCollision();
+		CheckCollision();
 		for(Enemy e : enemies){
 			e.tick();
 		}

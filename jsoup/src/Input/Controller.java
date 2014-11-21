@@ -34,22 +34,22 @@ public class Controller {
 		xMove = 0;
 		zMove = 0;
 
-		if (forward) {
+		if (forward && !Display.collisionfront) {
 			zMove++;
 			walk = true;
 		}
 
-		if (back) {
+		if (back && !Display.collisionback) {
 			zMove--;
 			walk = true;
 		}
 
-		if (left) {
+		if (left && !Display.collisionleft) {
 			xMove--;
 			walk = true;
 		}
 
-		if (right) {
+		if (right && !Display.collisionright) {
 			xMove++;
 			walk = true;
 		}

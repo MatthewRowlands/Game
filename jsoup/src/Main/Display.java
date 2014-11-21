@@ -44,7 +44,7 @@ public class Display extends Canvas implements Runnable {
 	public static double WINDOW_TEST_MODE = 0.0;
 	public static double WINDOW_TICK_RATE = 60.0;
 	public static double WINDOW_NETWORK_TICK_RATE = 2.0;
-	public static boolean WINDOW_USE_VSYNC = true;
+	public static boolean WINDOW_USE_VSYNC = false;
 	public static String DEFAULT_PORT = "12500";
 	public static boolean WINDOW_FIX_MOUSE = false;
 	public static int PING = 0;
@@ -115,21 +115,29 @@ public class Display extends Canvas implements Runnable {
 	public static boolean Reload = false;
 	
 	boolean SemiAuto = false;
-	boolean FullAuto = true;
+	boolean FullAuto = !SemiAuto;
 	double firerate = 20;
 	
 	public int sFlashAmmo = 3;
 	public static int sWeaponAmmo = 30;
-	public int FlashAmmo = 3;
-	public static int WeaponAmmo = 30;
+	public int FlashAmmo = sFlashAmmo;
+	public static int WeaponAmmo = sWeaponAmmo;
 	
 	long guntime = System.currentTimeMillis();
 	long flashtime = System.currentTimeMillis();
 	public static long reloadtime = System.currentTimeMillis();
-	static double reloadspeed = 3000.0;
+	static double reloadspeed = 30.0;
 	public static boolean reloading = false;
 	public static boolean donereloadsound = false;
+
+	public static double StartHEALTH = 300;
+	public static double HEALTH = 300;
+	public static int enemiesattacking = 0;
 	
+	public static boolean collisionleft = false;
+	public static boolean collisionfront = false;
+	public static boolean collisionright = false;
+	public static boolean collisionback = false;
 
 	public Display() {
 		Dimension size = new Dimension(WIDTH, HEIGHT);
@@ -315,6 +323,15 @@ public class Display extends Canvas implements Runnable {
 			MousePressed = false;
 		}
 
+		if(HEALTH < StartHEALTH){
+		HEALTH+=0.01;
+		}else{
+			HEALTH = StartHEALTH;
+		}
+		if(HEALTH < 0){
+			HEALTH = 0;
+			//you died
+		}
 		screen.tick();
 	}
 
@@ -339,10 +356,10 @@ public class Display extends Canvas implements Runnable {
 	private void ThrowFlashBang() {
 		long checktime = System.currentTimeMillis();
 		if((checktime - flashtime) > (5000)){
-		screen.bullets.add(new Objects(x,y,z));
-		screen.bullets.get(screen.bullets.size()-1).UseFlashMechanism(rotationsin, rotationcos);
-		flashtime = System.currentTimeMillis();
-		FlashAmmo--;
+			screen.bullets.add(new Objects(x,y,z));
+			screen.bullets.get(screen.bullets.size()-1).UseFlashMechanism(rotationsin, rotationcos);
+			flashtime = System.currentTimeMillis();
+			FlashAmmo--;
 		}
 	}
 
@@ -376,8 +393,6 @@ public class Display extends Canvas implements Runnable {
 	        clip.open(audioInputStream);
 	        clip.start();
 	    } catch(Exception ex) {
-	        System.out.println("Error with playing sound.");
-	        ex.printStackTrace();
 	    }
 	}
 	public void render() {
@@ -411,6 +426,8 @@ public class Display extends Canvas implements Runnable {
 		g.drawString("Flash Grenades: "+FlashAmmo, 20, 100);
 		g.drawString("Weapon Ammo: "+WeaponAmmo, 20, 110);
 		g.drawString("Reloading: "+reloading, 20, 120);
+		g.drawString("Enemies Attacking: "+enemiesattacking, 20, 130);
+		g.drawString("Right: "+collisionright+" Left: "+collisionleft+" Front: "+collisionfront+" Back: "+collisionback, 20, 140);
 
 		for(int i = 0; i < screen.positions.size(); i++){
 			double[] v3f = new double[4];
@@ -452,17 +469,24 @@ public class Display extends Canvas implements Runnable {
 		g.setColor(Color.GREEN);
 		g.fillRect(centrex, centrey, (16+y)/minimapscale, (16+y)/minimapscale);
 		
-		//g.drawLine(centrex, centrey, -(int)(1000000*rotationcos), -(int)(1000000*rotationsin));
+		g.drawLine(centrex, centrey, -(int)(1000000*rotationcos), -(int)(1000000*rotationsin));
 		
 		for(Enemy e : screen.enemies){
 			int posx = (int)(x-e.x)/minimapscale+centrex;
 			int posy = (int)(z-e.z)/minimapscale+centrey;
 			
-			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100){
+			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100 && !e.dead){
 			g.setColor(Color.RED);
 			g.fillRect(posx, posy, (16+(int)e.y)/minimapscale, (16+(int)e.y)/minimapscale);
 			}
 		}
+		
+		g.setColor(Color.BLACK); 
+		g.fillRect(width/2-150, 0, 300, 20);
+		g.setColor(Color.GREEN); 
+		g.fillRect(width/2-150, 0, (int) (HEALTH), 20);
+		g.setColor(Color.BLACK);
+		g.drawString("Health: "+HEALTH, width/2 - 100, 13);
 		}
 		
 		if (Pause)

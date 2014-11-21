@@ -9,7 +9,7 @@ public class Objects {
 	public double x;
 	public double y;
 	public double z;
-	public double speed = 2;
+	public double speed = 5;
 	public double maxdistance = 1000;
 	public double heightstep = 0.15;
 	public boolean bullet = false;
