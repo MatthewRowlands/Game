@@ -22,6 +22,8 @@ public class Weapon {
 	public String name = "";
 	public int ID = 0;
 	public double reloadspeed = 3.0;
+	public int firemode = 1;
+	public String filepath = "/audio/whiz.wav";
 	
 	public Weapon(int id){
 		this.ID = id;
@@ -46,7 +48,7 @@ public class Weapon {
 	      
 	      String gun = text.get(id);
 
-	      String name, firerate, damage, accuracy, ammo, firemode, reloadtime;
+	      String name, firerate, damage, accuracy, ammo, firemode, reloadtime, filepath;
 	      String[] split = gun.split(" ");
 	      name = split[1];
 	      firerate = split[2];
@@ -55,15 +57,16 @@ public class Weapon {
 	      ammo = split[5];
 	      firemode = split[6];
 	      reloadtime = split[7];
+	      filepath = split[8];
 	      
 	      this.name = name;
 	      this.firerate = Double.parseDouble(firerate);
 	      this.WeaponDamage = Double.parseDouble(damage);
 	      this.accuracy = Double.parseDouble(accuracy);
-	      this.WeaponAmmo = Integer.parseInt(ammo);
 	      this.reloadspeed = Double.parseDouble(reloadtime);
-	      SemiAuto = firemode.equals("false");
-	      FullAuto = !SemiAuto;      
+	      this.WeaponAmmo = Integer.parseInt(ammo);
+	      this.firemode = Integer.parseInt(firemode);
+	      this.filepath  = filepath;
 
 	    } catch (FileNotFoundException e) {
 	      e.printStackTrace();

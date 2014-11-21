@@ -111,16 +111,16 @@ public class Display extends Canvas implements Runnable {
 	public static double StartHEALTH = 300;
 	public static double HEALTH = 300;
 	
-	static Weapon w1 = new Weapon(1);
-	static Weapon w2 = new Weapon(3);
+	static Weapon w1 = new Weapon(10);
+	static Weapon w2 = new Weapon(8);
 	static int wep = 1;
 	
 	public static double initialaccuracy = w1.accuracy;
 	public static double startaccuracy = initialaccuracy;
 	public static double accuracy = startaccuracy;
 	public static double firerate = w1.firerate;
-	public static boolean SemiAuto = w1.SemiAuto;
-	public static boolean FullAuto = !SemiAuto;
+	public static double WeaponDamage = w1.WeaponDamage;
+	public static int firemode = w1.firemode;
 	public static int sFlashAmmo = 3;
 	public static int sWeaponAmmo = w1.WeaponAmmo;
 	public static int FlashAmmo = sFlashAmmo;
@@ -133,7 +133,7 @@ public class Display extends Canvas implements Runnable {
 	long guntime = System.currentTimeMillis();
 	long flashtime = System.currentTimeMillis();
 	public static long reloadtime = System.currentTimeMillis();
-	static double reloadspeed = 3000.0;
+	static double reloadspeed = w1.reloadspeed*1000;
 	public static boolean reloading = false;
 	public static boolean donereloadsound = false;
 
@@ -301,10 +301,17 @@ public class Display extends Canvas implements Runnable {
 			}	
 		}
 		if(WeaponAmmo > 0 && !reloading){
-			if(MousePressed && SemiAuto && input.MouseButton == 1){
+			if(MousePressed && firemode == 1 && input.MouseButton == 1){
 				SemiAutoFire(1/firerate);
 			}
-			if(MousePressed && FullAuto && input.MouseButton == 1){
+			if(MousePressed && firemode > 4 && input.MouseButton == 1){
+				if(firerate < 3){
+					ShotgunSemiFire(1/firerate);
+				}else{
+					ShotgunFullFire(1/firerate);
+				}
+			}
+			if(MousePressed && firemode == 2 && input.MouseButton == 1){
 				FullAutoFire(1/firerate);
 			}
 		}else{
@@ -373,12 +380,17 @@ public class Display extends Canvas implements Runnable {
 
 	private void SemiAutoFire(double timedelay) {
 		if(canfire){
+			long checktime = System.currentTimeMillis();
+			if((checktime - guntime) > (timedelay * 1000)){
 			screen.bullets.add(new Objects(x,y,z));
 			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos);
+			guntime = System.currentTimeMillis();
 			canfire = false;
 			accuracy += startaccuracy/2;
-			PlaySound("/audio/M4A1.wav");
+			PlaySound(getCurrentWeapon().filepath);
+			PlaySound("/audio/whiz.wav");
 			WeaponAmmo--;
+			}
 		}
 	}
 	
@@ -389,8 +401,42 @@ public class Display extends Canvas implements Runnable {
 			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos);
 			guntime = System.currentTimeMillis();
 			accuracy += startaccuracy/4;
-			PlaySound("/audio/M4A1.wav");
+			PlaySound(getCurrentWeapon().filepath);
+			PlaySound("/audio/whiz.wav");
 			WeaponAmmo--;
+		}
+	}
+	
+	private void ShotgunFullFire(double timedelay) {
+		long checktime = System.currentTimeMillis();
+		if((checktime - guntime) > (timedelay * 1000)){
+			for(int i = 0; i < firemode; i++){
+				screen.bullets.add(new Objects(x,y,z));
+				screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos);
+			}
+			guntime = System.currentTimeMillis();
+			accuracy += startaccuracy/4;
+			PlaySound(getCurrentWeapon().filepath);
+			PlaySound("/audio/whiz.wav");
+			WeaponAmmo--;
+		}
+	}
+	
+	private void ShotgunSemiFire(double timedelay) {
+		if(canfire){
+			long checktime = System.currentTimeMillis();
+			if((checktime - guntime) > (timedelay * 1000)){
+			for(int i = 0; i < firemode; i++){
+				screen.bullets.add(new Objects(x,y,z));
+				screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos);
+			}
+			guntime = System.currentTimeMillis();
+			canfire = false;
+			accuracy += startaccuracy/2;
+			PlaySound(getCurrentWeapon().filepath);
+			PlaySound("/audio/whiz.wav");
+			WeaponAmmo--;
+			}
 		}
 	}
 
@@ -424,11 +470,11 @@ public class Display extends Canvas implements Runnable {
 		startaccuracy = initialaccuracy;
 		accuracy = startaccuracy;
 		firerate = w.firerate;
-		SemiAuto = w.SemiAuto;
-		FullAuto = !SemiAuto;
+		firemode = w.firemode;
 		sWeaponAmmo = w.WeaponAmmo;
 		WeaponAmmo = sWeaponAmmo;
 		reloadspeed = w.reloadspeed * 1000;
+		WeaponDamage = w.WeaponDamage;
 		
 		Reload();
 	}
@@ -527,6 +573,30 @@ public class Display extends Canvas implements Runnable {
 			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100 && !e.dead){
 			g.setColor(Color.RED);
 			g.fillRect(posx, posy, (16+(int)e.y)/minimapscale+3, (16+(int)e.y)/minimapscale+3);
+			}
+		}
+		g.setColor(Color.WHITE);
+		g.drawString("Current Weapon: "+getCurrentWeapon().name, centrex-100, centrey-200);
+		g.drawString("Damage: "+getCurrentWeapon().WeaponDamage, centrex-100, centrey-185);
+		g.drawString("Rounds Per Second: "+getCurrentWeapon().firerate, centrex-100, centrey-170);
+		g.drawString("Ammo: "+WeaponAmmo+"/"+getCurrentWeapon().WeaponAmmo, centrex-100, centrey-155);
+		g.drawString("Reload Time: "+getCurrentWeapon().reloadspeed, centrex-100, centrey-140);
+		if(firemode == 2){
+		g.drawString("Firemode: FULLY-AUTO", centrex-100, centrey-125);
+		}
+		if(firemode == 1){
+		g.drawString("Firemode: SEMI-AUTO", centrex-100, centrey-125);
+		}
+		if(firemode == 3){
+		g.drawString("Firemode: BURST", centrex-100, centrey-125);
+		}
+		if(firemode > 6){
+			if(firerate < 1){
+				g.drawString("Firemode: PUMP-ACTION [Shotgun]", centrex-100, centrey-125);
+			}else if(firerate >= 1 && firerate <= 3){
+				g.drawString("Firemode: SEMI-AUTO [Shotgun]", centrex-100, centrey-125);
+			}else if(firerate > 3){
+				g.drawString("Firemode: FULL-AUTO [Shotgun]", centrex-100, centrey-125);
 			}
 		}
 		

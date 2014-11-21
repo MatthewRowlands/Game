@@ -12,6 +12,8 @@ public class Enemy {
 	public boolean chase = true;
 	public boolean dead = false;
 	public boolean attacking = false;
+	public double health = 100;
+	public double displayhealth = health/100;
 	
 	public Enemy(double x, double y, double z){
 		this.x = x;
@@ -20,8 +22,15 @@ public class Enemy {
 	}
 
 	public void tick() {
-		if(chase)
-		chasePlayer();
+		if(!dead){
+			displayhealth = health/100;
+			if(health <= 0){
+				health = 0;
+				dead = true;
+			}
+			if(chase)
+			chasePlayer();
+		}
 	}
 
 	private void chasePlayer() {

@@ -37,7 +37,7 @@ public class Screen extends Render {
 		}
 		for(Enemy e : enemies){
 			if(!e.dead){
-			renderBlock(e.x/8,e.y/8,e.z/8, 1, 1, 1, 2);
+			renderBlock(e.x/8,e.y/8,e.z/8, 1, e.displayhealth, 1, 2);
 			}
 		}
 		for(Objects e : objects){
@@ -110,7 +110,7 @@ public class Screen extends Render {
 				z2 = e2.z;
 					
 				if(x2 >= x1 - 4 && x2 <= x1 + 4 && z2 >= z1 - 4 && z2 <= z1 + 4){
-					e.dead = true;
+					e.health-=Display.WeaponDamage;
 				}
 			}
 		}
