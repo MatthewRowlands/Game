@@ -12,7 +12,7 @@ public class Objects implements Serializable{
 	public double y;
 	public double z;
 	public double speed = 5;
-	public double maxdistance = 1000;
+	public double maxdistance = 100000;
 	public double heightstep = 0.15;
 	public boolean bullet = false;
 	public boolean flash = false;

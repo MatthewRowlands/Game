@@ -41,8 +41,8 @@ import Launcher.Options;
 public class Display extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
 
-	public static double WINDOW_FAST_JOIN = 1.0;
-	public static double WINDOW_TEST_MODE = 1.0;
+	public static double WINDOW_FAST_JOIN = 0.0;
+	public static double WINDOW_TEST_MODE = 0.0;
 	public static double WINDOW_TICK_RATE = 60.0;
 	public static double WINDOW_NETWORK_TICK_RATE = 1.0;
 	public static boolean WINDOW_USE_VSYNC = false;
@@ -112,7 +112,7 @@ public class Display extends Canvas implements Runnable {
 	public static double StartHEALTH = 300;
 	public static double HEALTH = 300;
 	
-	static Weapon w1 = new Weapon(10);
+	static Weapon w1 = new Weapon(9);
 	static Weapon w2 = new Weapon(3);
 	static int wep = 1;
 	
@@ -556,7 +556,7 @@ public class Display extends Canvas implements Runnable {
 		
 		int centrex = width - 100;
 		int centrey = height - 100;
-		int minimapscale = 5;
+		int minimapscale = 80;
 		
 		g.setColor(Color.BLACK);
 		g.fillRect(centrex - 100, centrey - 100, 200, 200);
@@ -564,7 +564,7 @@ public class Display extends Canvas implements Runnable {
 		g.setColor(Color.GREEN);
 		g.fillRect(centrex, centrey, (16+y)/minimapscale+3, (16+y)/minimapscale+3);
 		
-		g.drawLine(centrex, centrey, -(int)(1000000*rotationcos), -(int)(1000000*rotationsin));
+		g.drawLine(centrex, centrey, -(int)(1000000*rotationsin), -(int)(1000000*rotationcos));
 		
 		for(Enemy e : screen.enemies){
 			int posx = (int)(e.x-x)/minimapscale+centrex;
@@ -572,8 +572,17 @@ public class Display extends Canvas implements Runnable {
 			
 			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100 && !e.dead){
 			g.setColor(Color.RED);
-			g.fillRect(posx, posy, (16+(int)e.y)/minimapscale+3, (16+(int)e.y)/minimapscale+3);
+			g.fillRect(posx, -posy, (16+(int)e.y)/minimapscale+3, (16+(int)e.y)/minimapscale+3);
 			g.drawString("x:"+posx+" y:"+posy,posx, posy);
+			}
+		}
+		for(Objects e : screen.bullets){
+			int posx = (int)(e.x-x)/minimapscale+centrex;
+			int posy = (int)(e.z-z)/minimapscale+centrey;
+			
+			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100 && !e.maxdistreached){
+			g.setColor(Color.YELLOW);
+			g.fillRect(posx, posy, (16+(int)e.y)/minimapscale+3, (16+(int)e.y)/minimapscale+3);
 			}
 		}
 		for(double[] d : screen.positions){
