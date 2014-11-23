@@ -63,6 +63,7 @@ public class Server implements Runnable{
 	static ArrayList<EchoThread> clients = new ArrayList<EchoThread>();
 	static ArrayList<String> clientnames = new ArrayList<String>();
 	public static ArrayList<double[]> clientpos = new ArrayList<double[]>();
+	public static double[][][][] positions = new double[1][1][1][1];
 	Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
 	int tickCount = 0;
 	int frames = 0;

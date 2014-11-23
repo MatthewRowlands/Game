@@ -108,6 +108,7 @@ public class EchoThread extends Thread{
 				FontToFit(clientinfo);
 				
 				Server.clientpos.set(clientindex-1, xyz);
+				//Server.positions[clientindex-1][0][0] = x;
 				
 				outStream = new ObjectOutputStream(socket.getOutputStream());
 				outStream.writeObject(Server.clientpos);

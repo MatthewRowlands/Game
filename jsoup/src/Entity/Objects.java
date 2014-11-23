@@ -1,8 +1,10 @@
 package Entity;
 
+import java.io.Serializable;
+
 import Main.Display;
 
-public class Objects {
+public class Objects implements Serializable{
 	double initialx;
 	double initialy;
 	double initialz;

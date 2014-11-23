@@ -1,9 +1,11 @@
 package Entity;
 
+import java.io.Serializable;
+
 import Graphics.Screen;
 import Main.Display;
 
-public class Enemy {
+public class Enemy implements Serializable{
 
 	public double x;
 	public double y;

@@ -41,15 +41,16 @@ import Launcher.Options;
 public class Display extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
 
-	public static double WINDOW_FAST_JOIN = 0.0;
-	public static double WINDOW_TEST_MODE = 0.0;
+	public static double WINDOW_FAST_JOIN = 1.0;
+	public static double WINDOW_TEST_MODE = 1.0;
 	public static double WINDOW_TICK_RATE = 60.0;
-	public static double WINDOW_NETWORK_TICK_RATE = 5.0;
+	public static double WINDOW_NETWORK_TICK_RATE = 1.0;
 	public static boolean WINDOW_USE_VSYNC = false;
 	public static String DEFAULT_PORT = "12500";
 	public static boolean WINDOW_FIX_MOUSE = false;
 	public static int PING = 0;
 	public static int ping = 0;
+	public static double[] pings = new double[16];
 	public static boolean canUpdate = false;
 	
 	public static Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
@@ -112,7 +113,7 @@ public class Display extends Canvas implements Runnable {
 	public static double HEALTH = 300;
 	
 	static Weapon w1 = new Weapon(10);
-	static Weapon w2 = new Weapon(8);
+	static Weapon w2 = new Weapon(3);
 	static int wep = 1;
 	
 	public static double initialaccuracy = w1.accuracy;
@@ -160,10 +161,6 @@ public class Display extends Canvas implements Runnable {
 		addFocusListener(input);
 		addMouseListener(input);
 		addMouseMotionListener(input);
-		
-		System.out.println("Current wep:"+w1.ID);
-		System.out.println("Current wep:"+w2.ID);
-
 	}
 
 	public static Launcher getLauncherInstance() {
@@ -246,7 +243,7 @@ public class Display extends Canvas implements Runnable {
 				}
 				
 				if (tickCount % WINDOW_TICK_RATE == 0) {
-					screen.enemies.add(new Enemy((int)(Math.random()*500)+x,0,(int)(Math.random()*500)+z));
+					//screen.enemies.add(new Enemy((int)(Math.random()*500)+x,0,(int)(Math.random()*500)+z));
 					PING = ping;
 					fps = frames;
 					previousTime += 1000;
@@ -530,11 +527,14 @@ public class Display extends Canvas implements Runnable {
 			v3f[1] = screen.positions.get(i)[1];
 			v3f[2] = screen.positions.get(i)[2];
 			v3f[3] = screen.positions.get(i)[3];
+			if(game.time % WINDOW_TICK_RATE == 0){
+				pings[i] = v3f[3];
+			}
 			
 			g.drawString("Player["+(i+1)+"] x:"
 			+v3f[0]+" y:"
 			+v3f[1]+" z:"
-			+v3f[2]+" Ping: "+PING, 
+			+v3f[2]+" Ping: "+pings[i], 
 			20, 150+(i*10));
 		}
 		
@@ -567,12 +567,25 @@ public class Display extends Canvas implements Runnable {
 		g.drawLine(centrex, centrey, -(int)(1000000*rotationcos), -(int)(1000000*rotationsin));
 		
 		for(Enemy e : screen.enemies){
-			int posx = (int)(x-e.x)/minimapscale+centrex;
-			int posy = (int)(z-e.z)/minimapscale+centrey;
+			int posx = (int)(e.x-x)/minimapscale+centrex;
+			int posy = (int)(e.z-z)/minimapscale+centrey;
 			
 			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100 && !e.dead){
 			g.setColor(Color.RED);
 			g.fillRect(posx, posy, (16+(int)e.y)/minimapscale+3, (16+(int)e.y)/minimapscale+3);
+			g.drawString("x:"+posx+" y:"+posy,posx, posy);
+			}
+		}
+		for(double[] d : screen.positions){
+			if(screen.positions.indexOf(d) != Client.clientnumber-1){
+				int posx = (int)(d[0]-x)/minimapscale+centrex;
+				int posy = (int)(d[2]-z)/minimapscale+centrey;
+				
+				if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100){
+				g.setColor(Color.BLUE);
+				g.fillRect(posx, posy, (16+(int)d[1])/minimapscale+3, (16+(int)d[1])/minimapscale+3);
+				g.drawString("x:"+(int)d[0]+" y:"+(int)d[1]+" z:"+(int)d[2],posx-50, posy);
+				}
 			}
 		}
 		g.setColor(Color.WHITE);

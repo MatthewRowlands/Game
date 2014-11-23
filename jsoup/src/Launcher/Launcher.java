@@ -144,6 +144,7 @@ public class Launcher extends Canvas implements Runnable{
 						g.setColor(Color.white);
 						g.drawString("Singleplayer", 600, 120);
 					if(MousePressed == 1){
+						Display.PlaySound("/audio/Tick.wav");
 						InputHandler.MouseButton = 0;
 						System.out.println("Singleplayer");
 						StartGame(false, "localHost", "BOB", 1500);
