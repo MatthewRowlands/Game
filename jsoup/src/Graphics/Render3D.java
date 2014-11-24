@@ -31,7 +31,7 @@ public class Render3D extends Render {
 		right = game.controls.x;
 		up = game.controls.y;
 		walking = 0;
-		rotation = /*Math.sin(game.time / 80.0);*/ game.controls.rotation;
+		rotation = /*Math.sin(game.time / 80.0);*/ game.controls.rotationx;
 		cosine = Math.cos(rotation);
 		sine = Math.sin(rotation);
 		
@@ -42,7 +42,7 @@ public class Render3D extends Render {
 		Display.rotationcos = cosine;
 		
 		for (int y = 0; y < height; y++) {
-			double ceiling = (y - height / 2.0) / height;
+			double ceiling = (y - height*(Math.sin(game.controls.rotationy)-Math.cos(game.controls.rotationy)) / 2.0) / height;
 			double z = (floorpos + up) / ceiling;
 			
 			if (Controller.walk) {

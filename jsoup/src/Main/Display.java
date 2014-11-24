@@ -19,6 +19,7 @@ import sun.audio.*;
 
 import java.util.ArrayList;
 
+import javax.management.JMRuntimeException;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -73,12 +74,14 @@ public class Display extends Canvas implements Runnable {
 	private int[] pixels;
 	private InputHandler input;
 	private int newmX = 0;
+	private int newmY = 0;
 	
 	int tickCount = 0;
 	int frames = 0;
 	private int fps = 0;
 	
-	public static double MouseChange;
+	public static double MouseChangex;
+	public static double MouseChangey;
 	public static int selection = 0;
 	static Robot r;
 	public static int blockcount=0;
@@ -112,7 +115,7 @@ public class Display extends Canvas implements Runnable {
 	public static double StartHEALTH = 300;
 	public static double HEALTH = 300;
 	
-	static Weapon w1 = new Weapon(9);
+	static Weapon w1 = new Weapon(1);
 	static Weapon w2 = new Weapon(3);
 	static int wep = 1;
 	
@@ -243,11 +246,14 @@ public class Display extends Canvas implements Runnable {
 				}
 				
 				if (tickCount % WINDOW_TICK_RATE == 0) {
-					//screen.enemies.add(new Enemy((int)(Math.random()*500)+x,0,(int)(Math.random()*500)+z));
+					screen.enemies.add(new Enemy((int)(Math.random()*500)+x,0,(int)(Math.random()*500)+z));
 					PING = ping;
 					fps = frames;
 					previousTime += 1000;
 					frames = 0;
+					if(fps < 10){
+						System.gc();
+					}
 				}
 				if (ticked) {
 				}
@@ -275,6 +281,7 @@ public class Display extends Canvas implements Runnable {
 		
 		if(!Pause){
 			newmX = InputHandler.mouseX;
+			newmY = InputHandler.mouseY;
 	
 			if (newmX > w/2 && WINDOW_TEST_MODE != 1) {
 				Controller.turnright = true;
@@ -286,11 +293,23 @@ public class Display extends Canvas implements Runnable {
 				Controller.turnleft = false;
 				Controller.turnright = false;
 			}
+			if (newmY > h/2 && WINDOW_TEST_MODE != 1) {
+				Controller.turndown = true;
+			}
+			if (newmY < h/2 && WINDOW_TEST_MODE != 1) {
+				Controller.turnup = true;
+			}
+			if (newmY == h/2 && WINDOW_TEST_MODE != 1) {
+				Controller.turndown = false;
+				Controller.turnup = false;
+			}
 	
 			if(WINDOW_FIX_MOUSE){
-				MouseChange = Math.abs((width/2) - newmX);
+				MouseChangex = Math.abs((width/2) - newmX);
+				MouseChangey = Math.abs((height/2) - newmY);
 			}else{
-			    MouseChange = (width/2) - newmX;
+			    MouseChangex = (width/2) - newmX;
+			    MouseChangey = (height/2) - newmY;
 			}
 			
 			if(WINDOW_TEST_MODE != 1){
@@ -374,7 +393,22 @@ public class Display extends Canvas implements Runnable {
 			FlashAmmo--;
 		}
 	}
-
+	
+	private void Circle(double timedelay) {
+		long checktime = System.currentTimeMillis();
+		if((checktime - guntime) > (timedelay * 1000)){
+			for(int i = 0; i < 180; i++){
+				screen.bullets.add(new Objects(x,y,z));
+				screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(Math.sin(i), Math.cos(i));
+			}
+			guntime = System.currentTimeMillis();
+			accuracy += startaccuracy/4;
+			PlaySound(getCurrentWeapon().filepath);
+			PlaySound("/audio/whiz.wav");
+			WeaponAmmo--;
+		}
+	}
+	
 	private void SemiAutoFire(double timedelay) {
 		if(canfire){
 			long checktime = System.currentTimeMillis();
@@ -437,13 +471,18 @@ public class Display extends Canvas implements Runnable {
 		}
 	}
 
-	public static void PlaySound(String file){
+	public static void PlaySound(String file) {
+		Clip clip = null;
 	    try {
 	        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(Display.class.getResource(file));
-	        Clip clip = AudioSystem.getClip();
+	        clip = AudioSystem.getClip();
 	        clip.open(audioInputStream);
 	        clip.start();
 	    } catch(Exception ex) {
+	    } finally {
+	    
+	    //clip.close();
+	    
 	    }
 	}
 	
@@ -627,7 +666,7 @@ public class Display extends Canvas implements Runnable {
 		g.setColor(Color.GREEN); 
 		g.fillRect(width/2-150, 0, (int) (HEALTH), 20);
 		g.setColor(Color.BLACK);
-		g.drawString("Health: "+HEALTH, width/2 - 100, 13);
+		g.drawString("Health: "+(int)HEALTH/3, width/2 - 100, 13);
 		}
 		
 		if (Pause)
