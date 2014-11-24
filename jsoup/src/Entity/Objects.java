@@ -58,6 +58,7 @@ public class Objects implements Serializable{
 		}
 		if(y <= -Display.floorpos/2 || y >= Display.ceilingpos/2){
 			//make a bullet impact
+			Display.PlaySound("/audio/Hard_Hit.wav");
 			bullet = false;
 			maxdistreached = true;
 		}

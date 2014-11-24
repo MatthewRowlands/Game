@@ -440,8 +440,9 @@ public class Display extends Canvas implements Runnable {
 			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos, rotationy);
 			guntime = System.currentTimeMillis();
 			accuracy += startaccuracy/4;
-			PlaySound(getCurrentWeapon().filepath);
-			PlaySound("/audio/whiz.wav");
+			Display.PlaySound("/audio/Soft_Hit.wav");
+			//PlaySound(getCurrentWeapon().filepath);
+			//PlaySound("/audio/whiz.wav");
 			WeaponAmmo--;
 			getCurrentWeapon().remainingammo = WeaponAmmo;
 		}

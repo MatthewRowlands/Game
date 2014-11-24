@@ -37,7 +37,7 @@ public class Screen extends Render {
 		}
 		for(Enemy e : enemies){
 			if(!e.dead){
-			renderBlock(e.x/8,e.y/8,e.z/8, 1, e.displayhealth, 1, 2);
+			renderBlock(e.x/8,e.y/8,e.z/8, 1, 1, 1, 2);
 			}
 		}
 		for(Objects e : objects){
@@ -77,7 +77,9 @@ public class Screen extends Render {
 				if(x1 >= Display.x - 16 && x1 <= Display.x + 8 && z1 >= Display.z - 16 && z1 <= Display.z + 8){
 					e.chase = false;
 					e.attacking = true;
+					if(Display.HEALTH > 0){
 					Display.HEALTH --;
+					}
 					Display.enemiesattacking++;
 					
 					//TODO: needs fixing ->
@@ -111,6 +113,7 @@ public class Screen extends Render {
 					
 				if(x2 >= x1 - 4 && x2 <= x1 + 4 && z2 >= z1 - 4 && z2 <= z1 + 4 && y2 >= y1 -4 && y2 <= y1 +4){
 					e.health-=Display.WeaponDamage;
+					Display.PlaySound("/audio/Enemy_Hit.wav");
 				}
 			}
 		}
