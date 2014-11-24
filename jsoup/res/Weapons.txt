@@ -10,3 +10,4 @@
 9 MINIGUN 60 10 0.001 799 2 10 /audio/SMG.wav
 10 870MCS 0.8 8.5 0.12 12 12 6 /audio/Sniper.wav
 11 P250 5 35 0.035 13 1 1.8 /audio/P250.wav
+12 PROTOTYPE 30 100 0.000005 10000 200 0.1 /audio/Sniper.wav

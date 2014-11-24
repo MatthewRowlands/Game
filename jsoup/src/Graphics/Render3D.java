@@ -43,6 +43,7 @@ public class Render3D extends Render {
 		Display.rotationsin = sine;
 		Display.rotationcos = cosine;
 		Display.rotationy = rotationy;
+		Display.rotation = rotation;
 		
 		for (int y = 0; y < height; y++) {
 			double ceiling = (y - height*(rotationy) / 2.0) / height;

@@ -15,7 +15,7 @@ import Main.Display;
 public class Weapon {
 	public double accuracy = 0.05;
 	public double firerate = 15;
-	public double WeaponDamage = 35;
+	public double WeaponDamage = 0;
 	public boolean SemiAuto = false;
 	public boolean FullAuto = !SemiAuto;
 	public int WeaponAmmo = 30;

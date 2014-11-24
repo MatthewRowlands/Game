@@ -7,11 +7,13 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import Main.Display;
 
 public class InputHandler implements KeyListener, FocusListener, MouseListener,
-		MouseMotionListener {
+		MouseMotionListener, MouseWheelListener {
 
 	public boolean[] key = new boolean[68836];
 	public static int mouseX;
@@ -99,6 +101,16 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener,
 
 	public void keyTyped(KeyEvent e) {
 
+	}
+	
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		int increment = e.getScrollAmount();
+		int amount = e.getUnitsToScroll()/increment;
+		if(Display.ScrollLevel < 80 && Display.ScrollLevel+amount > 0){
+		Display.ScrollLevel += amount;
+		}
+		
+		System.out.println(Display.ScrollLevel);
 	}
 
 }

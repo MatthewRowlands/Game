@@ -30,33 +30,44 @@ public class Screen extends Render {
 		Display.activebullets = 0;
 		render.floor(game);
 		
-		for(double[] v3f : positions){
-			if(positions.indexOf(v3f) != Client.clientnumber-1){
-			renderBlock(v3f[0]/8,v3f[1]/8,v3f[2]/8, 1, 0.5, 1, 1);
+		if(Display.fps > 25){
+			for(double[] v3f : positions){
+				if(positions.indexOf(v3f) != Client.clientnumber-1){
+				renderBlock(v3f[0]/8,v3f[1]/8,v3f[2]/8, 1, 0.5, 1, 1);
+				}
 			}
-		}
-		for(Enemy e : enemies){
-			if(!e.dead){
-			renderBlock(e.x/8,e.y/8,e.z/8, 1, 1, 1, 2);
+			for(Enemy e : enemies){
+				if(!e.dead){
+				renderBlock(e.x/8,e.y/8,e.z/8, 1, 1, 1, 2);
+				}
 			}
-		}
-		for(Objects e : objects){
-			renderBlock(e.x/8,e.y/8,e.z/8, 1, 0.5, 1, 4);
-		}
-		for(Objects e : bullets){
-			if(!e.flash){
-			Display.activebullets++;
+			for(Objects e : objects){
+				renderBlock(e.x/8,e.y/8,e.z/8, 1, 0.5, 1, 4);
 			}
-			if(e.maxdistreached){
-			Display.activebullets--;
-			}else{
-				if(e.bullet)
-					renderBlock(e.x/8,e.y/8,e.z/8, 0.05, 0.025, 0.05, 0);
-				else if(e.flash)
-					renderBlock(e.x/8,e.y/8,e.z/8, 0.1, 0.1, 0.1, 0);
+			for(Objects e : bullets){
+				if(!e.flash){
+				Display.activebullets++;
+				}
+				if(e.maxdistreached){
+				Display.activebullets--;
+				}else{
+					if(e.bullet)
+						renderBlock(e.x/8,e.y/8,e.z/8, 0.05, 0.025, 0.05, 0);
+					else if(e.flash)
+						renderBlock(e.x/8,e.y/8,e.z/8, 0.1, 0.1, 0.1, 0);
+				}
 			}
+			render.renderDistanceLimiter();
+		}else{
+			bullets.clear();
+			if(Display.fps < 10){
+				objects.clear();
+			}
+			if(Display.fps < 5){
+				enemies.clear();
+			}
+			System.gc();
 		}
-		render.renderDistanceLimiter();
 		draw(render, 0, 0);
 	}
 	
@@ -111,7 +122,7 @@ public class Screen extends Render {
 				y2 = e2.y;
 				z2 = e2.z;
 					
-				if(x2 >= x1 - 4 && x2 <= x1 + 4 && z2 >= z1 - 4 && z2 <= z1 + 4 && y2 >= y1 -4 && y2 <= y1 +4){
+				if(x2 >= x1 - 4 && x2 <= x1 + 4 && z2 >= z1 - 4 && z2 <= z1 + 4 && y2 >= y1 -4 && y2 <= y1 +4 && e2.bullet){
 					e.health-=Display.WeaponDamage;
 					Display.PlaySound("/audio/Enemy_Hit.wav");
 				}
