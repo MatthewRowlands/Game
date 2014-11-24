@@ -25,6 +25,8 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.JFrame;
 
@@ -53,6 +55,8 @@ public class Display extends Canvas implements Runnable {
 	public static int ping = 0;
 	public static double[] pings = new double[16];
 	public static boolean canUpdate = false;
+	public static double floorpos = 8;
+	public static double ceilingpos = 80;
 	
 	public static Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
 	public static int w = ss.width;
@@ -111,11 +115,12 @@ public class Display extends Canvas implements Runnable {
 
 	public static double rotationcos = 0;
 	public static double rotationsin = 0;
+	public static double rotationy = 0;
 
 	public static double StartHEALTH = 300;
 	public static double HEALTH = 300;
 	
-	static Weapon w1 = new Weapon(1);
+	static Weapon w1 = new Weapon(9);
 	static Weapon w2 = new Weapon(3);
 	static int wep = 1;
 	
@@ -309,11 +314,11 @@ public class Display extends Canvas implements Runnable {
 				MouseChangey = Math.abs((height/2) - newmY);
 			}else{
 			    MouseChangex = (width/2) - newmX;
-			    MouseChangey = (height/2) - newmY;
+			    MouseChangey = (height/2) - newmY +15;
 			}
 			
 			if(WINDOW_TEST_MODE != 1){
-			r.mouseMove((w / 2), h / 2);
+			r.mouseMove((w / 2), (h / 2));
 			}	
 		}
 		if(WeaponAmmo > 0 && !reloading){
@@ -330,8 +335,8 @@ public class Display extends Canvas implements Runnable {
 			if(MousePressed && firemode == 2 && input.MouseButton == 1){
 				FullAutoFire(1/firerate);
 			}
+			WeaponAmmo = getCurrentWeapon().getRemainingAmmo();
 		}else{
-			WeaponAmmo = 0;
 			Reload();
 		}
 		if(FlashAmmo > 0){
@@ -380,6 +385,7 @@ public class Display extends Canvas implements Runnable {
 				reloading = false;
 				donereloadsound = false;
 				WeaponAmmo = sWeaponAmmo;
+				getCurrentWeapon().remainingammo = WeaponAmmo;
 			}
 		}
 	}
@@ -388,7 +394,7 @@ public class Display extends Canvas implements Runnable {
 		long checktime = System.currentTimeMillis();
 		if((checktime - flashtime) > (5000)){
 			screen.bullets.add(new Objects(x,y,z));
-			screen.bullets.get(screen.bullets.size()-1).UseFlashMechanism(rotationsin, rotationcos);
+			screen.bullets.get(screen.bullets.size()-1).UseFlashMechanism(rotationsin, rotationcos, rotationy);
 			flashtime = System.currentTimeMillis();
 			FlashAmmo--;
 		}
@@ -399,13 +405,14 @@ public class Display extends Canvas implements Runnable {
 		if((checktime - guntime) > (timedelay * 1000)){
 			for(int i = 0; i < 180; i++){
 				screen.bullets.add(new Objects(x,y,z));
-				screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(Math.sin(i), Math.cos(i));
+				screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(Math.sin(i), Math.cos(i), 0);
 			}
 			guntime = System.currentTimeMillis();
 			accuracy += startaccuracy/4;
 			PlaySound(getCurrentWeapon().filepath);
 			PlaySound("/audio/whiz.wav");
 			WeaponAmmo--;
+			getCurrentWeapon().remainingammo = WeaponAmmo;
 		}
 	}
 	
@@ -414,13 +421,14 @@ public class Display extends Canvas implements Runnable {
 			long checktime = System.currentTimeMillis();
 			if((checktime - guntime) > (timedelay * 1000)){
 			screen.bullets.add(new Objects(x,y,z));
-			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos);
+			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos, rotationy);
 			guntime = System.currentTimeMillis();
 			canfire = false;
 			accuracy += startaccuracy/2;
 			PlaySound(getCurrentWeapon().filepath);
 			PlaySound("/audio/whiz.wav");
 			WeaponAmmo--;
+			getCurrentWeapon().remainingammo = WeaponAmmo;
 			}
 		}
 	}
@@ -429,12 +437,13 @@ public class Display extends Canvas implements Runnable {
 		long checktime = System.currentTimeMillis();
 		if((checktime - guntime) > (timedelay * 1000)){
 			screen.bullets.add(new Objects(x,y,z));
-			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos);
+			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos, rotationy);
 			guntime = System.currentTimeMillis();
 			accuracy += startaccuracy/4;
 			PlaySound(getCurrentWeapon().filepath);
 			PlaySound("/audio/whiz.wav");
 			WeaponAmmo--;
+			getCurrentWeapon().remainingammo = WeaponAmmo;
 		}
 	}
 	
@@ -443,13 +452,14 @@ public class Display extends Canvas implements Runnable {
 		if((checktime - guntime) > (timedelay * 1000)){
 			for(int i = 0; i < firemode; i++){
 				screen.bullets.add(new Objects(x,y,z));
-				screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos);
+				screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos, rotationy);
 			}
 			guntime = System.currentTimeMillis();
 			accuracy += startaccuracy/4;
 			PlaySound(getCurrentWeapon().filepath);
 			PlaySound("/audio/whiz.wav");
 			WeaponAmmo--;
+			getCurrentWeapon().remainingammo = WeaponAmmo;
 		}
 	}
 	
@@ -459,7 +469,7 @@ public class Display extends Canvas implements Runnable {
 			if((checktime - guntime) > (timedelay * 1000)){
 			for(int i = 0; i < firemode; i++){
 				screen.bullets.add(new Objects(x,y,z));
-				screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos);
+				screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos, rotationy);
 			}
 			guntime = System.currentTimeMillis();
 			canfire = false;
@@ -467,6 +477,7 @@ public class Display extends Canvas implements Runnable {
 			PlaySound(getCurrentWeapon().filepath);
 			PlaySound("/audio/whiz.wav");
 			WeaponAmmo--;
+			getCurrentWeapon().remainingammo = WeaponAmmo;
 			}
 		}
 	}
@@ -476,17 +487,14 @@ public class Display extends Canvas implements Runnable {
 	    try {
 	        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(Display.class.getResource(file));
 	        clip = AudioSystem.getClip();
-	        clip.open(audioInputStream);
+	        clip.open(audioInputStream);	        
 	        clip.start();
 	    } catch(Exception ex) {
-	    } finally {
-	    
-	    //clip.close();
-	    
 	    }
 	}
 	
 	public static void ChangeWeapon(int weaponnum){
+		reloading = false;
 		if(weaponnum == 1){
 			wep = 1;
 		}else if(weaponnum == 2){
@@ -511,10 +519,9 @@ public class Display extends Canvas implements Runnable {
 		WeaponAmmo = sWeaponAmmo;
 		reloadspeed = w.reloadspeed * 1000;
 		WeaponDamage = w.WeaponDamage;
-		
-		Reload();
+		WeaponAmmo = w.getRemainingAmmo();
 	}
-	
+
 	public static Weapon getCurrentWeapon(){
 		if(wep == 1){
 			return w1;
@@ -546,7 +553,23 @@ public class Display extends Canvas implements Runnable {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, w, h);
 		g.drawImage(img, 0, 0, getGameWidth() + 10, getGameHeight() + 10, null);
+		
+		if(!Pause){	
+		drawInfoBoardNorth();
+		drawCrosshair();
+		drawInfoBoardSouth();
+		drawMiniMap();
+		drawRotationMap();
+		}
+		
+		if (Pause)
+			drawPauseMenu(g);
 
+		g.dispose();
+		bufferStrategy.show();
+	}
+
+	private void drawInfoBoardNorth() {
 		g.setFont(new Font("Verdana", Font.PLAIN, 10));
 		g.setColor(Color.WHITE);
 		g.drawString("FPS: " + fps+" Ping: "+PING, 20, 20);
@@ -575,67 +598,28 @@ public class Display extends Canvas implements Runnable {
 			+v3f[1]+" z:"
 			+v3f[2]+" Ping: "+pings[i], 
 			20, 150+(i*10));
-		}
+		}	
+	}
+
+	private void drawCrosshair() {
+		double accuracy = this.accuracy * 30;
 		
-		if(!Pause){
-			double accuracy = this.accuracy * 30;
-		g.setColor(Color.BLACK); g.fillRect((int) (width
-		/ 2 + accuracy * 10) - 1, height / 2 - 2, 12, 4); g.fillRect(width /
-		2 - 2, (int) (height / 2 + accuracy * 10) - 1, 4, 12);
-		g.fillRect((int) (width / 2 - 11 - accuracy * 10), height / 2 - 2,
-		12, 4); g.fillRect(width / 2 - 2, (int) (height / 2 - 11 - accuracy *
-		10), 4, 12);
+		g.setColor(Color.BLACK); 
+		g.fillRect((int) (width / 2 + accuracy * 10) - 1, height / 2 - 2, 12, 4); 
+		g.fillRect(width / 2 - 2, (int) (height / 2 + accuracy * 10) - 1, 4, 12);
+		g.fillRect((int) (width / 2 - 11 - accuracy * 10), height / 2 - 2, 12, 4); 
+		g.fillRect(width / 2 - 2, (int) (height / 2 - 11 - accuracy * 10), 4, 12);
 		 
-		g.setColor(Color.WHITE); g.fillRect((int) (width / 2 + accuracy *
-		10), height / 2 - 1, 10, 2); g.fillRect(width / 2 - 1, (int) (height
-		/ 2 + accuracy * 10), 2, 10); g.fillRect((int) (width / 2 - 10 -
-		accuracy * 10), height / 2 - 1, 10, 2); g.fillRect(width / 2 - 1,
-		(int) (height / 2 - 10 - accuracy * 10), 2, 10);
-		
-		
+		g.setColor(Color.WHITE); 
+		g.fillRect((int) (width / 2 + accuracy * 10), height / 2 - 1, 10, 2); 
+		g.fillRect(width / 2 - 1, (int) (height / 2 + accuracy * 10), 2, 10); 
+		g.fillRect((int) (width / 2 - 10 - accuracy * 10), height / 2 - 1, 10, 2); 
+		g.fillRect(width / 2 - 1, (int) (height / 2 - 10 - accuracy * 10), 2, 10);	
+	}
+
+	private void drawInfoBoardSouth() {
 		int centrex = width - 100;
 		int centrey = height - 100;
-		int minimapscale = 80;
-		
-		g.setColor(Color.BLACK);
-		g.fillRect(centrex - 100, centrey - 100, 200, 200);
-		
-		g.setColor(Color.GREEN);
-		g.fillRect(centrex, centrey, (16+y)/minimapscale+3, (16+y)/minimapscale+3);
-		
-		g.drawLine(centrex, centrey, -(int)(1000000*rotationsin), -(int)(1000000*rotationcos));
-		
-		for(Enemy e : screen.enemies){
-			int posx = (int)(e.x-x)/minimapscale+centrex;
-			int posy = (int)(e.z-z)/minimapscale+centrey;
-			
-			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100 && !e.dead){
-			g.setColor(Color.RED);
-			g.fillRect(posx, -posy, (16+(int)e.y)/minimapscale+3, (16+(int)e.y)/minimapscale+3);
-			g.drawString("x:"+posx+" y:"+posy,posx, posy);
-			}
-		}
-		for(Objects e : screen.bullets){
-			int posx = (int)(e.x-x)/minimapscale+centrex;
-			int posy = (int)(e.z-z)/minimapscale+centrey;
-			
-			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100 && !e.maxdistreached){
-			g.setColor(Color.YELLOW);
-			g.fillRect(posx, posy, (16+(int)e.y)/minimapscale+3, (16+(int)e.y)/minimapscale+3);
-			}
-		}
-		for(double[] d : screen.positions){
-			if(screen.positions.indexOf(d) != Client.clientnumber-1){
-				int posx = (int)(d[0]-x)/minimapscale+centrex;
-				int posy = (int)(d[2]-z)/minimapscale+centrey;
-				
-				if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100){
-				g.setColor(Color.BLUE);
-				g.fillRect(posx, posy, (16+(int)d[1])/minimapscale+3, (16+(int)d[1])/minimapscale+3);
-				g.drawString("x:"+(int)d[0]+" y:"+(int)d[1]+" z:"+(int)d[2],posx-50, posy);
-				}
-			}
-		}
 		g.setColor(Color.WHITE);
 		g.drawString("Current Weapon: "+getCurrentWeapon().name, centrex-100, centrey-200);
 		g.drawString("Damage: "+getCurrentWeapon().WeaponDamage, centrex-100, centrey-185);
@@ -659,7 +643,64 @@ public class Display extends Canvas implements Runnable {
 			}else if(firerate > 3){
 				g.drawString("Firemode: FULL-AUTO [Shotgun]", centrex-100, centrey-125);
 			}
+		}	
+	}
+
+	private void drawMiniMap() {
+		int centrex = width - 100;
+		int centrey = height - 100;
+		int minimapscale = 8;
+		
+		g.setColor(Color.BLACK);
+		g.fillRect(centrex - 100, centrey - 100, 200, 200);
+		
+		g.setColor(Color.BLUE);
+		g.fillRect(width/2-5, height/2-5, 10,10);
+		g.setColor(Color.RED);
+		g.fillRect(newmX-5, newmY-20, 10,10);
+		
+		g.setColor(Color.GREEN);
+		g.fillRect(centrex, centrey, (16+y)/minimapscale+3, (16+y)/minimapscale+3);
+		
+		g.drawLine(centrex+(int)(10*rotationsin), centrey+(int)(10*rotationcos), centrex-(int)(2*rotationsin), centrey-(int)(2*rotationcos));
+		
+		for(Enemy e : screen.enemies){
+			int posx = (int)(e.x-x)/minimapscale+centrex;
+			int posy = (int)(e.z-z)/minimapscale+centrey;
+			
+			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100 && !e.dead){
+			g.setColor(Color.RED);
+			g.fillRect(posx, -posy, (16+(int)e.y)/minimapscale+3, (16+(int)e.y)/minimapscale+3);
+			g.drawString("x:"+posx+" y:"+posy,posx, posy);
+			}
 		}
+		for(Objects e : screen.bullets){
+			int posx = (int)(e.x-x)/minimapscale+centrex;
+			int posy = (int)(e.z-z)/minimapscale+centrey;
+			
+			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100 && !e.maxdistreached){
+			g.setColor(Color.YELLOW);
+			g.fillRect(posx, posy, 1, 1);
+			}
+		}
+		for(double[] d : screen.positions){
+			if(screen.positions.indexOf(d) != Client.clientnumber-1){
+				int posx = (int)(d[0]-x)/minimapscale+centrex;
+				int posy = (int)(d[2]-z)/minimapscale+centrey;
+				
+				if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100){
+				g.setColor(Color.BLUE);
+				g.fillRect(posx, posy, (16+(int)d[1])/minimapscale+3, (16+(int)d[1])/minimapscale+3);
+				g.drawString("x:"+(int)d[0]+" y:"+(int)d[1]+" z:"+(int)d[2],posx-50, posy);
+				}
+			}
+		}
+		
+	}
+
+	private void drawRotationMap() {
+		int centrex = 100;
+		int centrey = height - 100;
 		
 		g.setColor(Color.BLACK); 
 		g.fillRect(width/2-150, 0, 300, 20);
@@ -667,13 +708,34 @@ public class Display extends Canvas implements Runnable {
 		g.fillRect(width/2-150, 0, (int) (HEALTH), 20);
 		g.setColor(Color.BLACK);
 		g.drawString("Health: "+(int)HEALTH/3, width/2 - 100, 13);
-		}
 		
-		if (Pause)
-			drawPauseMenu(g);
-
-		g.dispose();
-		bufferStrategy.show();
+		g.setColor(Color.BLACK);
+		g.fillRect(0, centrey - 100, 200, 200);
+		g.setColor(Color.DARK_GRAY);
+		g.fillRect(92, centrey - 100, 16, 200);
+		g.setColor(Color.BLUE);
+		g.fillRect(95, centrey - 100, 10, 200);
+		g.setColor(Color.GRAY);
+		g.fillRect(0, centrey - 12, 200, 24);
+		g.setColor(Color.DARK_GRAY);
+		g.fillRect(0, centrey - 10, 200, 20);
+		g.setColor(Color.YELLOW);
+		g.fillOval(92, centrey-(int)(rotationy*8), 16, 16);
+			for(int x = 0; x < 108; x++){			
+				g.setColor(Color.RED);
+				g.fillOval(100+(int)(Math.sin(x)*50), centrey + (int)(Math.cos(x)*50), 2, 2);
+				g.setColor(Color.GREEN);
+				int xpos = (int)(((double)(x*200))/108);
+				int ypos = (int)((double)(Math.sin(x)*200)/36);
+				g.fillRect(xpos, centrey+ypos, 1, 1);
+				g.setColor(Color.PINK);
+				int xpos2 = (int)(((double)(x*200))/108);
+				int ypos2 = (int)((double)(Math.cos(x)*200)/36);
+				g.fillRect(xpos2, centrey+ypos2, 1, 1);
+			}
+			g.setColor(Color.YELLOW);
+			g.fillOval(95+(int)(rotationcos*50), centrey + (int)(rotationsin*50), 10, 10);
+		
 	}
 
 	private void drawPauseMenu(Graphics g) {

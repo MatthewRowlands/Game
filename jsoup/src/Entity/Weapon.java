@@ -24,6 +24,7 @@ public class Weapon {
 	public double reloadspeed = 3.0;
 	public int firemode = 1;
 	public String filepath = "/audio/whiz.wav";
+	public int remainingammo = WeaponAmmo;
 	
 	public Weapon(int id){
 		this.ID = id;
@@ -67,11 +68,16 @@ public class Weapon {
 	      this.WeaponAmmo = Integer.parseInt(ammo);
 	      this.firemode = Integer.parseInt(firemode);
 	      this.filepath  = filepath;
+	      remainingammo = WeaponAmmo;
 
 	    } catch (FileNotFoundException e) {
 	      e.printStackTrace();
 	    } catch (IOException e) {
 	      e.printStackTrace();
 	    }
+	}
+
+	public int getRemainingAmmo() {
+		return remainingammo;
 	}
 }

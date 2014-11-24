@@ -30,6 +30,7 @@ public class Controller {
 		
 		if(!Display.Pause){
 		rotationSpeedx = 0.0025 * Display.MouseChangex;
+		rotationSpeedy = 0.0025 * Display.MouseChangey;
 		walkSpeed = 0.5 * Display.MoveSpeed;
 		jumpheight = 1 * Display.JumpHeight;
 		crouchheight = -0.3;
@@ -37,22 +38,22 @@ public class Controller {
 		xMove = 0;
 		zMove = 0;
 
-		if (forward && !Display.collisionfront) {
+		if (forward /*&& !Display.collisionfront*/) {
 			zMove++;
 			walk = true;
 		}
 
-		if (back && !Display.collisionback) {
+		if (back /*&& !Display.collisionback*/) {
 			zMove--;
 			walk = true;
 		}
 
-		if (left && !Display.collisionleft) {
+		if (left /*&& !Display.collisionleft*/) {
 			xMove--;
 			walk = true;
 		}
 
-		if (right && !Display.collisionright) {
+		if (right /*&& !Display.collisionright*/) {
 			xMove++;
 			walk = true;
 		}
@@ -63,6 +64,22 @@ public class Controller {
 
 		if (turnright) {
 			rotationax += rotationSpeedx * (double)(mousespeed/10);
+		}
+		
+		if (turnup) {
+			//if(rotationy <= 5){
+			rotationay += rotationSpeedy * (double)(mousespeed/10);
+			//}else{
+			//	rotationy = 5;
+			//}
+		}
+
+		if (turndown) {
+			//if(rotationy >= 0){
+			rotationay -= rotationSpeedy * (double)(mousespeed/10);
+			//}else{
+			//	rotationy = 0;
+			//}
 		}
 		
 		if (jump && !crouch && !prone) {
@@ -144,9 +161,12 @@ public class Controller {
 
 		xa *= 0.1;
 		za *= 0.1;
+		
 		rotationx += rotationax;
 		rotationy += rotationay;
-		rotationax *= 0.8;
+		
+		rotationax *= 0.8; 
+		rotationay *= 0.8; 
 		
 		mousespeed = Display.MouseSpeed;
 		}

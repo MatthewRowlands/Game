@@ -109,7 +109,7 @@ public class Screen extends Render {
 				y2 = e2.y;
 				z2 = e2.z;
 					
-				if(x2 >= x1 - 4 && x2 <= x1 + 4 && z2 >= z1 - 4 && z2 <= z1 + 4){
+				if(x2 >= x1 - 4 && x2 <= x1 + 4 && z2 >= z1 - 4 && z2 <= z1 + 4 && y2 >= y1 -4 && y2 <= y1 +4){
 					e.health-=Display.WeaponDamage;
 				}
 			}

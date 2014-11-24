@@ -12,8 +12,11 @@ public class Render3D extends Render {
 	public double[] zBufferWall;
 	public double renderDistance = Display.RenderDist;
 	int bob = 24;
-	double forward, right, up, cosine, sine, walking, rotation;
+	double forward, right, up, cosine, sine, walking, rotation, rotationy;
 
+	double floorpos = Display.floorpos;
+	double ceilingpos = Display.ceilingpos;
+	
 	public Render3D(int width, int height) {
 		super(width, height);
 		zBuffer = new double[width * height];
@@ -25,8 +28,6 @@ public class Render3D extends Render {
 			zBufferWall[x] = 0;
 		}
 		
-		double floorpos = 8;
-		double ceilingpos = 80;
 		forward = game.controls.z;
 		right = game.controls.x;
 		up = game.controls.y;
@@ -34,15 +35,17 @@ public class Render3D extends Render {
 		rotation = /*Math.sin(game.time / 80.0);*/ game.controls.rotationx;
 		cosine = Math.cos(rotation);
 		sine = Math.sin(rotation);
+		rotationy = game.controls.rotationy;
 		
 		Display.x = (int) right;
 		Display.y = (int) up;
 		Display.z = (int) forward;
 		Display.rotationsin = sine;
 		Display.rotationcos = cosine;
+		Display.rotationy = rotationy;
 		
 		for (int y = 0; y < height; y++) {
-			double ceiling = (y - height*(Math.sin(game.controls.rotationy)-Math.cos(game.controls.rotationy)) / 2.0) / height;
+			double ceiling = (y - height*(rotationy) / 2.0) / height;
 			double z = (floorpos + up) / ceiling;
 			
 			if (Controller.walk) {
@@ -147,16 +150,16 @@ public class Render3D extends Render {
 		double zcLeft = ((zDistanceLeft / 2) - (forward * forwardCorrect)) * 2;
 
 		double rotLeftSideX = xcLeft * cosine - zcLeft * sine;
-		double yCornerTL = ((-yPos) - (-up * upCorrect  + (walking * walkCorrect))) * 2;
-		double yCornerBL = (( + ySize - yPos) - (-up * upCorrect + (walking * walkCorrect))) * 2;
+		double yCornerTL = (((-yPos) - (-up * upCorrect + (walking * walkCorrect))) * 2) / rotationy;
+		double yCornerBL = ((( + ySize - yPos) - (-up * upCorrect + (walking * walkCorrect))) * 2) / rotationy;
 		double rotLeftSideZ = zcLeft * cosine + xcLeft * sine;
 
 		double xcRight = ((xRight / 2) - (right * rightCorrect)) * 2;
 		double zcRight = ((zDistanceRight / 2) - (forward * forwardCorrect)) * 2;
 
 		double rotRightSideX = xcRight * cosine - zcRight * sine;
-		double yCornerTR = ((-yPos) - (-up * upCorrect + (walking * walkCorrect))) * 2;
-		double yCornerBR = (( + ySize - yPos) - (-up * upCorrect + (walking * walkCorrect))) * 2;
+		double yCornerTR = (((-yPos) - (-up * upCorrect + (walking * walkCorrect))) * 2) / rotationy;
+		double yCornerBR = ((( + ySize - yPos) - (-up * upCorrect + (walking * walkCorrect))) * 2) / rotationy;
 		double rotRightSideZ = zcRight * cosine + xcRight * sine;
 
 		double tex30 = 0;
@@ -199,10 +202,10 @@ public class Render3D extends Render {
 			xPixelRightint = width;
 		}
 
-		double yPixelLeftTop = ((yCornerTL / rotLeftSideZ * height) + (height / 2.0));
-		double yPixelLeftBottom = ((yCornerBL / rotLeftSideZ * height) + (height / 2.0));
-		double yPixelRightTop = ((yCornerTR / rotRightSideZ * height) + (height / 2.0));
-		double yPixelRightBottom = ((yCornerBR / rotRightSideZ * height) + (height / 2.0));
+		double yPixelLeftTop = ((yCornerTL / rotLeftSideZ * height) + (height / 2.0))  * rotationy;
+		double yPixelLeftBottom = ((yCornerBL / rotLeftSideZ * height) + (height / 2.0))  * rotationy;
+		double yPixelRightTop = ((yCornerTR / rotRightSideZ * height) + (height / 2.0))  * rotationy;
+		double yPixelRightBottom = ((yCornerBR / rotRightSideZ * height) + (height / 2.0))  * rotationy;
 
 		double tex1 = 1 / rotLeftSideZ;
 		double tex2 = 1 / rotRightSideZ;
@@ -220,8 +223,8 @@ public class Render3D extends Render {
 			
 			int xTexture = (int)((tex3 + tex4 * pixelRotation) / zWall);
 
-			double yPixelTop = yPixelLeftTop + (yPixelRightTop - yPixelLeftTop) * pixelRotation;
-			double yPixelBottom = yPixelLeftBottom + (yPixelRightBottom - yPixelLeftBottom) * pixelRotation;
+			double yPixelTop = yPixelLeftTop + (yPixelRightTop - yPixelLeftTop) * pixelRotation  * rotationy;
+			double yPixelBottom = yPixelLeftBottom + (yPixelRightBottom - yPixelLeftBottom) * pixelRotation  * rotationy;
 
 			int yPixelTopint = (int) (yPixelTop);
 			int yPixelBottomint = (int) (yPixelBottom);

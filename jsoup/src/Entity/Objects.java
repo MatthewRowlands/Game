@@ -12,14 +12,17 @@ public class Objects implements Serializable{
 	public double y;
 	public double z;
 	public double speed = 5;
+	public double flashspeed = 2;
+	public double drop = 0.00005;
+	public double flashdrop = 0.0025;
 	public double maxdistance = 100000;
 	public double heightstep = 0.15;
 	public boolean bullet = false;
 	public boolean flash = false;
 	double rotationsin=0;
 	double rotationcos=0;
+	double rotationy = 0;
 	double accuracy = Display.accuracy;
-	double randomheightstep = 0;
 	public boolean maxdistreached = false;
 	
 	public Objects(double x, double y, double z){
@@ -34,8 +37,9 @@ public class Objects implements Serializable{
 	public void tick() {
 		if(bullet){
 		x+=rotationsin*speed;
-		y+=randomheightstep*speed;
+		y+=rotationy*speed;
 		z+=rotationcos*speed;
+		rotationy-=drop;
 		if(x - initialx > maxdistance){
 			bullet = false;
 			maxdistreached = true;
@@ -52,36 +56,39 @@ public class Objects implements Serializable{
 			bullet = false;
 			maxdistreached = true;
 		}
-		if(y <= -4){
+		if(y <= -Display.floorpos/2 || y >= Display.ceilingpos/2){
+			//make a bullet impact
 			bullet = false;
 			maxdistreached = true;
 		}
 		}
 		if(flash){
-			x+=rotationsin*speed;
-			y+=randomheightstep*speed;
-			z+=rotationcos*speed;
-			y-=0.1;
+			x+=rotationsin*flashspeed;
+			y+=rotationy*flashspeed;
+			z+=rotationcos*flashspeed;
+			rotationy-=flashdrop;
 			if(y < -4){
 				Display.PlaySound("/audio/Flashbang.wav");
 				flash = false;
+				bullet = false;
+				maxdistreached = true;
 			}
 		}
 	}
 	
-	public void UseBulletMechanism(double rotationsin, double rotationcos){
+	public void UseBulletMechanism(double rotationsin, double rotationcos, double rotationy){
 		this.bullet = true;
 		this.accuracy = Display.accuracy;
 		this.rotationsin = rotationsin+(Math.random()*accuracy)-accuracy/2;
 		this.rotationcos = rotationcos+(Math.random()*accuracy)-accuracy/2;
-		this.randomheightstep  = (Math.random()*accuracy/2)-accuracy/4;
+		this.rotationy  = rotationy/4+((Math.random()*accuracy/2)-accuracy/4)-0.25;
 	}
 
-	public void UseFlashMechanism(double rotationsin, double rotationcos) {
+	public void UseFlashMechanism(double rotationsin, double rotationcos, double rotationy) {
 		this.flash = true;
 		this.accuracy = Display.accuracy;
 		this.rotationsin = rotationsin+(Math.random()*accuracy)-accuracy/2;
 		this.rotationcos = rotationcos+(Math.random()*accuracy)-accuracy/2;
-		this.randomheightstep  = (Math.random()*accuracy/2)-accuracy/4;
+		this.rotationy = rotationy/4+((Math.random()*accuracy/2)-accuracy/4)-0.25;
 	}
 }
