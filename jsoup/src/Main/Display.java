@@ -59,6 +59,7 @@ public class Display extends Canvas implements Runnable {
 	 * -Player collision detection not aligned with direction facing
 	 * -Flash grenades make screen white no matter which direction facing
 	 * -Minimap is inverted
+	 * -Save loadouts
 	 */
 	
 	public static double WINDOW_FAST_JOIN = 0.0;
