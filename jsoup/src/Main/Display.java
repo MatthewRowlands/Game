@@ -598,7 +598,7 @@ public class Display extends Canvas implements Runnable {
 		drawCrosshair();
 		drawInfoBoardSouth();
 		drawMiniMap();
-		drawRotationMap();
+		//drawRotationMap();
 		}
 		
 		if (Pause)
