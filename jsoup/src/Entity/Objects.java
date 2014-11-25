@@ -19,6 +19,11 @@ public class Objects implements Serializable{
 	public double heightstep = 0.15;
 	public boolean bullet = false;
 	public boolean flash = false;
+	public boolean spawner = false;
+	public boolean spawn = false;
+	public double spawnrate = 1000;
+	public long spawntime1 = System.currentTimeMillis();
+	public long spawntime2 = System.currentTimeMillis();
 	double rotationsin=0;
 	double rotationcos=0;
 	double rotationy = 0;
@@ -91,5 +96,12 @@ public class Objects implements Serializable{
 		this.rotationsin = rotationsin+(Math.random()*accuracy)-accuracy/2;
 		this.rotationcos = rotationcos+(Math.random()*accuracy)-accuracy/2;
 		this.rotationy = rotationy/4+((Math.random()*accuracy/2)-accuracy/4)-0.25;
+	}
+
+	public void UseSpawnerMechanism(int spawnrate) {
+		this.spawner = true;
+		this.spawnrate = spawnrate;
+		spawntime1 = System.currentTimeMillis();
+		spawntime2 = System.currentTimeMillis();
 	}
 }

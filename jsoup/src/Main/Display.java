@@ -233,6 +233,13 @@ public class Display extends Canvas implements Runnable {
 		double secondsPerTick = 1 / WINDOW_TICK_RATE;
 		boolean ticked = false;
 		r.mouseMove((w / 2), (h / 2)-20);
+		//screen.objects.add(new Objects((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
+		//screen.objects.get(screen.objects.size()-1).UseSpawnerMechanism(5000);
+		//screen.objects.add(new Objects((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
+		//screen.objects.get(screen.objects.size()-1).UseSpawnerMechanism(5000);
+		//screen.objects.add(new Objects((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
+		//screen.objects.get(screen.objects.size()-1).UseSpawnerMechanism(5000);
+		
 		while (run) {
 			if(!WINDOW_USE_VSYNC){
 			render();
@@ -255,7 +262,7 @@ public class Display extends Canvas implements Runnable {
 				}
 				
 				if (tickCount % WINDOW_TICK_RATE == 0) {
-					screen.enemies.add(new Enemy((int)(Math.random()*500)+x,0,(int)(Math.random()*500)+z));
+					screen.enemies.add(new Enemy((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
 					PING = ping;
 					fps = frames;
 					previousTime += 1000;
@@ -316,7 +323,7 @@ public class Display extends Canvas implements Runnable {
 				MouseChangey = Math.abs((height/2) - newmY);
 			}else{
 			    MouseChangex = (width/2) - newmX;
-			    MouseChangey = (height/2) - newmY +15;
+			    MouseChangey = (height/2) - newmY+20;
 			}
 			
 			if(WINDOW_TEST_MODE != 1){
@@ -659,10 +666,11 @@ public class Display extends Canvas implements Runnable {
 		g.setColor(Color.BLACK);
 		g.fillRect(centrex - 100, centrey - 100, 200, 200);
 		
+		g.drawLine(width/2, height/2, newmX, newmY-20);
 		g.setColor(Color.BLUE);
-		g.fillRect(width/2-5, height/2-5, 10,10);
+		g.fillOval(width/2-5, height/2-5, 10,10);
 		g.setColor(Color.RED);
-		g.fillRect(newmX-5, newmY-20, 10,10);
+		g.fillOval(newmX-5, newmY-25, 10,10);
 		
 		g.setColor(Color.GREEN);
 		g.fillRect(centrex, centrey, (16+y)/minimapscale+3, (16+y)/minimapscale+3);

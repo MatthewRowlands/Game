@@ -38,7 +38,7 @@ public class Screen extends Render {
 			}
 			for(Enemy e : enemies){
 				if(!e.dead){
-				renderBlock(e.x/8,e.y/8,e.z/8, 1, 1, 1, 2);
+				renderBlock(e.x/8,e.y/8,e.z/8, 1, e.displayhealth, 1, 2);
 				}
 			}
 			for(Objects e : objects){
