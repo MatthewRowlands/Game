@@ -13,21 +13,10 @@ import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.*;
 
-import sun.audio.*;
-
-import java.util.ArrayList;
-
-import javax.management.JMRuntimeException;
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineEvent;
-import javax.sound.sampled.LineListener;
-import javax.sound.sampled.LineUnavailableException;
 import javax.swing.JFrame;
 
 import Connection.Client;
@@ -35,7 +24,6 @@ import Entity.Enemy;
 import Entity.Objects;
 import Entity.Weapon;
 import Graphics.Screen;
-import Graphics.Texture;
 import Input.Controller;
 import Input.InputHandler;
 import Launcher.Launcher;
@@ -331,20 +319,20 @@ public class Display extends Canvas implements Runnable {
 			}	
 		}
 		if(WeaponAmmo > 0 && !reloading){
-			if(MousePressed && firemode == 1 && input.MouseButton == 1){
+			if(MousePressed && firemode == 1 && InputHandler.MouseButton == 1){
 				SemiAutoFire(1/firerate);
 			}
-			if(MousePressed && firemode > 4 && firemode != 200 && input.MouseButton == 1){
+			if(MousePressed && firemode > 4 && firemode != 200 && InputHandler.MouseButton == 1){
 				if(firerate < 3){
 					ShotgunSemiFire(1/firerate);
 				}else{
 					ShotgunFullFire(1/firerate);
 				}
 			}
-			if(MousePressed && firemode == 2 && input.MouseButton == 1){
+			if(MousePressed && firemode == 2 && InputHandler.MouseButton == 1){
 				FullAutoFire(1/firerate);
 			}
-			if(MousePressed && firemode == 200 && input.MouseButton == 1){
+			if(MousePressed && firemode == 200 && InputHandler.MouseButton == 1){
 				Circle(1/firerate);
 			}
 			WeaponAmmo = getCurrentWeapon().getRemainingAmmo();
@@ -352,7 +340,7 @@ public class Display extends Canvas implements Runnable {
 			Reload();
 		}
 		if(FlashAmmo > 0){
-			if(MousePressed && input.MouseButton == 3 && FlashAmmo > 0){
+			if(MousePressed && InputHandler.MouseButton == 3 && FlashAmmo > 0){
 				ThrowFlashBang();
 			}
 		}
@@ -367,7 +355,7 @@ public class Display extends Canvas implements Runnable {
 		if(accuracy > 0.25){
 			accuracy-= startaccuracy/2;
 		}
-		if(input.MouseButton == 0){
+		if(InputHandler.MouseButton == 0){
 			MousePressed = false;
 		}
 
@@ -614,7 +602,7 @@ public class Display extends Canvas implements Runnable {
 	}
 
 	private void drawCrosshair() {
-		double accuracy = this.accuracy * 30;
+		double accuracy = Display.accuracy * 30;
 		
 		g.setColor(Color.BLACK); 
 		g.fillRect((int) (width / 2 + accuracy * 10) - 1, height / 2 - 2, 12, 4); 
@@ -723,7 +711,6 @@ public class Display extends Canvas implements Runnable {
 	}
 
 	private void drawRotationMap() {
-		int centrex = 100;
 		int centrey = height - 100;
 		
 		g.setColor(Color.BLACK); 

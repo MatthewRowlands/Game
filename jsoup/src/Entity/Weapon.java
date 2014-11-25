@@ -1,16 +1,11 @@
 package Entity;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import Main.Display;
 
 public class Weapon {
 	public double accuracy = 0.05;
@@ -26,6 +21,7 @@ public class Weapon {
 	public String filepath = "/audio/whiz.wav";
 	public int remainingammo = WeaponAmmo;
 	
+	@SuppressWarnings("deprecation")
 	public Weapon(int id){
 		this.ID = id;
 		String file = "/Weapons.txt";

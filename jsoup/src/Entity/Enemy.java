@@ -2,11 +2,15 @@ package Entity;
 
 import java.io.Serializable;
 
-import Graphics.Screen;
 import Main.Display;
 
 public class Enemy implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2577643837486522721L;
+	
 	public double x;
 	public double y;
 	public double z;

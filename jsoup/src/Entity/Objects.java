@@ -5,6 +5,11 @@ import java.io.Serializable;
 import Main.Display;
 
 public class Objects implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4912823895350326561L;
+	
 	double initialx;
 	double initialy;
 	double initialz;

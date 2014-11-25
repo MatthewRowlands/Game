@@ -2,8 +2,6 @@ package Main;
 
 import java.awt.event.KeyEvent;
 
-import Entity.Enemy;
-import Graphics.Screen;
 import Input.Controller;
 import Level.Level;
 
