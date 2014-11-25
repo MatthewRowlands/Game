@@ -24,7 +24,7 @@ public class Weapon {
 	@SuppressWarnings("deprecation")
 	public Weapon(int id){
 		this.ID = id;
-		String file = "/Weapons.txt";
+		String file = "/settings/Weapons.txt";
 	    FileInputStream fis = null;
 	    BufferedInputStream bis = null;
 	    DataInputStream dis = null;

@@ -8,15 +8,18 @@ public class GameApplet extends Applet{
 	
 	private Display display = new Display();
 	
+	@Override
 	public void init(){
 		setLayout(new BorderLayout());
 		add(display);
 	}
 	
+	@Override
 	public void start(){
 		display.start();
 	}
 	
+	@Override
 	public void stop(){
 		display.stop();
 	}

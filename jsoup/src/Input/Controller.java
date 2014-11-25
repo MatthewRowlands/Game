@@ -59,16 +59,16 @@ public class Controller {
 		}
 
 		if (turnleft) {
-			rotationax -= rotationSpeedx * (double)(mousespeed/10);
+			rotationax -= rotationSpeedx * (mousespeed/10);
 		}
 
 		if (turnright) {
-			rotationax += rotationSpeedx * (double)(mousespeed/10);
+			rotationax += rotationSpeedx * (mousespeed/10);
 		}
 		
 		if (turnup) {
 			//if(rotationy <= 5){
-			rotationay += rotationSpeedy * (double)(mousespeed/10);
+			rotationay += rotationSpeedy * (mousespeed/10);
 			//}else{
 			//	rotationy = 5;
 			//}
@@ -76,7 +76,7 @@ public class Controller {
 
 		if (turndown) {
 			//if(rotationy >= 0){
-			rotationay -= rotationSpeedy * (double)(mousespeed/10);
+			rotationay -= rotationSpeedy * (mousespeed/10);
 			//}else{
 			//	rotationy = 0;
 			//}

@@ -28,6 +28,7 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener,
 	public static int keyCode = 1;
 	public static boolean MouseClick = false;
 
+	@Override
 	public void mouseDragged(MouseEvent e) {
 		mouseDX = e.getX();
 		mouseDY = e.getY();
@@ -36,23 +37,28 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener,
 		dragged = true;
 	}
 
+	@Override
 	public void mouseMoved(MouseEvent e) {
 		mouseX = e.getX();
 		mouseY = e.getY();
 	}
 
+	@Override
 	public void mouseClicked(MouseEvent e) {
 		MouseClick = true;
 	}
 
+	@Override
 	public void mouseEntered(MouseEvent e) {
 
 	}
 
+	@Override
 	public void mouseExited(MouseEvent e) {
 
 	}
 
+	@Override
 	public void mousePressed(MouseEvent e) {
 		Display.MousePressed();
 		MouseButton = e.getButton();
@@ -63,22 +69,26 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener,
 		mouseY = e.getY();
 	}
 
+	@Override
 	public void mouseReleased(MouseEvent e) {
 		Display.MouseReleased();
 		MouseButton = 0;
 		dragged = false;
 	}
 
+	@Override
 	public void focusGained(FocusEvent e) {
 
 	}
 
+	@Override
 	public void focusLost(FocusEvent e) {
 		for (int i = 0; i < key.length; i++) {
 			key[i] = false;
 		}
 	}
 
+	@Override
 	public void keyPressed(KeyEvent e) {
 		keyCode = e.getKeyCode();
 
@@ -91,6 +101,7 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener,
 		}
 	}
 
+	@Override
 	public void keyReleased(KeyEvent e) {
 		keyCode = e.getKeyCode();
 
@@ -99,10 +110,12 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener,
 		}
 	}
 
+	@Override
 	public void keyTyped(KeyEvent e) {
 
 	}
 	
+	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		int increment = e.getScrollAmount();
 		int amount = e.getUnitsToScroll()/increment;

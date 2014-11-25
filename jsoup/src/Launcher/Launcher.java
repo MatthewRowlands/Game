@@ -89,6 +89,7 @@ public class Launcher extends Canvas implements Runnable{
 		}
 	}
 	
+	@Override
 	public void run() {
 		if(skipasadmin){
 			frame.dispose();
@@ -133,8 +134,9 @@ public class Launcher extends Canvas implements Runnable{
 			g.drawString("Singleplayer", 600, 120);
 			g.drawString("Multiplayer", 600, 160);
 			g.drawString("Host Game", 600, 200);
-			g.drawString("Options", 600, 240);
-			g.drawString("Exit", 600, 280);
+			g.drawString("Loadout", 600, 240);
+			g.drawString("Options", 600, 280);
+			g.drawString("Exit", 600, 320);
 			
 			if(InputHandler.mouseX >= 500 && InputHandler.mouseX <= 760){
 				if(InputHandler.mouseY > 85 && InputHandler.mouseY <= 125){
@@ -202,11 +204,11 @@ public class Launcher extends Canvas implements Runnable{
 					g.fillRect(500,215,260,30);
 						g.drawImage(ImageIO.read(Display.class.getResource("/Menuarrow.png")), 760, 217, 40, 25, null);
 						g.setColor(Color.white);
-						g.drawString("Options", 600, 240);
+						g.drawString("Loadout", 600, 240);
 					if(MousePressed == 1){
 						InputHandler.MouseButton = 0;
 						frame.dispose();
-						new Options();
+						new Loadout();
 						stopMenu();
 					}
 				}
@@ -215,7 +217,20 @@ public class Launcher extends Canvas implements Runnable{
 					g.fillRect(500,255,260,30);
 						g.drawImage(ImageIO.read(Display.class.getResource("/Menuarrow.png")), 760, 257, 40, 25, null);
 						g.setColor(Color.white);
-						g.drawString("Exit", 600, 280);
+						g.drawString("Options", 600, 280);
+					if(MousePressed == 1){
+						InputHandler.MouseButton = 0;
+						frame.dispose();
+						new Options();
+						stopMenu();
+					}
+				}
+				if(InputHandler.mouseY > 285 && InputHandler.mouseY <= 325){
+					g.setColor(c);
+					g.fillRect(500,295,260,30);
+						g.drawImage(ImageIO.read(Display.class.getResource("/Menuarrow.png")), 760, 297, 40, 25, null);
+						g.setColor(Color.white);
+						g.drawString("Exit", 600, 320);
 					if(MousePressed == 1){
 						System.exit(0);
 					}

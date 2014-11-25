@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 
 import Launcher.Launcher;
 import Main.Display;
@@ -78,11 +79,12 @@ public class Server implements Runnable{
 		f.setTitle("Server");
 		f.setBounds(ss.width - 750, 50, 701, 350);
 		f.setResizable(false);
-		f.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		f.setAlwaysOnTop(true);
 		f.setLayout(null);
 		f.add(p);
 		f.addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent we) {
 				if (connection) {
 					try {
@@ -113,6 +115,7 @@ public class Server implements Runnable{
 		f.add(tf);
 		tf.setBounds(151, 298, 544, 23);
 		tf.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				tftext = tf.getText();
 				RunCommand(tftext);
@@ -244,6 +247,7 @@ public class Server implements Runnable{
 		jt.setCaretPosition(jt.getDocument().getLength());
 	}
 	
+	@Override
 	public void run() {
 		serverMessage("Loading...\n");
 		for(int b = 0; b < 231; b++){

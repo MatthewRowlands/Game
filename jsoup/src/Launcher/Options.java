@@ -38,6 +38,7 @@ public class Options extends JFrame{
 	JPanel window = new JPanel();
 	Configuration config = new Configuration();
 	Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
+	
 	public Options(){
 		setTitle("Options");
 		setSize(new Dimension(width, height));
@@ -106,6 +107,7 @@ public class Options extends JFrame{
 		window.add(lmouse);
 		
 		ok.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 				Display.setMoveSpeed(Integer.parseInt(tmove.getText()));
@@ -120,6 +122,7 @@ public class Options extends JFrame{
 			}		
 		});
 		fullscreen.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 				Display.setMoveSpeed(Integer.parseInt(tmove.getText()));

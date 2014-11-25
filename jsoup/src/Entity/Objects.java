@@ -1,6 +1,7 @@
 package Entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import Main.Display;
 
@@ -20,7 +21,7 @@ public class Objects implements Serializable{
 	public double flashspeed = 2;
 	public double drop = 0.000025;
 	public double flashdrop = 0.0025;
-	public double maxdistance = 100000;
+	public double maxdistance = 500;
 	public double heightstep = 0.15;
 	public boolean bullet = false;
 	public boolean flash = false;
@@ -34,6 +35,7 @@ public class Objects implements Serializable{
 	double rotationy = 0;
 	double accuracy = Display.accuracy;
 	public boolean maxdistreached = false;
+	ArrayList<Enemy> hurtenemies = new ArrayList<Enemy>();
 	
 	public Objects(double x, double y, double z){
 		this.x = x;
@@ -108,5 +110,16 @@ public class Objects implements Serializable{
 		this.spawnrate = spawnrate;
 		spawntime1 = System.currentTimeMillis();
 		spawntime2 = System.currentTimeMillis();
+	}
+
+	public void canthurt(Enemy e) {
+		if(!e.dead)
+		hurtenemies.add(e);
+	}
+	public boolean canhurt(Enemy e){
+		if(hurtenemies.contains(e))
+			return false;
+		else
+			return true;
 	}
 }

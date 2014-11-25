@@ -1,7 +1,7 @@
-0 GUN FR DM ACCUR MAG FM RELOADT Filepath
+0 GUN FR DM ACCUR MAG FM RELOADT Filepath RECOIL(todo)
 1 MP5 13 28 0.035 30 2 1.7 /audio/SMG.wav
 2 M4A1 12.5 40 0.02 30 2 2.3 /audio/M4A1.wav
-3 FIVE-SEVEN 8 33 0.015 20 1 1.8 /audio/P250.wav
+3 FIVE-SEVEN 12 33 0.015 20 1 1.8 /audio/P250.wav
 4 INTERVENTION 0.8 200 0.001 5 1 3.0 /audio/Sniper.wav
 5 G18 30 20 0.05 20 2 2.4 /audio/P250.wav
 6 DesertEagle 10 60 0.08 8 1 3.6 /audio/Sniper.wav

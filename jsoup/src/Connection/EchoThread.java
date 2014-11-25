@@ -48,6 +48,7 @@ public class EchoThread extends Thread{
 
 	}
 	
+	@Override
 	public void run(){
 		double unprocessedSeconds = 0;
 		long previousTime = System.nanoTime();
@@ -148,7 +149,7 @@ public class EchoThread extends Thread{
 		double componentWidth = label.getWidth();
 
 		// Find out how much the font can grow in width.
-		double widthRatio = (double) componentWidth / (double) stringWidth;
+		double widthRatio = componentWidth / stringWidth;
 
 		double newFontSize = (int) (labelFont.getSize() * widthRatio);
 		double componentHeight = label.getHeight();
