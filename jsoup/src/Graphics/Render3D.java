@@ -31,7 +31,7 @@ public class Render3D extends Render {
 		right = game.controls.x;
 		up = game.controls.y;
 		walking = 0;
-		rotation = /*Math.sin(game.time / 80.0);*/ game.controls.rotationx;
+		rotation = game.controls.rotationx;
 		cosine = Math.cos(rotation);
 		sine = Math.sin(rotation);
 		rotationy = game.controls.rotationy;
@@ -80,7 +80,11 @@ public class Render3D extends Render {
 				int xPix = (int) ((xx + right));
 				int yPix = (int) ((yy + forward));
 				zBuffer[x + y * width] = z;
-				pixels[x + y * width] = Texture.floor.pixels[(xPix & 1000) + (yPix & 1000) * 40];
+				try{
+					pixels[x + y * width] = Texture.floor.pixels[(xPix & 20) + (yPix & 20) * 40];
+				}catch(Exception e){
+					pixels[x + y * width] = 0xff69b4;
+				}
 				if (z > renderDistance) {
 					pixels[x + y * width] = 0;
 				}

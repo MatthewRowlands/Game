@@ -31,32 +31,7 @@ public class Screen extends Render {
 		render.floor(game);
 		
 		if(Display.fps > 25){
-			for(double[] v3f : positions){
-				if(positions.indexOf(v3f) != Client.clientnumber-1){
-				renderBlock(v3f[0]/8,v3f[1]/8,v3f[2]/8, 1, 0.5, 1, 1);
-				}
-			}
-			for(Enemy e : enemies){
-				if(!e.dead){
-				renderBlock(e.x/8,e.y/8,e.z/8, 1, e.displayhealth, 1, 2);
-				}
-			}
-			for(Objects e : objects){
-				renderBlock(e.x/8,e.y/8,e.z/8, 1, 0.5, 1, 4);
-			}
-			for(Objects e : bullets){
-				if(!e.flash){
-				Display.activebullets++;
-				}
-				if(e.maxdistreached){
-				Display.activebullets--;
-				}else{
-					if(e.bullet)
-						renderBlock(e.x/8,e.y/8,e.z/8, 0.05, 0.025, 0.05, 0);
-					else if(e.flash)
-						renderBlock(e.x/8,e.y/8,e.z/8, 0.1, 0.1, 0.1, 0);
-				}
-			}
+			RenderObjects();
 			render.renderDistanceLimiter();
 		}else{
 			bullets.clear();
@@ -72,6 +47,35 @@ public class Screen extends Render {
 		draw(render, 0, 0);
 	}
 	
+	private void RenderObjects() {
+		for(double[] v3f : positions){
+			if(positions.indexOf(v3f) != Client.clientnumber-1){
+			renderBlock(v3f[0]/8,v3f[1]/8,v3f[2]/8, 1, 0.5, 1, 1);
+			}
+		}
+		for(Enemy e : enemies){
+			if(!e.dead){
+			renderBlock(e.x/8,e.y/8,e.z/8, 1, e.displayhealth, 1, 2);
+			}
+		}
+		for(Objects e : objects){
+			renderBlock(e.x/8,e.y/8,e.z/8, 1, 0.5, 1, 4);
+		}
+		for(Objects e : bullets){
+			if(!e.flash){
+			Display.activebullets++;
+			}
+			if(e.maxdistreached){
+			Display.activebullets--;
+			}else{
+				if(e.bullet)
+					renderBlock(e.x/8,e.y/8,e.z/8, 0.05, 0.025, 0.05, 0);
+				else if(e.flash)
+					renderBlock(e.x/8,e.y/8,e.z/8, 0.1, 0.1, 0.1, 0);
+			}
+		}	
+	}
+
 	private void CheckCollision() {
 		Display.enemiesattacking = 0;
 		Display.collisionright = false;
@@ -134,7 +138,7 @@ public class Screen extends Render {
 			}
 		}
 	}
-
+	
 	public void tick(){
 		for(Enemy e : enemies){
 			e.tick();
