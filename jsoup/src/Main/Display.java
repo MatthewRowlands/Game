@@ -702,7 +702,7 @@ public class Display extends Canvas implements Runnable {
 	private void drawMiniMap() {
 		int centrex = width - 100;
 		int centrey = height - 100;
-		int minimapscale = ScrollLevel;
+		int minimapscale = ScrollLevel*width/1000;
 
 		BufferedImage img2 = null;
 		try {
