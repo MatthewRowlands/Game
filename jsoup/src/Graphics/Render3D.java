@@ -11,7 +11,6 @@ public class Render3D extends Render {
 	public double[] zBuffer;
 	public double[] zBufferWall;
 	public double renderDistance = Display.RenderDist;
-	int bob = 24;
 	double forward, right, up, cosine, sine, walking, rotation, rotationy;
 
 	double floorpos = Display.floorpos;
@@ -78,11 +77,11 @@ public class Render3D extends Render {
 				depth *= z;
 				double xx = depth * cosine + z * sine;
 				double yy = z * cosine - depth * sine;
-				int xPix = (int) (xx + right);
-				int yPix = (int) (yy + forward);
+				int xPix = (int) ((xx + right));
+				int yPix = (int) ((yy + forward));
 				zBuffer[x + y * width] = z;
-				pixels[x + y * width] = Texture.floor.pixels[(xPix & 7) + bob + (yPix & 7) * 40];
-				if (z > renderDistance / 20) {
+				pixels[x + y * width] = Texture.floor.pixels[(xPix & 1000) + (yPix & 1000) * 40];
+				if (z > renderDistance) {
 					pixels[x + y * width] = 0;
 				}
 			}

@@ -345,7 +345,7 @@ public class Display extends Canvas implements Runnable {
 				MouseChangey = Math.abs((height/2) - newmY);
 			}else{
 			    MouseChangex = (width/2) - newmX;
-			    MouseChangey = (height/2) - newmY;
+			    MouseChangey = (height/2) - newmY+5;
 			}
 			
 			if(WINDOW_TEST_MODE != 1){
@@ -654,6 +654,13 @@ public class Display extends Canvas implements Runnable {
 		g.fillRect(width / 2 - 1, (int) (height / 2 + accuracy * 10), 2, 10); 
 		g.fillRect((int) (width / 2 - 10 - accuracy * 10), height / 2 - 1, 10, 2); 
 		g.fillRect(width / 2 - 1, (int) (height / 2 - 10 - accuracy * 10), 2, 10);	
+		
+		g.setColor(Color.BLACK); 
+		g.drawLine(width/2, height/2, (int)(width/2-MouseChangex), (int)(height/2-MouseChangey));
+		g.setColor(Color.BLUE);
+		g.fillOval(width/2-5, height/2-5, 10,10);
+		g.setColor(Color.RED);
+		g.fillOval((int)(width/2-MouseChangex)-5, (int)(height/2-MouseChangey)-5, 10,10);
 	}
 
 	private void drawInfoBoardSouth() {
@@ -695,12 +702,6 @@ public class Display extends Canvas implements Runnable {
 		
 		g.setColor(Color.BLACK);
 		g.fillRect(centrex - 100, centrey - 100, 200, 200);
-		
-		g.drawLine(width/2, height/2, newmX, newmY);
-		g.setColor(Color.BLUE);
-		g.fillOval(width/2-5, height/2-5, 10,10);
-		g.setColor(Color.RED);
-		g.fillOval(newmX-5, newmY-5, 10,10);
 		
 		g.setColor(Color.GREEN);
 		g.fillRect(centrex, centrey, (16+y)/minimapscale+3, (16+y)/minimapscale+3);
