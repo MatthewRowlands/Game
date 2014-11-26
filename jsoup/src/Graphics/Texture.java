@@ -6,7 +6,13 @@ import java.io.File;
 import javax.imageio.ImageIO;
 
 public class Texture {
-	public static Render floor = loadBitmap("/textures/floor.png");
+	public static String floorf = "/textures/Concrete.png";
+	public static Render floor = loadBitmap(floorf);
+	public static String rooff = "/textures/Wood_Dark.png";
+	public static Render roof = loadBitmap(rooff);
+	public static String enemyf = "/textures/Enemy.png";
+	public static Render enemy = loadBitmap(enemyf);
+	
 	public static Render loadBitmap(String fileName){
 		try{
 			File file = new File("/textures");

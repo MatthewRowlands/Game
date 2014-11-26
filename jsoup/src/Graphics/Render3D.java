@@ -1,5 +1,7 @@
 package Graphics;
 
+import java.awt.Color;
+
 import Input.Controller;
 import Level.Block;
 import Level.Level;
@@ -15,6 +17,8 @@ public class Render3D extends Render {
 
 	double floorpos = Display.floorpos;
 	double ceilingpos = Display.ceilingpos;
+	private double brightness = 1;
+	int c = 0;
 	
 	public Render3D(int width, int height) {
 		super(width, height);
@@ -47,6 +51,7 @@ public class Render3D extends Render {
 		for (int y = 0; y < height; y++) {
 			double ceiling = (y - height*(rotationy) / 2.0) / height;
 			double z = (floorpos + up) / ceiling;
+			c = 0;
 			
 			if (Controller.walk) {
 				walking = Math.sin(game.time / 6.0) * 0.4;
@@ -67,6 +72,7 @@ public class Render3D extends Render {
 			
 			if (ceiling < 0) {
 				z = (ceilingpos - up) / -ceiling;
+				c = 1;
 				if (Controller.walk) {
 					z = (ceilingpos - up - walking) / -ceiling;
 				}
@@ -77,16 +83,20 @@ public class Render3D extends Render {
 				depth *= z;
 				double xx = depth * cosine + z * sine;
 				double yy = z * cosine - depth * sine;
-				int xPix = (int) ((xx + right));
-				int yPix = (int) ((yy + forward));
+				int xPix = (int) ((xx + right)*32);
+				int yPix = (int) ((yy + forward)*32);
 				zBuffer[x + y * width] = z;
 				try{
-					pixels[x + y * width] = Texture.floor.pixels[(xPix & 20) + (yPix & 20) * 40];
+					if(c == 0){
+						pixels[x + y * width] = Texture.floor.pixels[(xPix & 511) + (yPix & 511) * 512];
+					}else{
+						pixels[x + y * width] = Texture.roof.pixels[(xPix & 511) + (yPix & 511) * 512];
+					}
 				}catch(Exception e){
 					pixels[x + y * width] = 0xff69b4;
 				}
-				if (z > renderDistance) {
-					pixels[x + y * width] = 0;
+				if (z > renderDistance/20) {
+					pixels[x + y * width] = 0x7EC0EE;
 				}
 			}
 		}
@@ -225,7 +235,7 @@ public class Render3D extends Render {
 			}
 			zBufferWall[x] = zWall;
 			
-			int xTexture = (int)((tex3 + tex4 * pixelRotation) / zWall);
+			int xTexture = (int)((tex3 + tex4 * pixelRotation) / zWall * 64);
 
 			double yPixelTop = yPixelLeftTop + (yPixelRightTop - yPixelLeftTop) * pixelRotation  * rotationy;
 			double yPixelBottom = yPixelLeftBottom + (yPixelRightBottom - yPixelLeftBottom) * pixelRotation  * rotationy;
@@ -242,13 +252,9 @@ public class Render3D extends Render {
 
 			for (int y = yPixelTopint; y < yPixelBottomint; y++) {
 				double pixelRotationY = (y - yPixelTop) / (yPixelBottom - yPixelTop);
-				int yTexture = (int)(8 * pixelRotationY);
+				int yTexture = (int)(8 * pixelRotationY * 64);
 				try {
-					if(texture < 0){
-					pixels[x + y * (width)] = (xTexture * 100 + yTexture * 100 * 256) << -texture;//0x1B9E0;
-				    }else{
-					pixels[x + y * (width)] = Texture.floor.pixels[((xTexture & 7) + 8 * texture) + (yTexture & 7) * 40];
-				    }
+					pixels[x + y * (width)] = Texture.enemy.pixels[(((xTexture) & 511)) + (((yTexture) & 511)) * 512];
 				} catch (ArrayIndexOutOfBoundsException e) {
 					e.printStackTrace();
 					continue;
@@ -262,7 +268,7 @@ public class Render3D extends Render {
 	public void renderDistanceLimiter() {
 		for (int i = 0; i < width * height; i++) {
 			int colour = pixels[i];
-			int brightness = (int) (renderDistance / (zBuffer[i]));
+			int brightness = (int) (renderDistance / (zBuffer[i]) * this.brightness );
 
 			if (brightness < 0) {
 				brightness = 0;
@@ -279,7 +285,7 @@ public class Render3D extends Render {
 			g = g * brightness / 255;
 			b = b * brightness / 255;
 
-			pixels[i] = r << 16 | g << 8 | b;
+			pixels[i] = (r << 16 | g << 8 | b);
 		}
 	}
 }

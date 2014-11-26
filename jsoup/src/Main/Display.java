@@ -13,7 +13,10 @@ import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.awt.image.RescaleOp;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -24,6 +27,7 @@ import Entity.Enemy;
 import Entity.Objects;
 import Entity.Weapon;
 import Graphics.Screen;
+import Graphics.Texture;
 import Input.Controller;
 import Input.InputHandler;
 import Launcher.Launcher;
@@ -74,7 +78,7 @@ public class Display extends Canvas implements Runnable {
 	public static double[] pings = new double[16];
 	public static boolean canUpdate = false;
 	public static double floorpos = 8;
-	public static double ceilingpos = 80;
+	public static double ceilingpos = 16;
 	int time = 0;
 	
 	public static Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
@@ -251,7 +255,7 @@ public class Display extends Canvas implements Runnable {
 		long previousTime = System.nanoTime();
 		double secondsPerTick = 1 / WINDOW_TICK_RATE;
 		boolean ticked = false;
-		r.mouseMove((w / 2), (h / 2)-20);
+		r.mouseMove((w / 2), (h / 2));
 		//screen.objects.add(new Objects((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
 		//screen.objects.get(screen.objects.size()-1).UseSpawnerMechanism(5000);
 		//screen.objects.add(new Objects((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
@@ -345,7 +349,7 @@ public class Display extends Canvas implements Runnable {
 				MouseChangey = Math.abs((height/2) - newmY);
 			}else{
 			    MouseChangex = (width/2) - newmX;
-			    MouseChangey = (height/2) - newmY+5;
+			    MouseChangey = (height/2) - newmY;
 			}
 			
 			if(WINDOW_TEST_MODE != 1){
@@ -699,9 +703,17 @@ public class Display extends Canvas implements Runnable {
 		int centrex = width - 100;
 		int centrey = height - 100;
 		int minimapscale = ScrollLevel;
-		
-		g.setColor(Color.BLACK);
-		g.fillRect(centrex - 100, centrey - 100, 200, 200);
+
+		BufferedImage img2 = null;
+		try {
+			img2 = ImageIO.read(Display.class.getResource(Texture.floorf));
+		} catch (Exception e) {
+		}
+		float percentage = .3f;
+		g.drawImage(img2, centrex - 100, centrey - 100, 200, 200, this);
+        int brightness = (int)(256 - 256 * percentage);
+        g.setColor(new Color(0,0,0,brightness));
+        g.fillRect(centrex - 100, centrey - 100, getWidth(), getHeight());
 		
 		g.setColor(Color.GREEN);
 		g.fillRect(centrex, centrey, (16+y)/minimapscale+3, (16+y)/minimapscale+3);
