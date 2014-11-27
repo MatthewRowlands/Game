@@ -78,7 +78,7 @@ public class Display extends Canvas implements Runnable {
 	public static double[] pings = new double[16];
 	public static boolean canUpdate = false;
 	public static double floorpos = 8;
-	public static double ceilingpos = 16;
+	public static double ceilingpos = 512;
 	int time = 0;
 	
 	public static Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
@@ -122,7 +122,7 @@ public class Display extends Canvas implements Runnable {
 	public static double MoveSpeed = 1;
 	public static double JumpHeight = 1;
 	public static double MouseSpeed = 10;
-	public static int RenderDist = 10000;
+	public static int RenderDist = 1000000;
 	public static boolean Pause = false;
 	
 	static BufferedImage cursor = new BufferedImage(16, 16,
@@ -263,7 +263,7 @@ public class Display extends Canvas implements Runnable {
 		//screen.objects.add(new Objects((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
 		//screen.objects.get(screen.objects.size()-1).UseSpawnerMechanism(5000);
 		
-		while (run) {
+		while (run && !thread.isInterrupted()) {
 			if(!WINDOW_USE_VSYNC){
 			render();
 			}
@@ -615,7 +615,7 @@ public class Display extends Canvas implements Runnable {
 	private void drawInfoBoardNorth() {
 		g.setFont(new Font("Verdana", Font.PLAIN, 10));
 		g.setColor(Color.WHITE);
-		g.drawString("FPS: " + fps+" Ping: "+PING, 20, 20);
+		g.drawString("FPS: " + fps+" Ping: "+PING+" Threads: "+Thread.activeCount(), 20, 20);
 		g.drawString("X/Y/Z: "+x+","+y+","+z+" Rotation C/S: "+rotationsin+"/"+rotationcos, 20, 30);
 		g.drawString("Textures: "+blockcount, 20, 40);
 		g.drawString("VSYNC: "+WINDOW_USE_VSYNC, 20, 50);

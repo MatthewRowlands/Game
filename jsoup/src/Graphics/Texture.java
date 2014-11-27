@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 public class Texture {
 	public static String floorf = "/textures/Concrete.png";
 	public static Render floor = loadBitmap(floorf);
-	public static String rooff = "/textures/Wood_Dark.png";
+	public static String rooff = "/textures/Sky.png";
 	public static Render roof = loadBitmap(rooff);
 	public static String enemyf = "/textures/Enemy.png";
 	public static Render enemy = loadBitmap(enemyf);

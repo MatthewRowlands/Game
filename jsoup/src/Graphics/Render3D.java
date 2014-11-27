@@ -83,17 +83,20 @@ public class Render3D extends Render {
 				depth *= z;
 				double xx = depth * cosine + z * sine;
 				double yy = z * cosine - depth * sine;
-				int xPix = (int) ((xx + right)*32);
-				int yPix = (int) ((yy + forward)*32);
+				int xPix;
+				int yPix;
+				if(c == 0){
+					xPix = (int) ((xx + right)*4);
+					yPix = (int) ((yy + forward)*4);
+				}else{
+					xPix = (int) ((xx + right)/16);
+					yPix = (int) ((yy + forward)/16);	
+				}
 				zBuffer[x + y * width] = z;
-				try{
-					if(c == 0){
-						pixels[x + y * width] = Texture.floor.pixels[(xPix & 511) + (yPix & 511) * 512];
-					}else{
-						pixels[x + y * width] = Texture.roof.pixels[(xPix & 511) + (yPix & 511) * 512];
-					}
-				}catch(Exception e){
-					pixels[x + y * width] = 0xff69b4;
+				if(c == 0){
+					pixels[x + y * width] = Texture.floor.pixels[(xPix & 511) + (yPix & 511) * 512];
+				}else{
+					pixels[x + y * width] = Texture.roof.pixels[(xPix & 1023) + (yPix & 1023) * 1024];
 				}
 				if (z > renderDistance/20) {
 					pixels[x + y * width] = 0x7EC0EE;
@@ -270,8 +273,8 @@ public class Render3D extends Render {
 			int colour = pixels[i];
 			int brightness = (int) (renderDistance / (zBuffer[i]) * this.brightness );
 
-			if (brightness < 0) {
-				brightness = 0;
+			if (brightness < 100) {
+				brightness = 100;
 			}
 			if (brightness > 255) {
 				brightness = 255;

@@ -27,21 +27,14 @@ public class Screen extends Render {
 		for (int i = 0; i < width * height; i++) {
 			pixels[i] = 0;
 		}
+		
 		Display.activebullets = 0;
 		render.floor(game);
+		RenderObjects();
+		render.renderDistanceLimiter();
 		
-		if(Display.fps > 25){
-			RenderObjects();
-			render.renderDistanceLimiter();
-		}else{
+		if(Display.fps < 25){
 			bullets.clear();
-			if(Display.fps < 10){
-				objects.clear();
-			}
-			if(Display.fps < 5){
-				enemies.clear();
-			}
-			System.gc();
 		}
 		CheckCollision();
 		draw(render, 0, 0);
