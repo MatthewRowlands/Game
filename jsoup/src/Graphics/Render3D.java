@@ -19,6 +19,7 @@ public class Render3D extends Render {
 	double ceilingpos = Display.ceilingpos;
 	private double brightness = 1;
 	int c = 0;
+	int num = 1;
 	
 	public Render3D(int width, int height) {
 		super(width, height);
@@ -86,17 +87,17 @@ public class Render3D extends Render {
 				int xPix;
 				int yPix;
 				if(c == 0){
-					xPix = (int) ((xx + right)*4);
-					yPix = (int) ((yy + forward)*4);
+					xPix = (int) ((xx + right)*8);
+					yPix = (int) ((yy + forward)*8);
 				}else{
-					xPix = (int) ((xx + right)/16);
-					yPix = (int) ((yy + forward)/16);	
+					xPix = (int) ((xx + right)/4);
+					yPix = (int) ((yy + forward)/4);	
 				}
 				zBuffer[x + y * width] = z;
 				if(c == 0){
 					pixels[x + y * width] = Texture.floor.pixels[(xPix & 511) + (yPix & 511) * 512];
 				}else{
-					pixels[x + y * width] = Texture.roof.pixels[(xPix & 1023) + (yPix & 1023) * 1024];
+					pixels[x + y * width] = Texture.roof.pixels[(xPix & 511) + (yPix & 511) * 512];
 				}
 				if (z > renderDistance/20) {
 					pixels[x + y * width] = 0x7EC0EE;
@@ -238,7 +239,7 @@ public class Render3D extends Render {
 			}
 			zBufferWall[x] = zWall;
 			
-			int xTexture = (int)((tex3 + tex4 * pixelRotation) / zWall * 64);
+			int xTexture = (int)((tex3 + tex4 * pixelRotation) / zWall * 4);
 
 			double yPixelTop = yPixelLeftTop + (yPixelRightTop - yPixelLeftTop) * pixelRotation  * rotationy;
 			double yPixelBottom = yPixelLeftBottom + (yPixelRightBottom - yPixelLeftBottom) * pixelRotation  * rotationy;
@@ -255,9 +256,9 @@ public class Render3D extends Render {
 
 			for (int y = yPixelTopint; y < yPixelBottomint; y++) {
 				double pixelRotationY = (y - yPixelTop) / (yPixelBottom - yPixelTop);
-				int yTexture = (int)(8 * pixelRotationY * 64);
+				int yTexture = (int)(8 * pixelRotationY * 4);
 				try {
-					pixels[x + y * (width)] = Texture.enemy.pixels[(((xTexture) & 511)) + (((yTexture) & 511)) * 512];
+					pixels[x + y * (width)] = Texture.enemy.pixels[(((xTexture) & 127)) + (((yTexture) & 127)) * 128];
 				} catch (ArrayIndexOutOfBoundsException e) {
 					e.printStackTrace();
 					continue;

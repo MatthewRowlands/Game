@@ -709,7 +709,7 @@ public class Display extends Canvas implements Runnable {
 			img2 = ImageIO.read(Display.class.getResource(Texture.floorf));
 		} catch (Exception e) {
 		}
-		float percentage = .3f;
+		float percentage = .4f;
 		g.drawImage(img2, centrex - 100, centrey - 100, 200, 200, this);
         int brightness = (int)(256 - 256 * percentage);
         g.setColor(new Color(0,0,0,brightness));
