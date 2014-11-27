@@ -79,6 +79,7 @@ public class Display extends Canvas implements Runnable {
 	public static boolean canUpdate = false;
 	public static double floorpos = 8;
 	public static double ceilingpos = 512;
+	public static boolean flymode = true;
 	int time = 0;
 	
 	public static Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
@@ -285,7 +286,7 @@ public class Display extends Canvas implements Runnable {
 				}
 				
 				if (tickCount % WINDOW_TICK_RATE == 0) {
-					screen.enemies.add(new Enemy((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
+					//screen.enemies.add(new Enemy((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
 					if(activebullets == 0 && screen.bullets.size() > 0){
 					screen.bullets.clear();
 					}

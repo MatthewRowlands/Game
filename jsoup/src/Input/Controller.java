@@ -83,25 +83,37 @@ public class Controller {
 		}
 		
 		if (jump && !crouch && !prone) {
-			if(y <= 0){
-			fall = false;
+			if(!Display.flymode){
+				if(y <= 0){
+				fall = false;
+				}
+			}else{
+				y++;	
 			}
 		}
 
-		if(fall && y > 0){
-			y -= jumpheight/8;
-		}
-		if(!fall && y < maxheight){
-			y += jumpheight;
-		}
-		if( y >= maxheight-jumpheight){
-			fall = true;
+		if(!Display.flymode){
+			if(fall && y > 0){
+				y -= jumpheight/8;
+			}
+			if(!fall && y < maxheight){
+				y += jumpheight;
+			}
+			if( y >= maxheight-jumpheight){
+				fall = true;
+			}
 		}
 		
-		if (crouch && y <= 0) {
-			walkSpeed = 0.2 * Display.MoveSpeed;
-			y += crouchheight;
-			crouchwalk = true;
+		if (crouch) {
+			if(!Display.flymode){
+				if(y <= 0){
+					walkSpeed = 0.2 * Display.MoveSpeed;
+					y += crouchheight;
+					crouchwalk = true;
+				}
+			}else{
+				y--;
+			}
 		}
 		if (prone && y <= 0) {
 			walkSpeed = 0.1 * Display.MoveSpeed;
@@ -157,7 +169,9 @@ public class Controller {
 
 		x += xa;
 		z += za;
+		if(!Display.flymode){
 		y *= 0.9;
+		}
 
 		xa *= 0.1;
 		za *= 0.1;

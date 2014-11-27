@@ -159,6 +159,10 @@ public class Render3D extends Render {
 
 	public void renderWall(double xLeft, double xRight, double zDistanceLeft, double zDistanceRight, double ySize, double yPos, int texture) {
 
+		if(yPos < -0.5){
+			return;
+		}
+		
 		double upCorrect = 0.0625;
 		double rightCorrect = 0.0625;
 		double forwardCorrect = 0.0625;

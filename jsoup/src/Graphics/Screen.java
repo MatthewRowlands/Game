@@ -31,6 +31,15 @@ public class Screen extends Render {
 		Display.activebullets = 0;
 		render.floor(game);
 		RenderObjects();
+		for(double x = -10; x < 10; x++){
+			for(double z = -10; z < 10; z++){
+				for(double y = 0; y < 4; y++){
+					if(x == -10 || x == 9 || z == -10 || z == 9){
+					renderBlock(x/2,y/4-0.25,z/2,0.5,0.25,0.5,0);
+					}
+				}
+			}
+		}
 		render.renderDistanceLimiter();
 		
 		if(Display.fps < 25){
