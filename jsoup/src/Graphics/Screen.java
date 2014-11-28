@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import Connection.Client;
 import Entity.Enemy;
 import Entity.Objects;
+import Level.Map;
 import Main.Display;
 import Main.Game;
 
@@ -21,6 +22,7 @@ public class Screen extends Render {
 		this.width = width;
 		this.height = height;
 		render = new Render3D(width, height);
+		objects = new Map().LoadMap("map1");;
 	}
 
 	public void render(Game game) {
@@ -31,18 +33,18 @@ public class Screen extends Render {
 		Display.activebullets = 0;
 		render.floor(game);
 		RenderObjects();
-		for(double x = -10; x < 10; x++){
-			for(double z = -10; z < 10; z++){
-				for(double y = 0; y < 4; y++){
-					if(x == -10 || x == 9 || z == -10 || z == 9){
-					renderBlock(x/2,y/4-0.25,z/2,0.5,0.25,0.5,0);
-					}
-				}
-			}
-		}
+		//for(double x = -10; x < 10; x++){
+		//	for(double z = -10; z < 10; z++){
+		//		for(double y = 0; y < 4; y++){
+		//			if(x == -10 || x == 9 || z == -10 || z == 9){
+		//				renderBlock(x/2,y/4-0.25,z/2,0.5,0.25,0.5,0);
+		//			}
+		//		}
+		//	}
+		//}
 		render.renderDistanceLimiter();
 		
-		if(Display.fps < 25){
+		if(Display.fps < 5){
 			bullets.clear();
 		}
 		CheckCollision();
@@ -61,7 +63,7 @@ public class Screen extends Render {
 			}
 		}
 		for(Objects e : objects){
-			renderBlock(e.x/8,e.y/8,e.z/8, 1, 0.5, 1, 4);
+			renderBlock(e.x,e.y,e.z, 1, 0.5, 1, 4);
 		}
 		for(Objects e : bullets){
 			if(!e.flash){

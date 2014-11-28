@@ -48,22 +48,19 @@ public class Display extends Canvas implements Runnable {
 	 * -Guns
 	 * -Vertical Rotation
 	 * -Multiplayer
+	 * -Fixed Stretching for objects (partially)
 	 * 
 	 * TODO: 
-	 * -Choose Loadout
 	 * -Add in actual maps
 	 * -Model loader
 	 * -More guns
 	 * -Develop multiplayer
 	 * 
 	 * KNOWN BUGS:
-	 * -Look too far up and goes WIERD
-	 * -^^ down
-	 * -Enemies stretch with vertical rotation
+	 * -Look too far up or down and goes WIERD (stretches texture?)
 	 * -Player collision detection not aligned with direction facing
 	 * -Flash grenades make screen white no matter which direction facing
 	 * -Minimap is inverted
-	 * -Save loadouts
 	 */
 	
 	public static double WINDOW_FAST_JOIN = 0.0;
@@ -123,7 +120,7 @@ public class Display extends Canvas implements Runnable {
 	public static double MoveSpeed = 1;
 	public static double JumpHeight = 1;
 	public static double MouseSpeed = 10;
-	public static int RenderDist = 1000000;
+	public static int RenderDist = 100000;
 	public static boolean Pause = false;
 	
 	static BufferedImage cursor = new BufferedImage(16, 16,
@@ -179,6 +176,8 @@ public class Display extends Canvas implements Runnable {
 	public static boolean collisionback = false;
 
 	public static int ScrollLevel = 8;
+
+	public static int brightness = 200;
 
 	public Display() {
 		Dimension size = new Dimension(WIDTH, HEIGHT);
@@ -350,7 +349,7 @@ public class Display extends Canvas implements Runnable {
 				MouseChangey = Math.abs((height/2) - newmY);
 			}else{
 			    MouseChangex = (width/2) - newmX;
-			    MouseChangey = (height/2) - newmY;
+			    MouseChangey = (height/2) - newmY + 5;
 			}
 			
 			if(WINDOW_TEST_MODE != 1){

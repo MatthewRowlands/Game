@@ -37,6 +37,8 @@ public class Loadout extends JFrame{
 	Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
 	private JButton ok, left, right, select1, select2;
 	private JLabel name, fr, dm, ac, mg, fm, rt;
+	Save save = new Save();
+	
 	public Loadout(){
 		setTitle("Choose Loadout");
 		setSize(new Dimension(width, height));
@@ -107,18 +109,7 @@ public class Loadout extends JFrame{
 		ok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				Display.w1 = wep1;
-				Display.w2 = wep2;
-				Display.initialaccuracy = wep1.accuracy;
-				Display.startaccuracy = Display.initialaccuracy;
-				Display.accuracy = Display.startaccuracy;
-				Display.firerate = wep1.firerate;
-				Display.firemode = wep1.firemode;
-				Display.sWeaponAmmo = wep1.WeaponAmmo;
-				Display.WeaponAmmo = Display.sWeaponAmmo;
-				Display.reloadspeed = wep1.reloadspeed * 1000;
-				Display.WeaponDamage = wep1.WeaponDamage;
-				//save stuff
+				save.saveConfiguration(wep1, wep2);
 				new Launcher();
 			}		
 		});

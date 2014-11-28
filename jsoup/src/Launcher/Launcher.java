@@ -37,6 +37,7 @@ public class Launcher extends Canvas implements Runnable{
 	public boolean skipasspectator = false;
 	
 	Configuration config = new Configuration();
+	Save save = new Save();
 	Thread thread;
 	JFrame frame = new JFrame();
 	Options opt;
@@ -247,6 +248,7 @@ public class Launcher extends Canvas implements Runnable{
 	public void StartGame(boolean multiplayer, String ip, String un, int port){
 		frame.dispose();
 		config.loadConfiguration("res/settings/config.xml");
+		save.loadConfiguration("res/settings/loadout.xml");
 		new RunGame(multiplayer, ip, un, port);
 	}
 }

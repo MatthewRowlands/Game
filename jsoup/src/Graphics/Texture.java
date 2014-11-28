@@ -6,9 +6,9 @@ import java.io.File;
 import javax.imageio.ImageIO;
 
 public class Texture {
-	public static String floorf = "/textures/Fire.png";
+	public static String floorf = "/textures/Ground1.png";
 	public static Render floor = loadBitmap(floorf);
-	public static String rooff = "/textures/Night Sky.png";
+	public static String rooff = "/textures/Sky.png";
 	public static Render roof = loadBitmap(rooff);
 	public static String enemyf = "/textures/Fire2.png";
 	public static Render enemy = loadBitmap(enemyf);
