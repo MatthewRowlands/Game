@@ -13,8 +13,6 @@ import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.awt.image.RescaleOp;
-import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
@@ -350,7 +348,7 @@ public class Display extends Canvas implements Runnable {
 				MouseChangey = Math.abs((height/2) - newmY);
 			}else{
 			    MouseChangex = (width/2) - newmX;
-			    MouseChangey = (height/2) - newmY;
+			    MouseChangey = (height/2) - newmY + 5;
 			}
 			
 			if(WINDOW_TEST_MODE != 1){
@@ -766,6 +764,7 @@ public class Display extends Canvas implements Runnable {
 		}	
 	}
 
+	@SuppressWarnings("unused")
 	private void drawRotationMap() {
 		int centrey = height - 100;
 		

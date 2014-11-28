@@ -1,7 +1,5 @@
 package Graphics;
 
-import java.awt.Color;
-
 import Input.Controller;
 import Level.Block;
 import Level.Level;
@@ -99,7 +97,7 @@ public class Render3D extends Render {
 				}else{
 					pixels[x + y * width] = Texture.roof.pixels[(xPix & 511) + (yPix & 511) * 512];
 				}
-				if (z > renderDistance/20) {
+				if (z > renderDistance) {
 					pixels[x + y * width] = 0x7EC0EE;
 				}
 			}
