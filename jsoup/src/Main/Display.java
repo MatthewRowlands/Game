@@ -22,6 +22,7 @@ import javax.swing.JFrame;
 
 import Connection.Client;
 import Entity.Enemy;
+import Entity.Entity;
 import Entity.Objects;
 import Entity.Weapon;
 import Graphics.Screen;
@@ -49,10 +50,11 @@ public class Display extends Canvas implements Runnable {
 	 * -Fixed Stretching for objects (partially)
 	 * 
 	 * TODO: 
-	 * -Add in actual maps
-	 * -Model loader
+	 * -Add in actual maps 
 	 * -More guns
 	 * -Develop multiplayer
+	 * -Use only one ArrayList of type entity
+	 * -Develop model loader
 	 * 
 	 * KNOWN BUGS:
 	 * -Look too far up or down and goes WIERD (stretches texture?)
@@ -283,7 +285,7 @@ public class Display extends Canvas implements Runnable {
 				}
 				
 				if (tickCount % WINDOW_TICK_RATE == 0) {
-					//screen.enemies.add(new Enemy((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
+					screen.objects.add(new Objects((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
 					if(activebullets == 0 && screen.bullets.size() > 0){
 					screen.bullets.clear();
 					}
@@ -347,7 +349,7 @@ public class Display extends Canvas implements Runnable {
 				MouseChangey = Math.abs((height/2) - newmY);
 			}else{
 			    MouseChangex = (width/2) - newmX;
-			    MouseChangey = (height/2) - newmY + 5;
+			    MouseChangey = (height/2) - newmY;
 			}
 			
 			if(WINDOW_TEST_MODE != 1){
@@ -704,7 +706,7 @@ public class Display extends Canvas implements Runnable {
 
 		BufferedImage img2 = null;
 		try {
-			img2 = ImageIO.read(Display.class.getResource(Texture.floorf));
+			img2 = ImageIO.read(Display.class.getResource(screen.render.temptex.file));
 		} catch (Exception e) {
 		}
 		float percentage = .4f;
@@ -761,6 +763,15 @@ public class Display extends Canvas implements Runnable {
 				//if facing
 			}
 		}	
+		for(Objects e : screen.objects){
+			int posx = (int)(e.x-x)/minimapscale+centrex;
+			int posy = (int)(e.z-z)/minimapscale+centrey;
+			
+			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100){
+			g.setColor(Color.BLUE);
+			g.fillRect(posx, posy, (16+(int)e.y)/minimapscale+3, (16+(int)e.y)/minimapscale+3);
+			}
+		}
 	}
 
 	@SuppressWarnings("unused")

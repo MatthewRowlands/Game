@@ -19,6 +19,7 @@ public class Render3D extends Render {
 	int c = 0;
 	int num = 1;
 	
+	public Texture temptex = new Texture("/textures/Sky.png");
 	public Render3D(int width, int height) {
 		super(width, height);
 		zBuffer = new double[width * height];
@@ -94,12 +95,12 @@ public class Render3D extends Render {
 				zBuffer[x + y * width] = z;
 				if(c == 0){
 					if(up > -Display.floorpos/2)
-						pixels[x + y * width] = Texture.floor.pixels[(int) ((xPix & 511) + (yPix & 511) * 512)];
+						pixels[x + y * width] = temptex.r.pixels[(int) ((xPix & 511)+temptex.texVar+(yPix & 511) * 512)];
 					else
 						pixels[x + y * width] = 0;
 				}else{
 					if(up < Display.ceilingpos/2)
-						pixels[x + y * width] = Texture.roof.pixels[(xPix & 511) + (yPix & 511) * 512];
+						pixels[x + y * width] = temptex.r.pixels[(xPix & 511)+temptex.texVar+(yPix & 511) * 512];
 					else
 						pixels[x + y * width] = 0;
 				}
@@ -120,17 +121,17 @@ public class Render3D extends Render {
 				
 				if(block.solid){
 					if(!east.solid){
-						renderWall(xBlock + 1, xBlock + 1, zBlock, zBlock + 1,0.5, 0, 1);
+						renderWall(xBlock + 1, xBlock + 1, zBlock, zBlock + 1,0, 0.5, temptex);
 					}
 					if(!south.solid){
-						renderWall(xBlock + 1, xBlock, zBlock + 1, zBlock + 1,0.5, 0, 3);
+						renderWall(xBlock + 1, xBlock, zBlock + 1, zBlock + 1,0, 0.5, temptex);
 					}
 				}else{
 					if(east.solid){
-						renderWall(xBlock + 1, xBlock + 1, zBlock + 1, zBlock,0.5, 0, 2);
+						renderWall(xBlock + 1, xBlock + 1, zBlock + 1, zBlock,0, 0.5, temptex);
 					}
 					if(south.solid){
-						renderWall(xBlock, xBlock + 1, zBlock + 1, zBlock + 1,0.5, 0, 4);
+						renderWall(xBlock, xBlock + 1, zBlock + 1, zBlock + 1,0, 0.5, temptex);
 					}
 				}
 			}
@@ -144,26 +145,26 @@ public class Render3D extends Render {
 				
 				if(block.solid){
 					if(!east.solid){
-						renderWall(xBlock + 1, xBlock + 1, zBlock, zBlock + 1,0.5, 0.5, 2);
+						renderWall(xBlock + 1, xBlock + 1, zBlock, zBlock + 1,0.5, 0.5, temptex);
 					}
 					if(!south.solid){
-						renderWall(xBlock + 1, xBlock, zBlock + 1, zBlock + 1,0.5, 0.5, 3);
+						renderWall(xBlock + 1, xBlock, zBlock + 1, zBlock + 1,0.5, 0.5, temptex);
 					}
 				}else{
 					if(east.solid){
-						renderWall(xBlock + 1, xBlock + 1, zBlock + 1, zBlock,0.5, 0.5, 1);
+						renderWall(xBlock + 1, xBlock + 1, zBlock + 1, zBlock,0.5, 0.5, temptex);
 					}
 					if(south.solid){
-						renderWall(xBlock, xBlock + 1, zBlock + 1, zBlock + 1,0.5, 0.5, 4);
+						renderWall(xBlock, xBlock + 1, zBlock + 1, zBlock + 1,0.5, 0.5, temptex);
 					}
 				}
 			}
 		}
 	}
 
-	public void renderWall(double xLeft, double xRight, double zDistanceLeft, double zDistanceRight, double ySize, double yPos, int texture) {
+	public void renderWall(double xLeft, double xRight, double zDistanceLeft, double zDistanceRight, double yTop, double yBottom, Texture t) {
 
-		if(yPos < -0.5){
+		if(yTop < -0.5){
 			return;
 		}
 		
@@ -176,16 +177,16 @@ public class Render3D extends Render {
 		double zcLeft = ((zDistanceLeft / 2) - (forward * forwardCorrect)) * 2;
 
 		double rotLeftSideX = xcLeft * cosine - zcLeft * sine;
-		double yCornerTL = (((-yPos) - (-up * upCorrect + (walking * walkCorrect))) * 2) / rotationy;
-		double yCornerBL = ((( + ySize - yPos) - (-up * upCorrect + (walking * walkCorrect))) * 2) / rotationy;
+		double yCornerTL = (((-yTop) - (-up * upCorrect + (walking * walkCorrect))) * 2) / rotationy;
+		double yCornerBL = ((( + yBottom - yTop) - (-up * upCorrect + (walking * walkCorrect))) * 2) / rotationy;
 		double rotLeftSideZ = zcLeft * cosine + xcLeft * sine;
 
 		double xcRight = ((xRight / 2) - (right * rightCorrect)) * 2;
 		double zcRight = ((zDistanceRight / 2) - (forward * forwardCorrect)) * 2;
 
 		double rotRightSideX = xcRight * cosine - zcRight * sine;
-		double yCornerTR = (((-yPos) - (-up * upCorrect + (walking * walkCorrect))) * 2) / rotationy;
-		double yCornerBR = ((( + ySize - yPos) - (-up * upCorrect + (walking * walkCorrect))) * 2) / rotationy;
+		double yCornerTR = (((-yTop) - (-up * upCorrect + (walking * walkCorrect))) * 2) / rotationy;
+		double yCornerBR = ((( + yBottom - yTop) - (-up * upCorrect + (walking * walkCorrect))) * 2) / rotationy;
 		double rotRightSideZ = zcRight * cosine + xcRight * sine;
 
 		double tex30 = 0;
@@ -266,7 +267,7 @@ public class Render3D extends Render {
 				double pixelRotationY = (y - yPixelTop) / (yPixelBottom - yPixelTop);
 				int yTexture = (int)(8 * pixelRotationY * 4);
 				try {
-					pixels[x + y * (width)] = Texture.enemy.pixels[((xTexture) & 127) + ((yTexture) & 127) * 128];
+					pixels[x + y * (width)] = t.r.pixels[((xTexture) & 127)+t.texVar+((yTexture) & 127) * 128];
 				} catch (ArrayIndexOutOfBoundsException e) {
 					e.printStackTrace();
 					continue;

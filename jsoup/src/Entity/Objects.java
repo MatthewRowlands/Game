@@ -5,24 +5,18 @@ import java.util.ArrayList;
 
 import Main.Display;
 
-public class Objects implements Serializable{
+public class Objects extends Entity implements Serializable{
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -4912823895350326561L;
 	
-	double initialx;
-	double initialy;
-	double initialz;
-	public double x;
-	public double y;
-	public double z;
 	public double speed = 5;
 	public double flashspeed = 2;
 	public double drop = 0.000025;
 	public double flashdrop = 0.0025;
 	public double maxdistance = 500;
-	public double heightstep = 0.15;
 	public boolean bullet = false;
 	public boolean flash = false;
 	public boolean spawner = false;
@@ -36,16 +30,12 @@ public class Objects implements Serializable{
 	double accuracy = Display.accuracy;
 	public boolean maxdistreached = false;
 	ArrayList<Enemy> hurtenemies = new ArrayList<Enemy>();
-	
-	public Objects(double x, double y, double z){
-		this.x = x;
-		this.y = y+heightstep;
-		this.z = z;
-		this.initialx = x;
-		this.initialy = y+heightstep;
-		this.initialz = z;
-	}
 
+	public Objects(double x, double y, double z) {
+		super(x, y, z);
+		// TODO Auto-generated constructor stub
+	}
+	
 	public void tick() {
 		if(bullet){
 		x+=rotationsin*speed;
