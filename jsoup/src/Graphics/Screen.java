@@ -1,11 +1,10 @@
 package Graphics;
 
 import java.util.ArrayList;
-
 import Connection.Client;
 import Entity.Enemy;
 import Entity.Objects;
-import Level.Map;
+import Level.Model;
 import Main.Display;
 import Main.Game;
 
@@ -22,7 +21,7 @@ public class Screen extends Render {
 		this.width = width;
 		this.height = height;
 		render = new Render3D(width, height);
-		objects = new Map().LoadMap("map1");;
+		objects = new Model().LoadModel("map1");;
 	}
 
 	public void render(Game game) {

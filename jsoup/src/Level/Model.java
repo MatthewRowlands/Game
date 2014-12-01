@@ -11,23 +11,20 @@ import java.util.ArrayList;
 import Entity.Objects;
 import Entity.Weapon;
 
-public class Map {
+public class Model {
 
-	public ArrayList<Objects> LoadMap(String file) {
+	public ArrayList<Objects> LoadModel(String file) {
 		String filepath = "res/maps/" + file + ".txt";
 		FileInputStream fis = null;
 		BufferedInputStream bis = null;
 		DataInputStream dis = null;
 		ArrayList<String> text = new ArrayList<String>();
-		ArrayList<Objects> coords = new ArrayList<Objects>();
+		ArrayList<double[]> coords = new ArrayList<double[]>();
 		try {
 			
 			File directory = new File("res/maps");
-			System.out.println(directory.getAbsolutePath());
 			boolean success = directory.mkdirs();
-			System.out.println(success);
 			File f = new File(filepath);
-			System.out.println(f.getAbsolutePath());
 			boolean exists = f.exists();
 			System.out.println(exists);
 			if (!exists) {
@@ -48,23 +45,37 @@ public class Map {
 			dis.close();
 			
 			String[] objects = new String[text.size()];
-			for(int i = 1; i < text.size(); i++){
-				if(!text.get(i).equals("")){
+			
+			for(int i = 0; i < text.size(); i++){
+				if(!text.get(i).equals("") && !text.get(i).trim().startsWith("#")){
 					objects[i] = text.get(i);
-					String[] line = objects[i].split(" ");
-					double[] num = new double[line.length];
-					for(int ii = 0; ii < line.length; ii++){
-						num[ii] = Double.parseDouble(line[ii].replace(",", ""));
-						System.out.print(num[ii]+", ");
+					
+					if(text.get(i).trim().startsWith("v")){
+						System.out.print("v ");
+						String[] line = objects[i].replace("v ", "").split(" ");
+						double[] vertex = new double[line.length];
+						for(int ii = 0; ii < line.length; ii++){
+							vertex[ii] = Double.parseDouble(line[ii]);
+						}
+						System.out.println(vertex[0]+" "+vertex[1]+" "+vertex[2]);
+						coords.add(vertex);
 					}
-					coords.add(new Objects(num[0], num[1], num[2]));
-					System.out.println();
+
+					if(text.get(i).trim().startsWith("f")){
+						System.out.print("f ");
+					//double[] num = new double[line.length];
+					//for(int ii = 0; ii < line.length; ii++){
+					//	num[ii] = Double.parseDouble(line[ii]);
+					//	System.out.print(num[ii]+", ");
+					//}
+					//System.out.println();
+					}
 				}
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return coords;
+		return null;
 	}
 }
