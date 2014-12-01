@@ -41,13 +41,14 @@ public class Display extends Canvas implements Runnable {
 	 * CX15-TR9Z-8UTY-6FNV
 	 * 
 	 * Changelog: 
-	 * Version 0.5 [25/11/14]
+	 * Version 0.6 [25/11/14]
 	 * -Minimap
 	 * -Enemies
 	 * -Guns
 	 * -Vertical Rotation
 	 * -Multiplayer
 	 * -Fixed Stretching for objects (partially)
+	 * -Model Loader
 	 * 
 	 * TODO: 
 	 * -Add in actual maps 
@@ -55,6 +56,7 @@ public class Display extends Canvas implements Runnable {
 	 * -Develop multiplayer
 	 * -Use only one ArrayList of type entity
 	 * -Develop model loader
+	 * -Sprites
 	 * 
 	 * KNOWN BUGS:
 	 * -Look too far up or down and goes WIERD (stretches texture?)
