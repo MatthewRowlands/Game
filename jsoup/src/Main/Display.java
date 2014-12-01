@@ -31,6 +31,7 @@ import Input.Controller;
 import Input.InputHandler;
 import Launcher.Launcher;
 import Launcher.Options;
+import Model.Model;
 
 public class Display extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
@@ -287,7 +288,7 @@ public class Display extends Canvas implements Runnable {
 				}
 				
 				if (tickCount % WINDOW_TICK_RATE == 0) {
-					screen.objects.add(new Objects((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
+					//screen.objects.add(new Objects((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
 					if(activebullets == 0 && screen.bullets.size() > 0){
 					screen.bullets.clear();
 					}
@@ -718,7 +719,7 @@ public class Display extends Canvas implements Runnable {
         g.fillRect(centrex - 100, centrey - 100, getWidth(), getHeight());
 		
 		g.setColor(Color.GREEN);
-		g.fillRect(centrex, centrey, (16+y)/minimapscale+3, (16+y)/minimapscale+3);
+		g.fillRect(centrex, centrey, (16)/minimapscale+3, (16)/minimapscale+3);
 		
 		g.drawLine(centrex+(int)(10*rotationsin), centrey+(int)(10*rotationcos), centrex-(int)(2*rotationsin), centrey-(int)(2*rotationcos));
 		
@@ -772,6 +773,15 @@ public class Display extends Canvas implements Runnable {
 			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100){
 			g.setColor(Color.BLUE);
 			g.fillRect(posx, posy, (16+(int)e.y)/minimapscale+3, (16+(int)e.y)/minimapscale+3);
+			}
+		}
+		for(Model e : screen.models){
+			int posx = (int)(e.model.get(0).vertices.get(0).x-x)/minimapscale+centrex;
+			int posy = (int)(e.model.get(0).vertices.get(0).z-z)/minimapscale+centrey;
+			
+			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100){
+			g.setColor(Color.GRAY);
+			g.fillRect(posx, posy, 5, 5);
 			}
 		}
 	}

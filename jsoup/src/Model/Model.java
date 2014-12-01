@@ -14,7 +14,7 @@ import Entity.Weapon;
 public class Model {
 
 	public ArrayList<Face> model = new ArrayList<Face>();
-	String cfile = "default";
+	String cfile = "Concrete";
 	int texloc = 0;
 	
 	public ArrayList<Face> LoadModel(String file) {
@@ -77,7 +77,7 @@ public class Model {
 						ArrayList<Vertex> facev = new ArrayList<Vertex>();
 						for(int ii = 0; ii < line.length; ii++){
 							line[ii].trim();
-							int index = Integer.parseInt(line[ii]);
+							int index = Math.abs(Integer.parseInt(line[ii]));
 							System.out.print(index+" ");
 							facev.add(coords.get(index-1));
 						}

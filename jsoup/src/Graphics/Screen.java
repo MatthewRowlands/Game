@@ -24,7 +24,7 @@ public class Screen extends Render {
 		this.width = width;
 		this.height = height;
 		render = new Render3D(width, height);
-		models.add(new Model());
+		models.add(new Model());//TODO implement properly
 		models.get(models.size()-1).LoadModel("map1");
 	}
 
