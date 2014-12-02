@@ -186,34 +186,39 @@ public class GraphicsTest {
 		g2.drawString(
 				(bufferCapabilities.isPageFlipping() && bufferCapabilities
 						.isMultiBufferAvailable()) ? "Hardware Acceleration is Working..."
-						: "Hardware Acceleration is Not Supported...", 100, 70);
+						: "Hardware Acceleration is Not Supported...", 100, 60);
 
 		g2.setColor(bufferCapabilities.isPageFlipping() ? Color.white
 				: errorColor);
 		g2.drawString("Page Flipping: "
 				+ (bufferCapabilities.isPageFlipping() ? "Available"
-						: "Not Supported"), 100, 100);
+						: "Not Supported"), 100, 80);
 
 		g2.setColor(bufferCapabilities.isFullScreenRequired() ? errorColor
 				: Color.white);
 		g2.drawString(
 				"Full Screen Required: "
 						+ (bufferCapabilities.isFullScreenRequired() ? "Required"
-								: "Not Required"), 100, 130);
+								: "Not Required"), 100, 100);
 
 		g2.setColor(bufferCapabilities.isMultiBufferAvailable() ? Color.white
 				: errorColor);
 		g2.drawString(
 				"Multiple Buffer Capable: "
 						+ (bufferCapabilities.isMultiBufferAvailable() ? "Yes"
-								: "No"), 100, 160);
+								: "No"), 100, 120);
 
 		g2.setColor(gd.isFullScreenSupported() ? Color.white : errorColor);
 		g2.drawString("Full-Screen Supported: "
-				+ (gd.isFullScreenSupported() ? "Yes" : "No"), 100, 190);
+				+ (gd.isFullScreenSupported() ? "Yes" : "No"), 100, 140);
 
+		g2.setColor((gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated() && gc.getBufferCapabilities().getFrontBufferCapabilities().isAccelerated() && gc.getImageCapabilities().isAccelerated()) ? Color.white : errorColor);
+		g2.drawString("Is Fully Accelerated: "
+				+ ((gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated() && gc.getBufferCapabilities().getFrontBufferCapabilities().isAccelerated() && gc.getImageCapabilities().isAccelerated()) ? "Yes" : "No"), 100, 160);
+
+		gc.getImageCapabilities().isAccelerated();
 		g2.setColor(errorColor);
-		g2.drawString("FPS: "+(int)fps, 100, 250);
+		g2.drawString("FPS: "+(int)fps, 100, 180);
 
 		if (gd.isFullScreenSupported()) {
 			g2.setColor(Color.gray);

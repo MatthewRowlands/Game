@@ -201,6 +201,12 @@ public class Display extends Canvas implements Runnable {
 		addMouseListener(input);
 		addMouseMotionListener(input);
 		addMouseWheelListener(input);
+		
+		try {
+			r = new Robot();
+		} catch (AWTException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static Launcher getLauncherInstance() {
@@ -899,11 +905,6 @@ public class Display extends Canvas implements Runnable {
 	}
 	
 	public static void main(String args[]) {
-		try {
-			r = new Robot();
-		} catch (AWTException e) {
-			e.printStackTrace();
-		}
 		getLauncherInstance();
 	}
 
