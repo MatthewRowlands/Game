@@ -59,6 +59,7 @@ public class Display extends Canvas implements Runnable {
 	 * -Develop model loader
 	 * -Sprites
 	 * -Render Face
+	 * -Use GPU
 	 * 
 	 * KNOWN BUGS:
 	 * -Look too far up or down and goes WIERD (stretches texture?)
