@@ -58,6 +58,7 @@ public class Display extends Canvas implements Runnable {
 	 * -Use only one ArrayList of type entity
 	 * -Develop model loader
 	 * -Sprites
+	 * -Render Face
 	 * 
 	 * KNOWN BUGS:
 	 * -Look too far up or down and goes WIERD (stretches texture?)
@@ -352,7 +353,7 @@ public class Display extends Canvas implements Runnable {
 				MouseChangey = Math.abs((height/2) - newmY);
 			}else{
 			    MouseChangex = (width/2) - newmX;
-			    MouseChangey = (height/2) - newmY;
+			    MouseChangey = (height/2) - newmY+5;
 			}
 			
 			if(WINDOW_TEST_MODE != 1){
@@ -709,7 +710,7 @@ public class Display extends Canvas implements Runnable {
 
 		BufferedImage img2 = null;
 		try {
-			img2 = ImageIO.read(Display.class.getResource(screen.render.temptex.file));
+			img2 = ImageIO.read(Display.class.getResource(screen.render.floor.file));
 		} catch (Exception e) {
 		}
 		float percentage = .4f;

@@ -19,6 +19,11 @@ public class Screen extends Render {
 	public ArrayList<Model> models = new ArrayList<Model>();
 	int width, height;
 	
+	Texture player = new Texture("/textures/Ground2.png");
+	Texture enemy = new Texture("/textures/Enemy.png");
+	Texture object = new Texture("/textures/Ground4.png");
+	Texture bullet = new Texture("/textures/Fire.png");
+
 	public Screen(int width, int height) {	
 		super(width, height);
 		this.width = width;
@@ -48,16 +53,16 @@ public class Screen extends Render {
 	private void RenderObjects() {
 		for(double[] v3f : positions){
 			if(positions.indexOf(v3f) != Client.clientnumber-1){
-			renderBlock(v3f[0]/8,v3f[1]/8,v3f[2]/8, 1, 0.5, 1);
+			renderBlock(v3f[0]/8,v3f[1]/8,v3f[2]/8, 1, 0.5, 1, player);
 			}
 		}
 		for(Enemy e : enemies){
 			if(!e.dead){
-			renderBlock(e.x/8,e.y/8,e.z/8, 1, e.displayhealth, 1);
+			renderBlock(e.x/8,e.y/8,e.z/8, 1, e.displayhealth, 1, enemy);
 			}
 		}
 		for(Objects e : objects){
-			renderBlock(e.x/8,e.y/8,e.z/8, 1, 1, 1);
+			renderBlock(e.x/8,e.y/8,e.z/8, 1, 1, 1, object);
 		}
 		for(Objects e : bullets){
 			if(!e.flash){
@@ -67,14 +72,14 @@ public class Screen extends Render {
 			Display.activebullets--;
 			}else{
 				if(e.bullet)
-					renderBlock(e.x/8,e.y/8,e.z/8, 0.05, 0.025, 0.05);
+					renderBlock(e.x/8,e.y/8,e.z/8, 0.05, 0.025, 0.05, bullet);
 				else if(e.flash)
-					renderBlock(e.x/8,e.y/8,e.z/8, 0.1, 0.1, 0.1);
+					renderBlock(e.x/8,e.y/8,e.z/8, 0.1, 0.1, 0.1, bullet);
 			}
 		}	
 		for(Model m : models){
 			for(Face f : m.model){
-				render.renderWall(f.vertices.get(0).x, f.vertices.get(f.vertices.size()-1).x, f.vertices.get(0).z, f.vertices.get(f.vertices.size()-1).z, f.vertices.get(0).y/2, f.vertices.get(f.vertices.size()-1).y/2, f.t);
+				render.renderFace(f, f.t);
 			}
 		}
 	}
@@ -152,26 +157,26 @@ public class Screen extends Render {
 		CheckCollision();
 	}
 	
-	public void renderBlock(double x, double y, double z, double sizex, double sizey, double sizez){	
+	public void renderBlock(double x, double y, double z, double sizex, double sizey, double sizez, Texture t){	
 		if(sizey > 0.5){
 			
-			render.renderWall(x, 	     x,         z + sizez, z,         0.5, y, render.temptex);//left
-			render.renderWall(x + sizex, x + sizex, z,         z + sizez, 0.5, y, render.temptex);//right
-			render.renderWall(x,         x + sizex, z,         z,         0.5, y, render.temptex);//front
-			render.renderWall(x + sizex, x,         z + sizez, z + sizez, 0.5, y, render.temptex);//back
+			render.renderWall(x, 	     x,         z + sizez, z,         0.5, y, t);//left
+			render.renderWall(x + sizex, x + sizex, z,         z + sizez, 0.5, y, t);//right
+			render.renderWall(x,         x + sizex, z,         z,         0.5, y, t);//front
+			render.renderWall(x + sizex, x,         z + sizez, z + sizez, 0.5, y, t);//back
 			
-			render.renderWall(x + sizex, x + sizex, z,         z + sizez, 0.5, y+sizey/2, render.temptex);
-			render.renderWall(x + sizex, x,         z + sizez, z + sizez, 0.5, y+sizey/2, render.temptex);
-			render.renderWall(x,         x,         z + sizez, z,         0.5, y+sizey/2, render.temptex);
-			render.renderWall(x,         x + sizex, z,         z,         0.5, y+sizey/2, render.temptex);
+			render.renderWall(x + sizex, x + sizex, z,         z + sizez, 0.5, y+sizey/2, t);
+			render.renderWall(x + sizex, x,         z + sizez, z + sizez, 0.5, y+sizey/2, t);
+			render.renderWall(x,         x,         z + sizez, z,         0.5, y+sizey/2, t);
+			render.renderWall(x,         x + sizex, z,         z,         0.5, y+sizey/2, t);
 			
 		}
 		else
 		{
-			render.renderWall(x, 	     x,         z + sizez, z,         sizey, y, render.temptex);//left
-			render.renderWall(x + sizex, x + sizex, z,         z + sizez, sizey, y, render.temptex);//right
-			render.renderWall(x,         x + sizex, z,         z,         sizey, y, render.temptex);//front
-			render.renderWall(x + sizex, x,         z + sizez, z + sizez, sizey, y, render.temptex);//back
+			render.renderWall(x, 	     x,         z + sizez, z,         sizey, y, t);//left
+			render.renderWall(x + sizex, x + sizex, z,         z + sizez, sizey, y, t);//right
+			render.renderWall(x,         x + sizex, z,         z,         sizey, y, t);//front
+			render.renderWall(x + sizex, x,         z + sizez, z + sizez, sizey, y, t);//back
 		}
 	}
 

@@ -15,7 +15,7 @@ public class Face {
 	}
 
 	public Face(ArrayList<Vertex> a, String name) {
-		this.vertices  = a;
+		this.vertices = a;
 		this.name = name;
 	}
 	
