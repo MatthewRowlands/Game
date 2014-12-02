@@ -423,7 +423,7 @@ public class Display extends Canvas implements Runnable {
 		}
 		if(reloading){
 			if((System.currentTimeMillis()-reloadtime) > (reloadspeed-1000) && !donereloadsound){
-				PlaySound("/audio/Reload.wav");
+				PlaySound("/Audio/Reload.wav");
 				donereloadsound = true;
 			}
 			if((System.currentTimeMillis()-reloadtime) > reloadspeed){
@@ -458,7 +458,7 @@ public class Display extends Canvas implements Runnable {
 			guntime = System.currentTimeMillis();
 			accuracy += startaccuracy/4;
 			PlaySound(getCurrentWeapon().filepath);
-			PlaySound("/audio/whiz.wav");
+			PlaySound("/Audio/whiz.wav");
 			getCurrentWeapon().remainingammo = WeaponAmmo;
 		}
 	}
@@ -473,7 +473,7 @@ public class Display extends Canvas implements Runnable {
 			canfire = false;
 			accuracy += startaccuracy;
 			PlaySound(getCurrentWeapon().filepath);
-			PlaySound("/audio/whiz.wav");
+			PlaySound("/Audio/whiz.wav");
 			WeaponAmmo--;
 			getCurrentWeapon().remainingammo = WeaponAmmo;
 			}
@@ -488,7 +488,7 @@ public class Display extends Canvas implements Runnable {
 			guntime = System.currentTimeMillis();
 			accuracy += startaccuracy/4;
 			PlaySound(getCurrentWeapon().filepath);
-			PlaySound("/audio/whiz.wav");
+			PlaySound("/Audio/whiz.wav");
 			WeaponAmmo--;
 			getCurrentWeapon().remainingammo = WeaponAmmo;
 		}
@@ -504,7 +504,7 @@ public class Display extends Canvas implements Runnable {
 			guntime = System.currentTimeMillis();
 			accuracy += startaccuracy;
 			PlaySound(getCurrentWeapon().filepath);
-			PlaySound("/audio/whiz.wav");
+			PlaySound("/Audio/whiz.wav");
 			WeaponAmmo--;
 			getCurrentWeapon().remainingammo = WeaponAmmo;
 		}
@@ -522,7 +522,7 @@ public class Display extends Canvas implements Runnable {
 			canfire = false;
 			accuracy += startaccuracy;
 			PlaySound(getCurrentWeapon().filepath);
-			PlaySound("/audio/whiz.wav");
+			PlaySound("/Audio/whiz.wav");
 			WeaponAmmo--;
 			getCurrentWeapon().remainingammo = WeaponAmmo;
 			}

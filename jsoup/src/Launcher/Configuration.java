@@ -16,7 +16,7 @@ public class Configuration {
 	Properties properties = new Properties();
 	
 	public void saveConfiguration(String s1, String s2, int width, int height){
-		String path = "res/settings";
+		String path = "res/Settings";
 		String filename = "/config";
 		try{
 			//File directory = new File(path);

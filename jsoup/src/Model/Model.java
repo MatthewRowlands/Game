@@ -18,7 +18,7 @@ public class Model {
 	int texloc = 0;
 	
 	public ArrayList<Face> LoadModel(String file) {
-		String filepath = "res/maps/" + file + ".txt";
+		String filepath = "res/Models/" + file + ".txt";
 		FileInputStream fis = null;
 		BufferedInputStream bis = null;
 		DataInputStream dis = null;
@@ -26,7 +26,7 @@ public class Model {
 		ArrayList<Vertex> coords = new ArrayList<Vertex>();
 		try {
 			
-			File directory = new File("res/maps");
+			File directory = new File("res/Models");
 			boolean success = directory.mkdirs();
 			File f = new File(filepath);
 			System.out.println(f.getAbsolutePath()+"\n");

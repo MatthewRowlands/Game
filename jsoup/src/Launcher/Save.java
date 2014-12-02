@@ -17,7 +17,7 @@ public class Save {
 	Properties loadout = new Properties();
 	
 	public void saveConfiguration(Weapon wep1, Weapon wep2){
-		String path = "res/settings";
+		String path = "res/Settings";
 		String filename = "/loadout";
 		try{
 			File directory = new File(path);

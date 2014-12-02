@@ -71,7 +71,7 @@ public class Objects extends Entity implements Serializable{
 			z+=rotationcos*flashspeed;
 			rotationy-=flashdrop;
 			if(y < -4){
-				Display.PlaySound("/audio/Flashbang.wav");
+				Display.PlaySound("/Audio/Flashbang.wav");
 				flash = false;
 				bullet = false;
 				maxdistreached = true;
