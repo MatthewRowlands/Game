@@ -1,4 +1,4 @@
-package Main;
+/*package Main;
 
 import java.awt.AWTException;
 import java.awt.Canvas;
@@ -7,7 +7,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.Toolkit;
@@ -32,13 +31,12 @@ import Input.Controller;
 import Input.InputHandler;
 import Launcher.Launcher;
 import Launcher.Options;
-import Main.GraphicsTest.AnimationThread;
 import Model.Model;
 
 public class Display extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
 
-	/**
+	*//**
 	 * @author Matthew
 	 * 
 	 * CX15-TR9Z-8UTY-6FNV
@@ -68,7 +66,7 @@ public class Display extends Canvas implements Runnable {
 	 * -Player collision detection not aligned with direction facing
 	 * -Flash grenades make screen white no matter which direction facing
 	 * -Minimap is inverted
-	 */
+	 *//*
 	
 	public static double WINDOW_FAST_JOIN = 0.0;
 	public static double WINDOW_TEST_MODE = 0.0;
@@ -182,14 +180,37 @@ public class Display extends Canvas implements Runnable {
 	public static boolean collisionback = false;
 
 	public static int ScrollLevel = 8;
+
 	public static int brightness = 200;
 
-	public static boolean fullscreen = false;
-	boolean alreadydone = false;
-
-	AnimationThread a;
-	
 	public Display() {
+		if(un.equals("Admin")){
+			bool = false;
+		}
+		
+		this.ip = ip;
+		this.username = un;
+		
+		BufferedImage cursor = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+		Cursor blank = Toolkit.getDefaultToolkit().createCustomCursor(cursor, new Point(0, 0), "blank");
+		Display game = new Display();
+		JFrame f = Display.getFrame();
+		f.add(game);
+		f.setSize(Display.getGameWidth(), Display.getGameHeight());
+		f.setUndecorated((Display.WINDOW_TEST_MODE == 0));
+		f.setAlwaysOnTop(!bool);
+		f.getContentPane().setCursor(blank);
+		f.setTitle(Display.title+" "+un);
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		f.setLocationRelativeTo(null);
+		f.setVisible(true);
+
+		if(multiplayer){
+		Display.startMultiplayer(port, ip, un);
+		}
+		game.start();
+		stopMenuThread();
+		
 		Dimension size = new Dimension(WIDTH, HEIGHT);
 		setPreferredSize(size);
 		setMinimumSize(size);
@@ -212,9 +233,6 @@ public class Display extends Canvas implements Runnable {
 		} catch (AWTException e) {
 			e.printStackTrace();
 		}
-		
-		a = new GraphicsTest(this).new AnimationThread();
-		a.start();
 	}
 
 	public static Launcher getLauncherInstance() {
@@ -283,14 +301,8 @@ public class Display extends Canvas implements Runnable {
 		//screen.objects.get(screen.objects.size()-1).UseSpawnerMechanism(5000);
 		
 		while (run && !thread.isInterrupted()) {
-			if(fullscreen && !alreadydone){
-				a.setFullscreen();
-				width=ss.width;
-				height=ss.height;
-				alreadydone = true;
-			}
 			if(!WINDOW_USE_VSYNC){
-			//render();
+			render();
 			}
 			long currentTime = System.nanoTime();
 			long passedTime = currentTime - previousTime;
@@ -300,7 +312,7 @@ public class Display extends Canvas implements Runnable {
 
 			while (unprocessedSeconds > secondsPerTick) {
 				if(WINDOW_USE_VSYNC){
-				//render();
+				render();
 				}
 				tick();
 				unprocessedSeconds -= secondsPerTick;
@@ -374,7 +386,7 @@ public class Display extends Canvas implements Runnable {
 				MouseChangey = Math.abs((height/2) - newmY);
 			}else{
 			    MouseChangex = (width/2) - newmX;
-			    MouseChangey = (height/2) - newmY;
+			    MouseChangey = (height/2) - newmY+5;
 			}
 			
 			if(WINDOW_TEST_MODE != 1){
@@ -602,14 +614,14 @@ public class Display extends Canvas implements Runnable {
 		}
 	}
 	
-	public void render(Graphics2D g) {
+	public void render() {
 		frames++;
-		//BufferStrategy bufferStrategy = this.getBufferStrategy();
+		BufferStrategy bufferStrategy = this.getBufferStrategy();
 
-		//if (bufferStrategy == null) {
-		//	this.createBufferStrategy(2);
-		//	return;
-		//}
+		if (bufferStrategy == null) {
+			this.createBufferStrategy(2);
+			return;
+		}
 
 		screen.render(game);
 
@@ -617,26 +629,27 @@ public class Display extends Canvas implements Runnable {
 			pixels[i] = screen.pixels[i];
 		}
 
-		//g = bufferStrategy.getDrawGraphics();
+		g = bufferStrategy.getDrawGraphics();
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, w, h);
 		g.drawImage(img, 0, 0, getGameWidth() + 10, getGameHeight() + 10, null);
 		
 		if(!Pause){	
-		/*drawInfoBoardNorth(g);
-		drawCrosshair(g);
-		drawInfoBoardSouth(g);
-		drawMiniMap(g);*/
+		drawInfoBoardNorth();
+		drawCrosshair();
+		drawInfoBoardSouth();
+		drawMiniMap();
 		//drawRotationMap();
 		}
-		if (Pause && !fullscreen)
+		
+		if (Pause)
 			drawPauseMenu(g);
 
-		//g.dispose();
-		//bufferStrategy.show();
+		g.dispose();
+		bufferStrategy.show();
 	}
 
-	private void drawInfoBoardNorth(Graphics2D g) {
+	private void drawInfoBoardNorth() {
 		g.setFont(new Font("Verdana", Font.PLAIN, 10));
 		g.setColor(Color.WHITE);
 		g.drawString("FPS: " + fps+" Ping: "+PING+" Threads: "+Thread.activeCount(), 20, 20);
@@ -668,7 +681,7 @@ public class Display extends Canvas implements Runnable {
 		}	
 	}
 
-	private void drawCrosshair(Graphics2D g) {
+	private void drawCrosshair() {
 		double accuracy = Display.accuracy * 30;
 		
 		g.setColor(Color.BLACK); 
@@ -691,7 +704,7 @@ public class Display extends Canvas implements Runnable {
 		g.fillOval((int)(width/2-MouseChangex)-5, (int)(height/2-MouseChangey)-5, 10,10);
 	}
 
-	private void drawInfoBoardSouth(Graphics2D g) {
+	private void drawInfoBoardSouth() {
 		int centrex = width - 100;
 		int centrey = height - 100;
 		g.setColor(Color.WHITE);
@@ -723,7 +736,7 @@ public class Display extends Canvas implements Runnable {
 		}
 	}
 
-	private void drawMiniMap(Graphics2D g) {
+	private void drawMiniMap() {
 		int centrex = width - 100;
 		int centrey = height - 100;
 		int minimapscale = ScrollLevel*width/1000;
@@ -808,7 +821,7 @@ public class Display extends Canvas implements Runnable {
 	}
 
 	@SuppressWarnings("unused")
-	private void drawRotationMap(Graphics2D g) {
+	private void drawRotationMap() {
 		int centrey = height - 100;
 		
 		g.setColor(Color.BLACK); 
@@ -938,3 +951,4 @@ public class Display extends Canvas implements Runnable {
 		MousePressed = false;		
 	}
 }
+*/

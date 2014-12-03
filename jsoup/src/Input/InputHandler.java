@@ -92,6 +92,11 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener,
 	public void keyPressed(KeyEvent e) {
 		keyCode = e.getKeyCode();
 
+		
+		if(keyCode == KeyEvent.VK_F12){
+			Display.fullscreen = true;
+		}
+		
 		if (keyCode > 0 && keyCode < key.length) {
 			key[keyCode] = true;
 		}

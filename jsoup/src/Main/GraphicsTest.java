@@ -1,21 +1,24 @@
 package Main;
 
 import javax.swing.*;
+
+import Input.InputHandler;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferStrategy;
 
 public class GraphicsTest {
 
-	public static void main(String[] args) {
+/*	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				new GraphicsTest();
 			}
 		});
-	}
+	}*/
 
-	JFrame frame = new JFrame("Hardware Acceleration Diagnostics");
+
 
 	GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
 			.getDefaultScreenDevice();
@@ -24,7 +27,8 @@ public class GraphicsTest {
 	BufferStrategy bufferStrategy;
 	FrameStateListener frameStateListener = new FrameStateListener();
 	FrameEscapeListener frameEscapeListener = new FrameEscapeListener();
-
+	JFrame frame;
+	
 	int y = 0;
 	int delta = 1;
 	boolean run = true;
@@ -35,15 +39,25 @@ public class GraphicsTest {
 	int ticks = 0;
 	long time = 0;
 	Font font = new Font("Arial", Font.PLAIN, 11);
-
-	public GraphicsTest() {
-
-		frame.setSize(480, 270);
+	Display d;
+	private InputHandler input;
+	
+	public GraphicsTest(Display display) {
+		this.d = display;
+		frame = new JFrame();
+		frame.setSize(d.getGameWidth(), d.getGameHeight());
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.addWindowStateListener(frameStateListener);
 		frame.addKeyListener(frameEscapeListener);
-
+		input = new InputHandler();
+		frame.addKeyListener(input);
+		frame.addFocusListener(input);
+		frame.addMouseListener(input);
+		frame.addMouseMotionListener(input);
+		frame.addMouseWheelListener(input);
+		frame.setUndecorated(true);
+		frame.setAlwaysOnTop(true);
 		frame.setVisible(true);
 
 		frame.createBufferStrategy(3);
@@ -57,14 +71,13 @@ public class GraphicsTest {
 			    if(ticks == 30){
 			    	fps = 1e9f / time;
 			    	ticks = 0;
+			    	System.out.println(fps);
 			    }
 			}
 		};
 
 		Timer timer = new Timer(1000/60, actListner);
 		timer.start();
-		
-		new AnimationThread().start();
 	}
 
     private String getDeviceConfigurationString(GraphicsConfiguration gc){
@@ -118,35 +131,68 @@ public class GraphicsTest {
 	class FrameEscapeListener extends KeyAdapter {
 		@Override
 		public void keyPressed(KeyEvent e) {
-			if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+			int keycode = e.getKeyCode();
+			if (keycode == KeyEvent.VK_ESCAPE) {
 				if (fullscreen) {
 					y = 0;
 					fullscreen = false;
 					run = false;
 
 					frame.dispose();
-					frame = new JFrame("Hardware Acceleration Diagnostics");
-					frame.setSize(480, 270);
+					frame = new JFrame();
+					frame.setSize(d.getGameWidth(), d.getGameHeight());
 					frame.setLocationRelativeTo(null);
 					frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 					frame.addWindowStateListener(frameStateListener);
 					frame.addKeyListener(frameEscapeListener);
-
+					input = new InputHandler();
+					frame.addKeyListener(input);
+					frame.addFocusListener(input);
+					frame.addMouseListener(input);
+					frame.addMouseMotionListener(input);
+					frame.addMouseWheelListener(input);
+					frame.setUndecorated(true);
+					frame.setAlwaysOnTop(true);
 					frame.setVisible(true);
 
 					frame.createBufferStrategy(3);
 					bufferStrategy = frame.getBufferStrategy();
-					//bufferCapabilities = gc.getBufferCapabilities();
+					bufferCapabilities = gc.getBufferCapabilities();
+					acc = gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated();
+					d.fullscreen = false;
 
 					run = true;
 					new AnimationThread().start();
 				}
+			}
+			if (keycode == KeyEvent.VK_Y) {
+
 			}
 		}
 	}
 
 	class AnimationThread extends Thread {
 
+		public void setFullscreen(){
+			fullscreen = true;
+			run = false;
+
+			frame.dispose();
+			frame = new JFrame();
+			frame.setUndecorated(true);
+			frame.addWindowStateListener(frameStateListener);
+			frame.addKeyListener(frameEscapeListener);
+
+			gd.setFullScreenWindow(frame);
+			
+			frame.createBufferStrategy(3);
+			bufferStrategy = frame.getBufferStrategy();
+			bufferCapabilities = gc.getBufferCapabilities();
+
+			run = true;
+			new AnimationThread().start();
+		}
+		
 		public void run() {
 			while (run) {
 				long start = System.nanoTime();
@@ -161,7 +207,8 @@ public class GraphicsTest {
 				Graphics2D g2 = null;
 				try {
 				g2 = (Graphics2D) bufferStrategy.getDrawGraphics();
-				draw(g2);
+				//draw(g2);
+				d.render(g2);
 				if(canoutputgraphics){
 					System.out.println("BackBuffer: "+((gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated()) ? "Yes" : "No"));
 					System.out.println("FrontBuffer: "+((gc.getBufferCapabilities().getFrontBufferCapabilities().isAccelerated()) ? "Yes" : "No"));
