@@ -25,8 +25,6 @@ public class GraphicsTest {
 	GraphicsConfiguration gc = gd.getDefaultConfiguration();
 	BufferCapabilities bufferCapabilities;
 	BufferStrategy bufferStrategy;
-	FrameStateListener frameStateListener = new FrameStateListener();
-	FrameEscapeListener frameEscapeListener = new FrameEscapeListener();
 	JFrame frame;
 	
 	int y = 0;
@@ -48,8 +46,6 @@ public class GraphicsTest {
 		frame.setSize(d.getGameWidth(), d.getGameHeight());
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		frame.addWindowStateListener(frameStateListener);
-		frame.addKeyListener(frameEscapeListener);
 		input = new InputHandler();
 		frame.addKeyListener(input);
 		frame.addFocusListener(input);
@@ -102,74 +98,6 @@ public class GraphicsTest {
                 "      -Accelerated: " + gc.getImageCapabilities().isAccelerated() + "\n" + 
                 "      -True Volatile: " + gc.getImageCapabilities().isTrueVolatile() + "\n";        
     }
-    
-	class FrameStateListener implements WindowStateListener {
-		@Override
-		public void windowStateChanged(WindowEvent e) {
-			if (e.getNewState() == JFrame.MAXIMIZED_BOTH) {
-				fullscreen = true;
-				run = false;
-
-				frame.dispose();
-				frame = new JFrame();
-				frame.setUndecorated(true);
-				frame.addWindowStateListener(frameStateListener);
-				frame.addKeyListener(frameEscapeListener);
-
-				gd.setFullScreenWindow(frame);
-				
-				frame.createBufferStrategy(3);
-				bufferStrategy = frame.getBufferStrategy();
-				bufferCapabilities = gc.getBufferCapabilities();
-
-				run = true;
-				new AnimationThread().start();
-			}
-		}
-	}
-
-	class FrameEscapeListener extends KeyAdapter {
-		@Override
-		public void keyPressed(KeyEvent e) {
-			int keycode = e.getKeyCode();
-			if (keycode == KeyEvent.VK_ESCAPE) {
-				if (fullscreen) {
-					y = 0;
-					fullscreen = false;
-					run = false;
-
-					frame.dispose();
-					frame = new JFrame();
-					frame.setSize(d.getGameWidth(), d.getGameHeight());
-					frame.setLocationRelativeTo(null);
-					frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-					frame.addWindowStateListener(frameStateListener);
-					frame.addKeyListener(frameEscapeListener);
-					input = new InputHandler();
-					frame.addKeyListener(input);
-					frame.addFocusListener(input);
-					frame.addMouseListener(input);
-					frame.addMouseMotionListener(input);
-					frame.addMouseWheelListener(input);
-					frame.setUndecorated(true);
-					frame.setAlwaysOnTop(true);
-					frame.setVisible(true);
-
-					frame.createBufferStrategy(3);
-					bufferStrategy = frame.getBufferStrategy();
-					bufferCapabilities = gc.getBufferCapabilities();
-					acc = gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated();
-					d.fullscreen = false;
-
-					run = true;
-					new AnimationThread().start();
-				}
-			}
-			if (keycode == KeyEvent.VK_Y) {
-
-			}
-		}
-	}
 
 	class AnimationThread extends Thread {
 
@@ -180,8 +108,6 @@ public class GraphicsTest {
 			frame.dispose();
 			frame = new JFrame();
 			frame.setUndecorated(true);
-			frame.addWindowStateListener(frameStateListener);
-			frame.addKeyListener(frameEscapeListener);
 
 			gd.setFullScreenWindow(frame);
 			
@@ -191,6 +117,37 @@ public class GraphicsTest {
 
 			run = true;
 			new AnimationThread().start();
+		}
+		public void setNormal(){
+			if (fullscreen) {
+				y = 0;
+				fullscreen = false;
+				run = false;
+
+				frame.dispose();
+				frame = new JFrame();
+				frame.setSize(d.getGameWidth(), d.getGameHeight());
+				frame.setLocationRelativeTo(null);
+				frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+				input = new InputHandler();
+				frame.addKeyListener(input);
+				frame.addFocusListener(input);
+				frame.addMouseListener(input);
+				frame.addMouseMotionListener(input);
+				frame.addMouseWheelListener(input);
+				frame.setUndecorated(true);
+				frame.setAlwaysOnTop(true);
+				frame.setVisible(true);
+
+				frame.createBufferStrategy(3);
+				bufferStrategy = frame.getBufferStrategy();
+				bufferCapabilities = gc.getBufferCapabilities();
+				acc = gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated();
+				d.fullscreen = false;
+
+				run = true;
+				new AnimationThread().start();
+			}
 		}
 		
 		public void run() {
@@ -207,8 +164,8 @@ public class GraphicsTest {
 				Graphics2D g2 = null;
 				try {
 				g2 = (Graphics2D) bufferStrategy.getDrawGraphics();
-				//draw(g2);
 				d.render(g2);
+				draw(g2);
 				if(canoutputgraphics){
 					System.out.println("BackBuffer: "+((gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated()) ? "Yes" : "No"));
 					System.out.println("FrontBuffer: "+((gc.getBufferCapabilities().getFrontBufferCapabilities().isAccelerated()) ? "Yes" : "No"));
@@ -228,7 +185,7 @@ public class GraphicsTest {
 	public void draw(Graphics2D g2) {
 		Color errorColor = new Color(173, 0, 8);
 		g2.setFont(font);
-
+/*
 		g2.setColor(Color.black);
 		g2.fillRect(0, 0, frame.getWidth(), frame.getHeight());
 
@@ -262,33 +219,33 @@ public class GraphicsTest {
 		g2.setColor(gd.isFullScreenSupported() ? Color.white : errorColor);
 		g2.drawString("Full-Screen Supported: "
 				+ (gd.isFullScreenSupported() ? "Yes" : "No"), 100, 140);
-
+*/
 		g2.setColor((gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated() && gc.getBufferCapabilities().getFrontBufferCapabilities().isAccelerated() && gc.getImageCapabilities().isAccelerated()) ? Color.white : errorColor);
-		g2.drawString("BackBuffer Accelerated:  "+ ((gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated()) ? "Yes" : "No"), 101, 160);
-		g2.drawString("FrontBuffer Accelerated:  "+ ((gc.getBufferCapabilities().getFrontBufferCapabilities().isAccelerated()) ? "Yes" : "No"), 100, 170);
-		g2.drawString("ImageBuffer Accelerated: "+ ((gc.getImageCapabilities().isAccelerated()) ? "Yes" : "No"), 100, 180);
+		g2.drawString("BackBuffer Accelerated:  "+ ((gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated()) ? "Yes" : "No"), 51, 160);
+		g2.drawString("FrontBuffer Accelerated:  "+ ((gc.getBufferCapabilities().getFrontBufferCapabilities().isAccelerated()) ? "Yes" : "No"), 50, 170);
+		g2.drawString("ImageBuffer Accelerated: "+ ((gc.getImageCapabilities().isAccelerated()) ? "Yes" : "No"), 50, 180);
 
 		if (gd.isFullScreenSupported()) {
 			g2.setColor(Color.gray);
 			g2.drawString(
 					fullscreen ? "Press ESC to exit full-screen mode."
-							: "Maximize the window to enter Full-Screen Exclusive mode.",
-					100, 220);
+							: "F12 to enter Full-Screen Exclusive mode.",
+					50, 220);
 		} else {
 			g2.setColor(new Color(173, 0, 8));
 			g2.drawString("Full-screen exclusive mode is not supported...",
-					100, 220);
+					50, 220);
 		}
 
 		g2.setColor(new Color(0, 173, 8));
-		g2.drawString("FPS: "+(int)fps, 100, 200);
+		g2.drawString("FPS: "+(int)fps, 50, 200);
 		
-		y += delta;
+		/*y += delta;
 		if ((y + 50) > frame.getHeight() || y < 0) {
 			delta *= -1;
 		}
 
 		g2.setColor(Color.blue);
-		g2.fillRect(frame.getWidth() - 50, y, 50, 50);
+		g2.fillRect(frame.getWidth() - 50, y, 50, 50);*/
 	}
 }

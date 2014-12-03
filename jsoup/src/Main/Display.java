@@ -83,7 +83,7 @@ public class Display extends Canvas implements Runnable {
 	public static boolean canUpdate = false;
 	public static double floorpos = 8;
 	public static double ceilingpos = 512;
-	public static boolean flymode = true;
+	public static boolean flymode = false;
 	int time = 0;
 	
 	public static Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
@@ -623,10 +623,10 @@ public class Display extends Canvas implements Runnable {
 		g.drawImage(img, 0, 0, getGameWidth() + 10, getGameHeight() + 10, null);
 		
 		if(!Pause){	
-		/*drawInfoBoardNorth(g);
+		drawInfoBoardNorth(g);
 		drawCrosshair(g);
 		drawInfoBoardSouth(g);
-		drawMiniMap(g);*/
+		//drawMiniMap(g);
 		//drawRotationMap();
 		}
 		if (Pause && !fullscreen)
