@@ -28,6 +28,7 @@ public class GraphicsTest {
 	int y = 0;
 	int delta = 1;
 	boolean run = true;
+	boolean acc = false;
 	boolean fullscreen = false;
 	boolean canoutputgraphics = true;
 	float fps = 0;
@@ -45,9 +46,10 @@ public class GraphicsTest {
 
 		frame.setVisible(true);
 
-		frame.createBufferStrategy(2);
+		frame.createBufferStrategy(3);
 		bufferStrategy = frame.getBufferStrategy();
 		bufferCapabilities = gc.getBufferCapabilities();
+		acc = gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated();
 		
 		ActionListener actListner = new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
@@ -103,7 +105,7 @@ public class GraphicsTest {
 
 				gd.setFullScreenWindow(frame);
 				
-				frame.createBufferStrategy(2);
+				frame.createBufferStrategy(3);
 				bufferStrategy = frame.getBufferStrategy();
 				bufferCapabilities = gc.getBufferCapabilities();
 
@@ -132,9 +134,9 @@ public class GraphicsTest {
 
 					frame.setVisible(true);
 
-					frame.createBufferStrategy(2);
+					frame.createBufferStrategy(3);
 					bufferStrategy = frame.getBufferStrategy();
-					bufferCapabilities = gc.getBufferCapabilities();
+					//bufferCapabilities = gc.getBufferCapabilities();
 
 					run = true;
 					new AnimationThread().start();
@@ -161,7 +163,9 @@ public class GraphicsTest {
 				g2 = (Graphics2D) bufferStrategy.getDrawGraphics();
 				draw(g2);
 				if(canoutputgraphics){
-			    	System.out.println(getDeviceConfigurationString(g2.getDeviceConfiguration()));
+					System.out.println("BackBuffer: "+((gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated()) ? "Yes" : "No"));
+					System.out.println("FrontBuffer: "+((gc.getBufferCapabilities().getFrontBufferCapabilities().isAccelerated()) ? "Yes" : "No"));
+			    	System.out.println("Image: "+((gc.getImageCapabilities().isAccelerated()) ? "Yes" : "No"));
 			    	canoutputgraphics = false;
 				}
 			} finally {
@@ -216,9 +220,6 @@ public class GraphicsTest {
 		g2.drawString("BackBuffer Accelerated:  "+ ((gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated()) ? "Yes" : "No"), 101, 160);
 		g2.drawString("FrontBuffer Accelerated:  "+ ((gc.getBufferCapabilities().getFrontBufferCapabilities().isAccelerated()) ? "Yes" : "No"), 100, 170);
 		g2.drawString("ImageBuffer Accelerated: "+ ((gc.getImageCapabilities().isAccelerated()) ? "Yes" : "No"), 100, 180);
-		
-		g2.setColor(new Color(0, 173, 8));
-		g2.drawString("FPS: "+(int)fps, 100, 200);
 
 		if (gd.isFullScreenSupported()) {
 			g2.setColor(Color.gray);
@@ -232,6 +233,9 @@ public class GraphicsTest {
 					100, 220);
 		}
 
+		g2.setColor(new Color(0, 173, 8));
+		g2.drawString("FPS: "+(int)fps, 100, 200);
+		
 		y += delta;
 		if ((y + 50) > frame.getHeight() || y < 0) {
 			delta *= -1;
