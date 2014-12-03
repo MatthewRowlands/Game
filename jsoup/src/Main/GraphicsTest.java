@@ -213,12 +213,12 @@ public class GraphicsTest {
 				+ (gd.isFullScreenSupported() ? "Yes" : "No"), 100, 140);
 
 		g2.setColor((gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated() && gc.getBufferCapabilities().getFrontBufferCapabilities().isAccelerated() && gc.getImageCapabilities().isAccelerated()) ? Color.white : errorColor);
-		g2.drawString("Is Fully Accelerated: "
-				+ ((gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated() && gc.getBufferCapabilities().getFrontBufferCapabilities().isAccelerated() && gc.getImageCapabilities().isAccelerated()) ? "Yes" : "No"), 100, 160);
-
-		gc.getImageCapabilities().isAccelerated();
-		g2.setColor(errorColor);
-		g2.drawString("FPS: "+(int)fps, 100, 180);
+		g2.drawString("BackBuffer Accelerated:  "+ ((gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated()) ? "Yes" : "No"), 101, 160);
+		g2.drawString("FrontBuffer Accelerated:  "+ ((gc.getBufferCapabilities().getFrontBufferCapabilities().isAccelerated()) ? "Yes" : "No"), 100, 170);
+		g2.drawString("ImageBuffer Accelerated: "+ ((gc.getImageCapabilities().isAccelerated()) ? "Yes" : "No"), 100, 180);
+		
+		g2.setColor(new Color(0, 173, 8));
+		g2.drawString("FPS: "+(int)fps, 100, 200);
 
 		if (gd.isFullScreenSupported()) {
 			g2.setColor(Color.gray);
