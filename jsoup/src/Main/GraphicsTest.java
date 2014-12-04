@@ -20,8 +20,7 @@ public class GraphicsTest {
 
 
 
-	GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
-			.getDefaultScreenDevice();
+	GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 	GraphicsConfiguration gc = gd.getDefaultConfiguration();
 	BufferCapabilities bufferCapabilities;
 	BufferStrategy bufferStrategy;
@@ -52,7 +51,7 @@ public class GraphicsTest {
 		frame.addMouseListener(input);
 		frame.addMouseMotionListener(input);
 		frame.addMouseWheelListener(input);
-		frame.setUndecorated(true);
+		frame.setUndecorated((d.WINDOW_TEST_MODE == 0)? true : false);
 		frame.setAlwaysOnTop(true);
 		frame.setVisible(true);
 
@@ -64,10 +63,9 @@ public class GraphicsTest {
 		ActionListener actListner = new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 			    ticks += 1;
-			    if(ticks == 30){
-			    	fps = 1e9f / time;
+		    	fps = 1e9f / time;
+			    if(ticks == 60){
 			    	ticks = 0;
-			    	System.out.println(fps);
 			    }
 			}
 		};
@@ -166,12 +164,6 @@ public class GraphicsTest {
 				g2 = (Graphics2D) bufferStrategy.getDrawGraphics();
 				d.render(g2);
 				draw(g2);
-				if(canoutputgraphics){
-					System.out.println("BackBuffer: "+((gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated()) ? "Yes" : "No"));
-					System.out.println("FrontBuffer: "+((gc.getBufferCapabilities().getFrontBufferCapabilities().isAccelerated()) ? "Yes" : "No"));
-			    	System.out.println("Image: "+((gc.getImageCapabilities().isAccelerated()) ? "Yes" : "No"));
-			    	canoutputgraphics = false;
-				}
 			} finally {
 				if (g2 != null)
 					g2.dispose();
@@ -224,7 +216,8 @@ public class GraphicsTest {
 		g2.drawString("BackBuffer Accelerated:  "+ ((gc.getBufferCapabilities().getBackBufferCapabilities().isAccelerated()) ? "Yes" : "No"), 51, 160);
 		g2.drawString("FrontBuffer Accelerated:  "+ ((gc.getBufferCapabilities().getFrontBufferCapabilities().isAccelerated()) ? "Yes" : "No"), 50, 170);
 		g2.drawString("ImageBuffer Accelerated: "+ ((gc.getImageCapabilities().isAccelerated()) ? "Yes" : "No"), 50, 180);
-
+		g2.drawString("Memory: "+ gd.getAvailableAcceleratedMemory(), 50, 190);
+		
 		if (gd.isFullScreenSupported()) {
 			g2.setColor(Color.gray);
 			g2.drawString(

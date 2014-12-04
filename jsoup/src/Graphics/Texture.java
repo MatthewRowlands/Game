@@ -5,14 +5,9 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
+import biz.georgey.utils.Loader;
+
 public class Texture {
-	//public static String floorf = "/textures/Ground1.png";
-	//public static Render floor = loadBitmap(floorf);
-	//public static String rooff = "/textures/Sky.png";
-	//public static Render roof = loadBitmap(rooff);
-	//public static String enemyf = "/textures/Fire2.png";
-	//public static Render enemy = loadBitmap(enemyf);
-	
 	public Render r;
 	public int texVar = 0;
 	public String file;

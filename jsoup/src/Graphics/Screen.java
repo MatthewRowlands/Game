@@ -42,10 +42,6 @@ public class Screen extends Render {
 		render.floor(game);
 		RenderObjects();
 		render.renderDistanceLimiter();
-		
-		if(Display.fps < 5){
-			bullets.clear();
-		}
 		CheckCollision();
 		draw(render, 0, 0);
 	}

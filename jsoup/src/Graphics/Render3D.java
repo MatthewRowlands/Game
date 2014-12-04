@@ -21,8 +21,8 @@ public class Render3D extends Render {
 	int c = 0;
 	int num = 1;
 	
-	public Texture floor = new Texture("/textures/Fire.png");
-	public Texture roof = new Texture("/textures/Night Sky.png");
+	public Texture floor = new Texture("/textures/Ground2.png");
+	public Texture roof = new Texture("/textures/Sky.png");
 	public Render3D(int width, int height) {
 		super(width, height);
 		zBuffer = new double[width * height];

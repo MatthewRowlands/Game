@@ -59,50 +59,50 @@ public class Model {
 					}
 					
 					else if(text.get(i).trim().startsWith("v")){//check if starts with "v" after removing spaces
-						System.out.print("v ");//output v
+						//System.out.print("v ");//output v
 						String[] line = objects[i].replace("v", "").replaceAll("(^\\s+|\\s+$)", "").split("\\s+");//create array of strings to store 
 						double[] vertex = new double[line.length];
 						for(int ii = 0; ii < line.length; ii++){
 							String tstore = line[ii].trim();
-							System.out.print(tstore+" ");
+							//System.out.print(tstore+" ");
 							vertex[ii] = Double.parseDouble(tstore);
 						}
-						System.out.println();
+						//System.out.println();
 						coords.add(new Vertex(vertex[0],vertex[1],vertex[2]));
 					}
 
 					else if(text.get(i).trim().startsWith("f")){
-						System.out.print("f ");
+						//System.out.print("f ");
 						String[] line = objects[i].replace("f", "").replaceAll("(^\\s+|\\s+$)", "").split(" +");
 						ArrayList<Vertex> facev = new ArrayList<Vertex>();
 						for(int ii = 0; ii < line.length; ii++){
 							line[ii].trim();
 							int index = Math.abs(Integer.parseInt(line[ii]));
-							System.out.print(index+" ");
+							//System.out.print(index+" ");
 							facev.add(coords.get(index-1));
 						}
 						model.add(new Face(facev));
 						model.get(model.size()-1).setMaterial(cfile);
 						model.get(model.size()-1).setTexture(texloc);
-						System.out.println();
+						//System.out.println();
 					}
 					
 					else if(text.get(i).trim().startsWith("mtllib")){
 						String[] line = objects[i].replaceAll("(^\\s+|\\s+$)", "").split(" +");
 						String filename = line[1].replace(".mtl", "");
-						System.out.println("mtllib "+filename+".mtl");
+						//System.out.println("mtllib "+filename+".mtl");
 						this.cfile = filename;
 					}
 					
 					else if(text.get(i).trim().startsWith("usemtl")){
 						texloc = 0;//TODO
-						System.out.println("usemtl "+texloc);
+						//System.out.println("usemtl "+texloc);
 					}
 					else{
 						//System.out.println(text.get(i).trim());
 					}
 				}else{
-					System.out.println();
+					//System.out.println();
 				}
 			}
 

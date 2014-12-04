@@ -2,7 +2,7 @@ package Input;
 
 import Main.Display;
 
-public class Controller {
+public class Controller extends Thread{
 
 	public double x, y, z, rotationx, rotationy, xa, ya, za, rotationax, rotationay;
 	public static boolean turnleft = false;
@@ -63,7 +63,7 @@ public class Controller {
 		}
 
 		if (turnright) {
-			rotationax += rotationSpeedx * (mousespeed/10);
+			rotationax -= rotationSpeedx * (mousespeed/10);
 		}
 		
 		if (turnup) {

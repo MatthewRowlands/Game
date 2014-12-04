@@ -12,7 +12,7 @@ import java.awt.event.MouseWheelListener;
 
 import Main.Display;
 
-public class InputHandler implements KeyListener, FocusListener, MouseListener,
+public class InputHandler extends Thread implements KeyListener, FocusListener, MouseListener,
 		MouseMotionListener, MouseWheelListener {
 
 	public boolean[] key = new boolean[68836];
@@ -91,11 +91,6 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener,
 	@Override
 	public void keyPressed(KeyEvent e) {
 		keyCode = e.getKeyCode();
-
-		
-		if(keyCode == KeyEvent.VK_F12){
-			Display.fullscreen = true;
-		}
 		
 		if (keyCode > 0 && keyCode < key.length) {
 			key[keyCode] = true;
@@ -103,6 +98,9 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener,
 		
 		if(keyCode == KeyEvent.VK_ESCAPE){
 			Display.pause();
+		}
+		if(keyCode == KeyEvent.VK_F12){
+			Display.fullscreen = true;
 		}
 	}
 

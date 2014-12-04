@@ -5,14 +5,21 @@ import java.util.ArrayList;
 
 import Main.Display;
 
-public class Objects extends Entity implements Serializable{
+public class Objects implements Serializable{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -4912823895350326561L;
 	
-	public double speed = 5;
+	double initialx;
+	double initialy;
+	double initialz;
+	public double x;
+	public double y;
+	public double z;
+	public double heightstep = 0.15;
+	public double speed = 2;
 	public double flashspeed = 2;
 	public double drop = 0.000025;
 	public double flashdrop = 0.0025;
@@ -32,8 +39,13 @@ public class Objects extends Entity implements Serializable{
 	ArrayList<Enemy> hurtenemies = new ArrayList<Enemy>();
 
 	public Objects(double x, double y, double z) {
-		super(x, y, z);
-		// TODO Auto-generated constructor stub
+		//super(x, y, z);
+		this.x = x;
+		this.y = y+heightstep;
+		this.z = z;
+		this.initialx = x;
+		this.initialy = y+heightstep;
+		this.initialz = z;
 	}
 	
 	public void tick() {

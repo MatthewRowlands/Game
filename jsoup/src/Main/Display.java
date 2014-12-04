@@ -184,7 +184,7 @@ public class Display extends Canvas implements Runnable {
 	public static int ScrollLevel = 8;
 	public static int brightness = 200;
 
-	public static boolean fullscreen = false;
+	public static boolean fullscreen = true;
 	boolean alreadydone = false;
 
 	AnimationThread a;
@@ -275,12 +275,6 @@ public class Display extends Canvas implements Runnable {
 		double secondsPerTick = 1 / WINDOW_TICK_RATE;
 		boolean ticked = false;
 		r.mouseMove((w / 2), (h / 2));
-		//screen.objects.add(new Objects((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
-		//screen.objects.get(screen.objects.size()-1).UseSpawnerMechanism(5000);
-		//screen.objects.add(new Objects((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
-		//screen.objects.get(screen.objects.size()-1).UseSpawnerMechanism(5000);
-		//screen.objects.add(new Objects((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
-		//screen.objects.get(screen.objects.size()-1).UseSpawnerMechanism(5000);
 		
 		while (run && !thread.isInterrupted()) {
 			if(fullscreen && !alreadydone){
@@ -292,6 +286,7 @@ public class Display extends Canvas implements Runnable {
 			if(!WINDOW_USE_VSYNC){
 			//render();
 			}
+			frames++;
 			long currentTime = System.nanoTime();
 			long passedTime = currentTime - previousTime;
 			previousTime = currentTime;
@@ -310,7 +305,7 @@ public class Display extends Canvas implements Runnable {
 				}
 				
 				if (tickCount % WINDOW_TICK_RATE == 0) {
-					//screen.objects.add(new Objects((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
+					screen.enemies.add(new Enemy((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
 					if(activebullets == 0 && screen.bullets.size() > 0){
 					screen.bullets.clear();
 					}
@@ -374,7 +369,7 @@ public class Display extends Canvas implements Runnable {
 				MouseChangey = Math.abs((height/2) - newmY);
 			}else{
 			    MouseChangex = (width/2) - newmX;
-			    MouseChangey = (height/2) - newmY;
+			    MouseChangey = (height/2) - newmY+5;
 			}
 			
 			if(WINDOW_TEST_MODE != 1){
@@ -603,7 +598,6 @@ public class Display extends Canvas implements Runnable {
 	}
 	
 	public void render(Graphics2D g) {
-		frames++;
 		//BufferStrategy bufferStrategy = this.getBufferStrategy();
 
 		//if (bufferStrategy == null) {
