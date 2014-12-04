@@ -42,7 +42,6 @@ public class Screen extends Render {
 		render.floor(game);
 		RenderObjects();
 		render.renderDistanceLimiter();
-		CheckCollision();
 		draw(render, 0, 0);
 	}
 	
@@ -80,7 +79,7 @@ public class Screen extends Render {
 		}
 	}
 
-	private void CheckCollision() {
+	public void CheckCollision() {
 		Display.enemiesattacking = 0;
 		Display.collisionright = false;
 		Display.collisionback = false;

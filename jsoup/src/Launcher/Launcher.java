@@ -62,7 +62,6 @@ public class Launcher extends Canvas implements Runnable{
 		addFocusListener(input);
 		addMouseListener(input);
 		addMouseMotionListener(input);
-		startMenu();
 		frame.repaint();
 	}
 	

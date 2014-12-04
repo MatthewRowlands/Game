@@ -118,7 +118,7 @@ public class Options extends JFrame{
 				System.out.println("Jump Height: "+Display.JumpHeight);
 				System.out.println("Move Speed: "+Display.MoveSpeed);
 				System.out.println("Mouse Speed: "+Display.MouseSpeed);
-				new Launcher();
+				new Launcher().startMenu();
 			}		
 		});
 		fullscreen.addActionListener(new ActionListener() {
@@ -133,7 +133,7 @@ public class Options extends JFrame{
 				System.out.println("Jump Height: "+Display.JumpHeight);
 				System.out.println("Move Speed: "+Display.MoveSpeed);
 				System.out.println("Mouse Speed: "+Display.MouseSpeed);
-				new Launcher();
+				new Launcher().startMenu();
 			}		
 		});
 	}

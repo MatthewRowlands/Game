@@ -5,8 +5,6 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-import biz.georgey.utils.Loader;
-
 public class Texture {
 	public Render r;
 	public int texVar = 0;

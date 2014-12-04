@@ -99,9 +99,9 @@ public class InputHandler extends Thread implements KeyListener, FocusListener, 
 		if(keyCode == KeyEvent.VK_ESCAPE){
 			Display.pause();
 		}
-		if(keyCode == KeyEvent.VK_F12){
-			Display.fullscreen = true;
-		}
+		//if(keyCode == KeyEvent.VK_F12){
+		//	Display.fullscreen = true;
+		//}
 	}
 
 	@Override

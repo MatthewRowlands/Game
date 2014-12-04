@@ -107,7 +107,7 @@ public class Loadout extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 				save.saveConfiguration(wep1, wep2);
-				new Launcher();
+				new Launcher().startMenu();
 			}		
 		});
 		select1 = new JButton("Primary: "+wep1.name);

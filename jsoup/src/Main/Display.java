@@ -182,12 +182,13 @@ public class Display extends Canvas implements Runnable {
 	public static boolean collisionback = false;
 
 	public static int ScrollLevel = 8;
-	public static int brightness = 200;
+	public static int brightness = 0;
 
-	public static boolean fullscreen = true;
+	public static boolean fullscreen = false;
 	boolean alreadydone = false;
 
 	AnimationThread a;
+	GraphicsTest gt;
 	
 	public Display() {
 		Dimension size = new Dimension(WIDTH, HEIGHT);
@@ -213,8 +214,10 @@ public class Display extends Canvas implements Runnable {
 			e.printStackTrace();
 		}
 		
-		a = new GraphicsTest(this).new AnimationThread();
+		gt = new GraphicsTest(this);
+		a = gt.new AnimationThread();
 		a.start();
+		gt.gc.createCompatibleVolatileImage(width, height);
 	}
 
 	public static Launcher getLauncherInstance() {
@@ -277,22 +280,23 @@ public class Display extends Canvas implements Runnable {
 		r.mouseMove((w / 2), (h / 2));
 		
 		while (run && !thread.isInterrupted()) {
-			if(fullscreen && !alreadydone){
+			/*if(fullscreen && !alreadydone){
 				a.setFullscreen();
 				width=ss.width;
 				height=ss.height;
 				alreadydone = true;
-			}
+			}*/
 			if(!WINDOW_USE_VSYNC){
 			//render();
 			}
+			screen.CheckCollision();
 			frames++;
 			long currentTime = System.nanoTime();
 			long passedTime = currentTime - previousTime;
 			previousTime = currentTime;
 			unprocessedSeconds += passedTime / 1000000000.0;
 			requestFocus();
-
+			
 			while (unprocessedSeconds > secondsPerTick) {
 				if(WINDOW_USE_VSYNC){
 				//render();
@@ -364,16 +368,15 @@ public class Display extends Canvas implements Runnable {
 				Controller.turnup = false;
 			}
 	
-			if(WINDOW_FIX_MOUSE){
-				MouseChangex = Math.abs((width/2) - newmX);
-				MouseChangey = Math.abs((height/2) - newmY);
-			}else{
-			    MouseChangex = (width/2) - newmX;
-			    MouseChangey = (height/2) - newmY+5;
-			}
+			MouseChangex = (width/2) - newmX;
+			MouseChangey = (height/2) - newmY+ ((!WINDOW_FIX_MOUSE)? -15 : 0);
+			
 			
 			if(WINDOW_TEST_MODE != 1){
-			r.mouseMove((w / 2), (h / 2));
+				if(WINDOW_FIX_MOUSE)
+					r.mouseMove((w / 2), (h / 2));
+				else
+					r.mouseMove((width / 2), (height / 2));	
 			}	
 		}
 		ShootingMechanism();
@@ -606,7 +609,7 @@ public class Display extends Canvas implements Runnable {
 		//}
 
 		screen.render(game);
-
+		
 		for (int i = 0; i < getGameWidth() * getGameHeight(); i++) {
 			pixels[i] = screen.pixels[i];
 		}
@@ -912,7 +915,7 @@ public class Display extends Canvas implements Runnable {
 	}
 	
 	public static void main(String args[]) {
-		getLauncherInstance();
+		getLauncherInstance().startMenu();
 	}
 
 	public static void startMultiplayer(int port, String ip, String un) {
