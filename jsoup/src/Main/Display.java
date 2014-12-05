@@ -71,7 +71,7 @@ public class Display extends Canvas implements Runnable {
 	 */
 	
 	public static double WINDOW_FAST_JOIN = 0.0;
-	public static double WINDOW_TEST_MODE = 1.0;
+	public static double WINDOW_TEST_MODE = 0.0;
 	public static double WINDOW_TICK_RATE = 60.0;
 	public static double WINDOW_NETWORK_TICK_RATE = 1.0;
 	public static boolean WINDOW_USE_VSYNC = false;
