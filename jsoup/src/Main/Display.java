@@ -125,7 +125,7 @@ public class Display extends Canvas implements Runnable {
 
 	public static double MoveSpeed = 1;
 	public static double JumpHeight = 1;
-	public static double MouseSpeed = 10;
+	public static double MouseSpeed = 5;
 	public static int RenderDist = 100000;
 	public static boolean Pause = false;
 	
@@ -297,6 +297,10 @@ public class Display extends Canvas implements Runnable {
 			unprocessedSeconds += passedTime / 1000000000.0;
 			requestFocus();
 			
+			if(canUpdate){
+			networkUpdate();
+			}
+			
 			while (unprocessedSeconds > secondsPerTick) {
 				if(WINDOW_USE_VSYNC){
 				//render();
@@ -304,9 +308,6 @@ public class Display extends Canvas implements Runnable {
 				tick();
 				unprocessedSeconds -= secondsPerTick;
 				ticked = true;
-				if(tickCount % WINDOW_NETWORK_TICK_RATE == 0 && canUpdate){
-				networkUpdate();
-				}
 				
 				if (tickCount % WINDOW_TICK_RATE == 0) {
 					
@@ -677,12 +678,12 @@ public class Display extends Canvas implements Runnable {
 		g.fillRect((int) (width / 2 - 10 - accuracy * 10), height / 2 - 1, 10, 2); 
 		g.fillRect(width / 2 - 1, (int) (height / 2 - 10 - accuracy * 10), 2, 10);	
 		
-		g.setColor(Color.BLACK); 
+		/*g.setColor(Color.BLACK); 
 		g.drawLine(width/2, height/2, (int)(width/2-MouseChangex), (int)(height/2-MouseChangey));
 		g.setColor(Color.BLUE);
 		g.fillOval(width/2-5, height/2-5, 10,10);
 		g.setColor(Color.RED);
-		g.fillOval((int)(width/2-MouseChangex)-5, (int)(height/2-MouseChangey)-5, 10,10);
+		g.fillOval((int)(width/2-MouseChangex)-5, (int)(height/2-MouseChangey)-5, 10,10);*/
 	}
 
 	private void drawInfoBoardSouth(Graphics2D g) {
