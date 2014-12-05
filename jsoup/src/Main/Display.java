@@ -71,7 +71,7 @@ public class Display extends Canvas implements Runnable {
 	 */
 	
 	public static double WINDOW_FAST_JOIN = 0.0;
-	public static double WINDOW_TEST_MODE = 0.0;
+	public static double WINDOW_TEST_MODE = 1.0;
 	public static double WINDOW_TICK_RATE = 60.0;
 	public static double WINDOW_NETWORK_TICK_RATE = 1.0;
 	public static boolean WINDOW_USE_VSYNC = false;
@@ -278,7 +278,7 @@ public class Display extends Canvas implements Runnable {
 		double secondsPerTick = 1 / WINDOW_TICK_RATE;
 		boolean ticked = false;
 		r.mouseMove((w / 2), (h / 2));
-		
+		screen.enemies.add(new Enemy((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
 		while (run && !thread.isInterrupted()) {
 			/*if(fullscreen && !alreadydone){
 				a.setFullscreen();
@@ -309,10 +309,7 @@ public class Display extends Canvas implements Runnable {
 				}
 				
 				if (tickCount % WINDOW_TICK_RATE == 0) {
-					screen.enemies.add(new Enemy((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
-					if(activebullets == 0 && screen.bullets.size() > 0){
-					screen.bullets.clear();
-					}
+					
 					PING = ping;
 					fps = frames;
 					previousTime += 1000;
@@ -369,7 +366,7 @@ public class Display extends Canvas implements Runnable {
 			}
 	
 			MouseChangex = (width/2) - newmX;
-			MouseChangey = (height/2) - newmY+ ((!WINDOW_FIX_MOUSE)? -15 : 0);
+			MouseChangey = (height/2) - newmY+ ((!WINDOW_FIX_MOUSE)? -15 : 5);
 			
 			
 			if(WINDOW_TEST_MODE != 1){
@@ -624,7 +621,7 @@ public class Display extends Canvas implements Runnable {
 		drawCrosshair(g);
 		drawInfoBoardSouth(g);
 		//drawMiniMap(g);
-		//drawRotationMap();
+		//drawRotationMap(g);
 		}
 		if (Pause && !fullscreen)
 			drawPauseMenu(g);

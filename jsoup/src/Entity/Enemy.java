@@ -34,8 +34,9 @@ public class Enemy implements Serializable{
 				health = 0;
 				dead = true;
 			}
-			if(chase)
-			chasePlayer();
+			if(chase){
+			//chasePlayer();
+			}
 		}
 	}
 
