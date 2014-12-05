@@ -28,7 +28,7 @@ public class Options extends JFrame{
 	int w = 0;
 	int h = 0;
 	
-	private JButton ok, fullscreen;
+	private JButton ok, fullscreen, cancel;
 	private JTextField twidth, theight;
 	private JTextField tjump, tmove, tmouse;
 	private JLabel ljump, lmove, lmouse;
@@ -70,6 +70,10 @@ public class Options extends JFrame{
 		resolution.add("1024, 768");
 		resolution.select(1);
 		window.add(resolution);
+		
+		cancel = new JButton("Cancel");
+		cancel.setBounds((width-300), (height - 70), button_width, button_height - 10);
+		window.add(cancel);
 		
 		lwidth = new JLabel("Width: ");
 		lwidth.setBounds(30, 150, 120, 20);
@@ -133,6 +137,13 @@ public class Options extends JFrame{
 				System.out.println("Jump Height: "+Display.JumpHeight);
 				System.out.println("Move Speed: "+Display.MoveSpeed);
 				System.out.println("Mouse Speed: "+Display.MouseSpeed);
+				new Launcher().startMenu();
+			}		
+		});
+		cancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dispose();
 				new Launcher().startMenu();
 			}		
 		});

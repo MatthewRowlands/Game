@@ -125,8 +125,5 @@ public class InputHandler extends Thread implements KeyListener, FocusListener, 
 		if(Display.ScrollLevel < 80 && Display.ScrollLevel+amount > 0){
 		Display.ScrollLevel += amount;
 		}
-		
-		System.out.println(Display.ScrollLevel);
 	}
-
 }

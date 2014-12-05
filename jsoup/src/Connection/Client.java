@@ -5,6 +5,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import Launcher.Launcher;
 import Main.Display;
 
 public class Client extends Thread{
@@ -42,6 +43,7 @@ public class Client extends Thread{
 			System.err.println("Client Error: " + e.getMessage());
 			System.err.println("Localized: " + e.getLocalizedMessage());
 			System.err.println("Stack Trace: " + e.getStackTrace());
+			run = false;
 		}
 	}
 	

@@ -21,8 +21,8 @@ public class Render3D extends Render {
 	int c = 0;
 	int num = 1;
 	
-	public Texture floor = new Texture("/textures/Fire.png");
-	public Texture roof = new Texture("/textures/Night Sky.png");
+	public Texture floor = new Texture("/textures/Ground3.png");
+	public Texture roof = new Texture("/textures/Sky.png");
 	public Render3D(int width, int height) {
 		super(width, height);
 		zBuffer = new double[width * height];
@@ -92,8 +92,8 @@ public class Render3D extends Render {
 					xPix = (int) ((xx + right)*4);
 					yPix = (int) ((yy + forward)*4);
 				}else{
-					xPix = (int) ((xx + right)/8);
-					yPix = (int) ((yy + forward)/8);	
+					xPix = (int) ((xx + right)/32);
+					yPix = (int) ((yy + forward)/32);	
 				}
 				zBuffer[x + y * width] = z;
 				if(c == 0){
@@ -102,7 +102,7 @@ public class Render3D extends Render {
 					else
 						pixels[x + y * width] = 0;
 				}else{
-					if(up < Display.ceilingpos/2)
+					if(up < Display.ceilingpos)
 						pixels[x + y * width] = roof.r.pixels[(xPix & 511)+roof.texVar+(yPix & 511) * 512];
 					else
 						pixels[x + y * width] = 0;

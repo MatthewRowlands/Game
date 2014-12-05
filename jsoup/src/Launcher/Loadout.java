@@ -32,11 +32,15 @@ public class Loadout extends JFrame{
 	JPanel window = new JPanel();
 	Configuration config = new Configuration();
 	Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
-	private JButton ok, left, right, select1, select2;
+	private JButton ok, left, right, select1, select2, cancel;
 	private JLabel name, fr, dm, ac, mg, fm, rt;
 	Save save = new Save();
 	
 	public Loadout(){
+		save.loadConfiguration("res/settings/loadout.xml");
+		wep1 = Display.w1;
+		wep2 = Display.w2;
+		wep = wep1;
 		setTitle("Choose Loadout");
 		setSize(new Dimension(width, height));
 		getContentPane().add(window);
@@ -100,6 +104,17 @@ public class Loadout extends JFrame{
 		name.setBounds(width/2 - 100, 100, 300, 30);
 		window.add(name);
 		
+		cancel = new JButton("Cancel");
+		cancel.setBounds((width-180), (height - 60), 80, 30);
+		window.add(cancel);
+		cancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+				new Launcher().startMenu();
+			}		
+		});
+		
 		ok = new JButton("OK");
 		ok.setBounds((width-90), (height - 60), 80, 30);
 		window.add(ok);
@@ -111,7 +126,7 @@ public class Loadout extends JFrame{
 			}		
 		});
 		select1 = new JButton("Primary: "+wep1.name);
-		select1.setBounds(width/2-150, (height - 60), 150, 30);
+		select1.setBounds(width/2-150, (height - 150), 150, 30);
 		window.add(select1);
 		select1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -127,7 +142,7 @@ public class Loadout extends JFrame{
 			}		
 		});
 		select2 = new JButton("Secondary: "+wep2.name);
-		select2.setBounds(width/2, (height - 60), 150, 30);
+		select2.setBounds(width/2, (height - 150), 150, 30);
 		window.add(select2);
 		select2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

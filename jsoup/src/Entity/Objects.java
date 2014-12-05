@@ -19,7 +19,7 @@ public class Objects implements Serializable{
 	public double y;
 	public double z;
 	public double heightstep = 0.15;
-	public double speed = 2;
+	public double speed = 10;
 	public double flashspeed = 2;
 	public double drop = 0.000025;
 	public double flashdrop = 0.0025;

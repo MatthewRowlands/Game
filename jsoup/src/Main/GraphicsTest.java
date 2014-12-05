@@ -18,7 +18,7 @@ public class GraphicsTest {
 	public GraphicsConfiguration gc = gd.getDefaultConfiguration();
 	public BufferCapabilities bufferCapabilities;
 	public BufferStrategy bufferStrategy;
-	JFrame frame;
+	public JFrame frame;
 
 	int y = 0;
 	int delta = 1;
@@ -47,7 +47,7 @@ public class GraphicsTest {
 		frame.addMouseMotionListener(input);
 		frame.addMouseWheelListener(input);
 		
-		if (gd.isFullScreenSupported()) {
+		if (!gd.isFullScreenSupported()) {
 			gd.setFullScreenWindow(frame);
 			DisplayMode dm = new DisplayMode(d.width, d.height, 16,
 					DisplayMode.REFRESH_RATE_UNKNOWN);
