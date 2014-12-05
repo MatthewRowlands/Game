@@ -88,7 +88,8 @@ public class Controller extends Thread{
 				fall = false;
 				}
 			}else{
-				y++;	
+				if(y < Display.ceilingpos-5)
+				y+=5*Display.MoveSpeed;	
 			}
 		}
 
@@ -112,7 +113,8 @@ public class Controller extends Thread{
 					crouchwalk = true;
 				}
 			}else{
-				y--;
+				if(y > Display.floorpos/2)
+				y-=5*Display.MoveSpeed;
 			}
 		}
 		if (prone && y <= 0) {

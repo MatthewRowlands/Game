@@ -9,6 +9,7 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
+import java.net.InetAddress;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -102,14 +103,13 @@ public class Launcher extends Canvas implements Runnable{
 		while(running){
 			try{
 			renderMenu();
-			}catch (IllegalStateException e){
-				e.printStackTrace();
+			}catch (Exception e){
 			}
 			updateFrame();
 		}	
 	}
 
-	public void renderMenu() throws IllegalStateException{
+	public void renderMenu() throws Exception{
 		BufferStrategy bufferStrategy = this.getBufferStrategy();
 
 		if (bufferStrategy == null) {
@@ -148,7 +148,6 @@ public class Launcher extends Canvas implements Runnable{
 					if(MousePressed == 1){
 						Display.PlaySound("/audio/Tick.wav");
 						InputHandler.MouseButton = 0;
-						System.out.println("Singleplayer");
 						StartGame(false, "localHost", "BOB", 1500);
 					}
 				}
@@ -161,7 +160,6 @@ public class Launcher extends Canvas implements Runnable{
 					if(MousePressed == 1){
 						InputHandler.MouseButton = 0;
 						frame.dispose();
-						System.out.println("Multiplayer");
 						String ip = "localHost";
 						String un = "TEST_PLAYER";
 						String port = Display.DEFAULT_PORT;
@@ -173,7 +171,9 @@ public class Launcher extends Canvas implements Runnable{
 						try{
 						StartGame(true, ip, un, Integer.parseInt(port));
 						}catch (Exception e){
-							System.out.println("... You actually failed to type a number");
+							System.err.println("Invalid Entry\n> "+port);
+							frame.dispose();
+							new Launcher().startMenu();
 						}
 					}
 				}
@@ -194,7 +194,8 @@ public class Launcher extends Canvas implements Runnable{
 							}
 							new Server(Integer.parseInt(port)).start();
 						}catch (Exception e){
-							System.out.println("... You actually failed to type a number");
+							frame.dispose();
+							new Launcher().startMenu();
 						}
 						stopMenu();
 					}

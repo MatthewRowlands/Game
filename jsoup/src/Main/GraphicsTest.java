@@ -18,7 +18,7 @@ public class GraphicsTest {
 	public GraphicsConfiguration gc = gd.getDefaultConfiguration();
 	public BufferCapabilities bufferCapabilities;
 	public BufferStrategy bufferStrategy;
-	JFrame frame;
+	public JFrame frame;
 
 	int y = 0;
 	int delta = 1;

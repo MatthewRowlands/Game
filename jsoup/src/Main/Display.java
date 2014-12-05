@@ -82,8 +82,8 @@ public class Display extends Canvas implements Runnable {
 	public static double[] pings = new double[16];
 	public static boolean canUpdate = false;
 	public static double floorpos = 8;
-	public static double ceilingpos = 512;
-	public static boolean flymode = false;
+	public static double ceilingpos = 2048;
+	public static boolean flymode = true;
 	int time = 0;
 	
 	public static Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
@@ -101,7 +101,7 @@ public class Display extends Canvas implements Runnable {
 	public Screen screen;
 	private Game game;
 	private BufferedImage img;
-	private boolean run = false;
+	public static boolean run = false;
 	private int[] pixels;
 	private InputHandler input;
 	private int newmX = 0;
@@ -126,7 +126,7 @@ public class Display extends Canvas implements Runnable {
 	public static double MoveSpeed = 1;
 	public static double JumpHeight = 1;
 	public static double MouseSpeed = 5;
-	public static int RenderDist = 100000;
+	public static int RenderDist = 500000;
 	public static boolean Pause = false;
 	
 	static BufferedImage cursor = new BufferedImage(16, 16,
@@ -182,7 +182,7 @@ public class Display extends Canvas implements Runnable {
 	public static boolean collisionback = false;
 
 	public static int ScrollLevel = 8;
-	public static int brightness = 0;
+	public static int brightness = 200;
 
 	public static boolean fullscreen = false;
 	boolean alreadydone = false;
@@ -278,7 +278,7 @@ public class Display extends Canvas implements Runnable {
 		double secondsPerTick = 1 / WINDOW_TICK_RATE;
 		boolean ticked = false;
 		r.mouseMove((w / 2), (h / 2));
-		screen.enemies.add(new Enemy((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
+		
 		while (run && !thread.isInterrupted()) {
 			/*if(fullscreen && !alreadydone){
 				a.setFullscreen();
@@ -310,7 +310,7 @@ public class Display extends Canvas implements Runnable {
 				ticked = true;
 				
 				if (tickCount % WINDOW_TICK_RATE == 0) {
-					
+					screen.enemies.add(new Enemy((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
 					PING = ping;
 					fps = frames;
 					previousTime += 1000;
@@ -321,6 +321,7 @@ public class Display extends Canvas implements Runnable {
 				}
 			}
 		}
+		gt.frame.dispose();
 	}
 	
 	private void networkUpdate() {
@@ -634,7 +635,7 @@ public class Display extends Canvas implements Runnable {
 	private void drawInfoBoardNorth(Graphics2D g) {
 		g.setFont(new Font("Verdana", Font.PLAIN, 10));
 		g.setColor(Color.WHITE);
-		g.drawString("FPS: " + fps+" Ping: "+PING+" Threads: "+Thread.activeCount(), 20, 20);
+		g.drawString("UPS: " + fps+" Ping: "+PING+" Threads: "+Thread.activeCount(), 20, 20);
 		g.drawString("X/Y/Z: "+x+","+y+","+z+" Rotation C/S: "+rotationsin+"/"+rotationcos, 20, 30);
 		g.drawString("Textures: "+blockcount, 20, 40);
 		g.drawString("VSYNC: "+WINDOW_USE_VSYNC, 20, 50);
