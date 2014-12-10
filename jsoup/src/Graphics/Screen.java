@@ -130,11 +130,11 @@ public class Screen extends Render {
 				y2 = e2.y;
 				z2 = e2.z;
 					
-				if(x2 >= x1 - 4 && x2 <= x1 + 6 && z2 >= z1 - 4 && z2 <= z1 + 6 && y2 >= y1 -8 && y2 <= y1 +8 && e2.bullet){
+				if(x2 >= x1 && x2 <= x1 + 8 && z2 >= z1 && z2 <= z1 + 8 && y2 >= y1 -8 && y2 <= y1 +8 && e2.bullet){
 					if(e2.canhurt(e)){
 						double dmgtodo = (Display.WeaponDamage+(Math.random()*3)-1);
-					e.health-=dmgtodo;
-					Display.PlaySound("/audio/Enemy_Hit.wav");
+						e.health-=dmgtodo;
+						Display.PlaySound("/audio/Enemy_Hit.wav");
 					}
 					e2.canthurt(e);
 				}

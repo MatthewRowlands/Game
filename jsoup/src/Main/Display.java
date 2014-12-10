@@ -368,7 +368,7 @@ public class Display extends Canvas implements Runnable {
 			}
 	
 			MouseChangex = (width/2) - newmX;
-			MouseChangey = (height/2) - newmY+ ((!WINDOW_FIX_MOUSE)? -15 : 5);
+			MouseChangey = (height/2) - newmY+ ((!WINDOW_FIX_MOUSE)? -15 : 0);
 			
 			
 			if(WINDOW_TEST_MODE != 1){
@@ -506,7 +506,7 @@ public class Display extends Canvas implements Runnable {
 			guntime = System.currentTimeMillis();
 			accuracy += startaccuracy/4;
 			PlaySound(getCurrentWeapon().filepath);
-			PlaySound("/Audio/whiz.wav");
+			//PlaySound("/Audio/whiz.wav");
 			WeaponAmmo--;
 			getCurrentWeapon().remainingammo = WeaponAmmo;
 		}

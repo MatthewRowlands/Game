@@ -24,7 +24,7 @@ public class Loadout extends JFrame{
 	int h = 0;
 	
 	int index = 1;
-	int maxindex = 12;
+	int maxindex = 13;
 	Weapon wep = new Weapon(index);
 	Weapon wep1 = new Weapon(index);
 	Weapon wep2 = new Weapon(index+1);

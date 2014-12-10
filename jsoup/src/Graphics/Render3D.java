@@ -89,8 +89,8 @@ public class Render3D extends Render {
 				int xPix;
 				int yPix;
 				if(c == 0){
-					xPix = (int) ((xx + right)*4);
-					yPix = (int) ((yy + forward)*4);
+					xPix = (int) ((xx + right)*16);
+					yPix = (int) ((yy + forward)*16);
 				}else{
 					xPix = (int) ((xx + right)/32);
 					yPix = (int) ((yy + forward)/32);	
@@ -98,12 +98,12 @@ public class Render3D extends Render {
 				zBuffer[x + y * width] = z;
 				if(c == 0){
 					if(up > -Display.floorpos/2)
-						pixels[x + y * width] = floor.r.pixels[(int) ((xPix & 511)+floor.texVar+(yPix & 511) * 512)];
+						pixels[x + y * width] = floor.r.pixels[(int) ((xPix & 1023)+floor.texVar+(yPix & 1023) * 1024)];
 					else
 						pixels[x + y * width] = 0;
 				}else{
 					if(up < Display.ceilingpos)
-						pixels[x + y * width] = roof.r.pixels[(xPix & 511)+roof.texVar+(yPix & 511) * 512];
+						pixels[x + y * width] = roof.r.pixels[(xPix & 1023)+roof.texVar+(yPix & 1023) * 1024];
 					else
 						pixels[x + y * width] = 0;
 				}
