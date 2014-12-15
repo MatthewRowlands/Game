@@ -10,7 +10,7 @@ import Main.Game;
 import Model.Face;
 import Model.Model;
 
-public class Screen extends Render {
+public class Screen extends Render{
 	public Render3D render;
 	public ArrayList<double[]> positions = new ArrayList<double[]>();
 	public ArrayList<Enemy> enemies = new ArrayList<Enemy>();

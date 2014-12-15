@@ -9,7 +9,6 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
-import java.net.InetAddress;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;

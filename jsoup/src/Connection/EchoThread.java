@@ -32,6 +32,10 @@ public class EchoThread extends Thread{
 	
 	int tickCount = 0;
 	int frames = 0;
+	long t1 = System.nanoTime();
+	long t2 = System.nanoTime();
+	double ping = 0;
+	double PING = ping;
 
 	public EchoThread(Socket clientSocket) {
 		this.socket = clientSocket;
@@ -65,12 +69,15 @@ public class EchoThread extends Thread{
 				tick();
 				unprocessedSeconds -= secondsPerTick;
 				ticked = true;
+				tickCount++;
 				
 				if(tickCount % Display.WINDOW_NETWORK_TICK_RATE == 0){
 				networkUpdate();
 				}
 				
 				if (tickCount % Display.WINDOW_TICK_RATE == 0) {
+					PING = ping;
+					System.out.println("aaaaaaaaaaa");
 					previousTime += 1000;
 					frames = 0;
 				}
@@ -93,23 +100,26 @@ public class EchoThread extends Thread{
 			numberofclients = Server.clients.size();
 			try {
 				
-				long t1 = System.currentTimeMillis();
-				
 				inStream = new ObjectInputStream(socket.getInputStream());
 				double[] xyz = (double[]) inStream.readObject();	
 				
 				x = xyz[0];
 				y = xyz[1];
 				z = xyz[2];
-				long t2 = System.currentTimeMillis();
-				xyz[3] = (int)(t2-t1);
+
+				t1 = System.nanoTime();
+
+				xyz[3] = (double)((double)(t1-t2)/1000)/1000;
+				
+				ping = xyz[3];
 				
 				clientinfo.setText("[" + clientindex + "] " + clientname + ": "
-						+ (int)x + "," + (int)y + "," + (int)z+" Ping: "+xyz[3]);
+						+ (int)x + "," + (int)y + "," + (int)z+" Ping: "+String.format("%.2g%n", ping));
 				FontToFit(clientinfo);
 				
 				Server.clientpos.set(clientindex-1, xyz);
 				//Server.positions[clientindex-1][0][0] = x;
+				t2 = System.nanoTime();
 				
 				outStream = new ObjectOutputStream(socket.getOutputStream());
 				outStream.writeObject(Server.clientpos);

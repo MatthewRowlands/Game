@@ -4,12 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
-
-import Entity.Objects;
-import Entity.Weapon;
 
 public class Model {
 
@@ -17,6 +12,7 @@ public class Model {
 	String cfile = "Concrete";
 	int texloc = 0;
 	
+	@SuppressWarnings("deprecation")
 	public ArrayList<Face> LoadModel(String file) {
 		String filepath = "res/Models/" + file + ".txt";
 		FileInputStream fis = null;
@@ -27,6 +23,7 @@ public class Model {
 		try {
 			
 			File directory = new File("res/Models");
+			@SuppressWarnings("unused")
 			boolean success = directory.mkdirs();
 			File f = new File(filepath);
 			System.out.println(f.getAbsolutePath()+"\n");

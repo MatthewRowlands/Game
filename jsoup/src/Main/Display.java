@@ -11,7 +11,8 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.Toolkit;
-import java.awt.image.BufferStrategy;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
@@ -20,18 +21,19 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.JFrame;
+import javax.swing.Timer;
 
 import Connection.Client;
 import Entity.Enemy;
-import Entity.Entity;
 import Entity.Objects;
 import Entity.Weapon;
 import Graphics.Screen;
-import Graphics.Texture;
 import Input.Controller;
 import Input.InputHandler;
 import Launcher.Launcher;
 import Launcher.Options;
+import Log.Dump;
+import Log.Log;
 import Main.GraphicsTest.AnimationThread;
 import Model.Model;
 
@@ -70,7 +72,7 @@ public class Display extends Canvas implements Runnable {
 	 * -Minimap is inverted
 	 */
 	
-	public static double WINDOW_FAST_JOIN = 0.0;
+	public static double WINDOW_FAST_JOIN = 1.0;
 	public static double WINDOW_TEST_MODE = 0.0;
 	public static double WINDOW_TICK_RATE = 60.0;
 	public static double WINDOW_NETWORK_TICK_RATE = 1.0;
@@ -187,6 +189,7 @@ public class Display extends Canvas implements Runnable {
 	public static boolean fullscreen = false;
 	boolean alreadydone = false;
 
+	NetworkThread nw;
 	AnimationThread a;
 	GraphicsTest gt;
 	
@@ -212,14 +215,37 @@ public class Display extends Canvas implements Runnable {
 			r = new Robot();
 		} catch (AWTException e) {
 			e.printStackTrace();
+			Log.Log(e.toString(), false);
+			System.exit(1);
 		}
 		
+
+		nw = new NetworkThread();
+		if(canUpdate)nw.start();
 		gt = new GraphicsTest(this);
 		a = gt.new AnimationThread();
 		a.start();
-		gt.gc.createCompatibleVolatileImage(width, height);
 	}
 
+	class NetworkThread extends Thread {
+		int ticks = 0;
+		public void run(){
+			ActionListener actListner = new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					ticks += 1;
+					networkUpdate();
+					if (ticks == WINDOW_NETWORK_TICK_RATE) {
+						ticks = 0;
+					}
+				}
+			};
+
+			Timer timer = new Timer((int) (1000 / WINDOW_NETWORK_TICK_RATE), actListner);
+			timer.start();
+		}
+	}
+	
 	public static Launcher getLauncherInstance() {
 		if (launcher == null) {
 			launcher = new Launcher();
@@ -267,6 +293,7 @@ public class Display extends Canvas implements Runnable {
 			thread.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			Dump.Dump(e.toString());
 			System.exit(1);
 		}
 	}
@@ -296,10 +323,6 @@ public class Display extends Canvas implements Runnable {
 			previousTime = currentTime;
 			unprocessedSeconds += passedTime / 1000000000.0;
 			requestFocus();
-			
-			if(canUpdate){
-			networkUpdate();
-			}
 			
 			while (unprocessedSeconds > secondsPerTick) {
 				if(WINDOW_USE_VSYNC){
@@ -554,7 +577,8 @@ public class Display extends Canvas implements Runnable {
 	        clip = AudioSystem.getClip();
 	        clip.open(audioInputStream);	        
 	        clip.start();
-	    } catch(Exception ex) {
+	    } catch(Exception e) {
+	    	Log.Log(e.toString(), false);
 	    }
 	}
 	
@@ -719,6 +743,7 @@ public class Display extends Canvas implements Runnable {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void drawMiniMap(Graphics2D g) {
 		int centrex = width - 100;
 		int centrey = height - 100;
@@ -728,6 +753,7 @@ public class Display extends Canvas implements Runnable {
 		try {
 			img2 = ImageIO.read(Display.class.getResource(screen.render.floor.file));
 		} catch (Exception e) {
+			Log.Log(e.getStackTrace()+"\n"+e.getMessage(), false);
 		}
 		float percentage = .4f;
 		g.drawImage(img2, centrex - 100, centrey - 100, 200, 200, this);

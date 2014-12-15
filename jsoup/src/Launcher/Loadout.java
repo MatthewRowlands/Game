@@ -119,6 +119,7 @@ public class Loadout extends JFrame{
 		ok.setBounds((width-90), (height - 60), 80, 30);
 		window.add(ok);
 		ok.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 				save.saveConfiguration(wep1, wep2);
@@ -129,6 +130,7 @@ public class Loadout extends JFrame{
 		select1.setBounds(width/2-150, (height - 150), 150, 30);
 		window.add(select1);
 		select1.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(!wep.name.equals(wep2.name)){
 				wep1 = wep;
@@ -145,6 +147,7 @@ public class Loadout extends JFrame{
 		select2.setBounds(width/2, (height - 150), 150, 30);
 		window.add(select2);
 		select2.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(!wep.name.equals(wep1.name)){
 				wep2 = wep;
@@ -161,6 +164,7 @@ public class Loadout extends JFrame{
 		left.setBounds(100, 170, 40, 80);
 		window.add(left);
 		left.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(index > 1){
 					index--;
@@ -175,6 +179,7 @@ public class Loadout extends JFrame{
 		right.setBounds(width-140, 170, 40, 80);
 		window.add(right);
 		right.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(index < maxindex){
 					index++;

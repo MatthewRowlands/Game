@@ -1,15 +1,26 @@
 package Main;
 
-import javax.swing.*;
-
-import org.ietf.jgss.GSSContext;
-
-import Input.InputHandler;
-
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BufferCapabilities;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.DisplayMode;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+
+import javax.swing.JFrame;
+import javax.swing.Timer;
+import javax.swing.WindowConstants;
+
+import Input.InputHandler;
 
 public class GraphicsTest {
 
@@ -47,18 +58,19 @@ public class GraphicsTest {
 		frame.addMouseMotionListener(input);
 		frame.addMouseWheelListener(input);
 		
-		if (!gd.isFullScreenSupported()) {
+		if (gd.isFullScreenSupported() && d.fullscreen) {
 			gd.setFullScreenWindow(frame);
-			DisplayMode dm = new DisplayMode(d.width, d.height, 16,
+			DisplayMode dm = new DisplayMode(Display.width, Display.height, 16,
 					DisplayMode.REFRESH_RATE_UNKNOWN);
 			gd.setDisplayMode(dm);
+			d.WINDOW_FIX_MOUSE = false;
 		} else {
-			d.WINDOW_FIX_MOUSE = true;
-			frame.setSize(d.getGameWidth(), d.getGameHeight());
+			Display.WINDOW_FIX_MOUSE = true;
+			frame.setSize(Display.getGameWidth(), Display.getGameHeight());
 			frame.setLocationRelativeTo(null);
 			frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 			frame.setAlwaysOnTop(true);
-			frame.setUndecorated((d.WINDOW_TEST_MODE == 0) ? true : false);
+			frame.setUndecorated((Display.WINDOW_TEST_MODE == 0) ? true : false);
 			frame.setVisible(true);
 		}
 
@@ -69,6 +81,7 @@ public class GraphicsTest {
 				.isAccelerated();
 
 		ActionListener actListner = new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent event) {
 				ticks += 1;
 				fps = 1e9f / time;
@@ -82,6 +95,7 @@ public class GraphicsTest {
 		timer.start();
 	}
 
+	@SuppressWarnings("unused")
 	private String getDeviceConfigurationString(GraphicsConfiguration gc) {
 		return "Bounds: "
 				+ gc.getBounds()
@@ -167,6 +181,7 @@ public class GraphicsTest {
 		 * run = true; new AnimationThread().start(); } }
 		 */
 
+		@Override
 		public void run() {
 			while (run) {
 				long start = System.nanoTime();

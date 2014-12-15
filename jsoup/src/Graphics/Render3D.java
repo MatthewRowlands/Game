@@ -1,8 +1,8 @@
 package Graphics;
 
-import java.util.ArrayList;
-
 import Input.Controller;
+import Log.Dump;
+import Log.Log;
 import Main.Display;
 import Main.Game;
 import Model.Face;
@@ -17,7 +17,6 @@ public class Render3D extends Render {
 
 	double floorpos = Display.floorpos;
 	double ceilingpos = Display.ceilingpos;
-	private double brightness = 1;
 	int c = 0;
 	int num = 1;
 	
@@ -98,7 +97,7 @@ public class Render3D extends Render {
 				zBuffer[x + y * width] = z;
 				if(c == 0){
 					if(up > -Display.floorpos/2)
-						pixels[x + y * width] = floor.r.pixels[(int) ((xPix & 1023)+floor.texVar+(yPix & 1023) * 1024)];
+						pixels[x + y * width] = floor.r.pixels[(xPix & 1023)+floor.texVar+(yPix & 1023) * 1024];
 					else
 						pixels[x + y * width] = 0;
 				}else{
@@ -112,57 +111,6 @@ public class Render3D extends Render {
 				}
 			}
 		}
-		
-/*		Level level = game.level;
-		int size = 20;
-		
-		for (int xBlock = -size; xBlock <= size; xBlock++){
-			for (int zBlock = -size; zBlock <= size; zBlock++){
-				Block block = level.create(xBlock, zBlock);
-				Block east = level.create(xBlock + 1, zBlock);
-				Block south = level.create(xBlock, zBlock + 1);
-				
-				if(block.solid){
-					if(!east.solid){
-						renderWall(xBlock + 1, xBlock + 1, zBlock, zBlock + 1,0, 0.5, temptex);
-					}
-					if(!south.solid){
-						renderWall(xBlock + 1, xBlock, zBlock + 1, zBlock + 1,0, 0.5, temptex);
-					}
-				}else{
-					if(east.solid){
-						renderWall(xBlock + 1, xBlock + 1, zBlock + 1, zBlock,0, 0.5, temptex);
-					}
-					if(south.solid){
-						renderWall(xBlock, xBlock + 1, zBlock + 1, zBlock + 1,0, 0.5, temptex);
-					}
-				}
-			}
-		}
-		
-		for (int xBlock = -size; xBlock <= size; xBlock++){
-			for (int zBlock = -size; zBlock <= size; zBlock++){
-				Block block = level.create(xBlock, zBlock);
-				Block east = level.create(xBlock + 1, zBlock);
-				Block south = level.create(xBlock, zBlock + 1);
-				
-				if(block.solid){
-					if(!east.solid){
-						renderWall(xBlock + 1, xBlock + 1, zBlock, zBlock + 1,0.5, 0.5, temptex);
-					}
-					if(!south.solid){
-						renderWall(xBlock + 1, xBlock, zBlock + 1, zBlock + 1,0.5, 0.5, temptex);
-					}
-				}else{
-					if(east.solid){
-						renderWall(xBlock + 1, xBlock + 1, zBlock + 1, zBlock,0.5, 0.5, temptex);
-					}
-					if(south.solid){
-						renderWall(xBlock, xBlock + 1, zBlock + 1, zBlock + 1,0.5, 0.5, temptex);
-					}
-				}
-			}
-		}*/
 	}
 
 	public void renderWall(double xLeft, double xRight, double zDistanceLeft, double zDistanceRight, double yBottom, double yTop, Texture t) {
@@ -270,9 +218,10 @@ public class Render3D extends Render {
 				double pixelRotationY = (y - yPixelTop) / (yPixelBottom - yPixelTop);
 				int yTexture = (int)(8 * pixelRotationY * 4);
 				try {
-					pixels[x + y * (width)] = t.r.pixels[((xTexture) & 127)+t.texVar+((yTexture) & 127) * 128];
+					pixels[x + y * (width+2)] = t.r.pixels[((xTexture) & 127)+t.texVar+((yTexture) & 127) * 128];
 				} catch (ArrayIndexOutOfBoundsException e) {
 					e.printStackTrace();
+					Log.Log(e.toString(), false);
 					continue;
 				}
 				zBuffer[x + y * width] = 1 / (tex1 + (tex2 - tex1) * pixelRotation) * 10/(renderDistance/5000);
@@ -394,6 +343,7 @@ public class Render3D extends Render {
 					pixels[x + y * (width)] = t.r.pixels[((xTexture) & 127)+t.texVar+((yTexture) & 127) * 128];
 				} catch (ArrayIndexOutOfBoundsException e) {
 					e.printStackTrace();
+					Log.Log(e.getStackTrace()+"\n"+e.getMessage(), false);
 					continue;
 				}
 				zBuffer[x + y * width] = 1 / (tex1 + (tex2 - tex1) * pixelRotation) * 10/(renderDistance/5000);
