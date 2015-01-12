@@ -12,6 +12,7 @@ import Model.Model;
 
 public class Screen extends Render{
 	public Render3D render;
+	Display d;
 	public ArrayList<double[]> positions = new ArrayList<double[]>();
 	public ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 	public ArrayList<Objects> objects = new ArrayList<Objects>();
@@ -24,13 +25,14 @@ public class Screen extends Render{
 	Texture object = new Texture("/textures/Ground4.png");
 	Texture bullet = new Texture("/textures/Fire.png");
 
-	public Screen(int width, int height) {	
+	public Screen(int width, int height, Display d) {	
 		super(width, height);
 		this.width = width;
 		this.height = height;
-		render = new Render3D(width, height);
+		this.d = d;
+		render = new Render3D(width, height, d);
 		models.add(new Model());//TODO implement properly
-		models.get(models.size()-1).LoadModel("map1");
+		models.get(models.size()-1).LoadModel("untitled");
 	}
 
 	public void render(Game game) {
@@ -38,7 +40,7 @@ public class Screen extends Render{
 			pixels[i] = 0;
 		}
 		
-		Display.activebullets = 0;
+		d.activebullets = 0;
 		render.floor(game);
 		RenderObjects();
 		render.renderDistanceLimiter();
@@ -61,10 +63,10 @@ public class Screen extends Render{
 		}
 		for(Objects e : bullets){
 			if(!e.flash){
-			Display.activebullets++;
+			d.activebullets++;
 			}
 			if(e.maxdistreached){
-			Display.activebullets--;
+			d.activebullets--;
 			}else{
 				if(e.bullet)
 					renderBlock(e.x/8,e.y/8,e.z/8, 0.05, 0.025, 0.05, bullet);
@@ -80,11 +82,11 @@ public class Screen extends Render{
 	}
 
 	public void CheckCollision() {
-		Display.enemiesattacking = 0;
-		Display.collisionright = false;
-		Display.collisionback = false;
-		Display.collisionfront = false;
-		Display.collisionleft = false;
+		d.enemiesattacking = 0;
+		d.collisionright = false;
+		d.collisionback = false;
+		d.collisionfront = false;
+		d.collisionleft = false;
 		
 		for(Enemy e : enemies){
 			double x1, y1, z1;
@@ -93,30 +95,30 @@ public class Screen extends Render{
 			z1 = e.z;
 			
 			if(!e.dead){		
-				if(x1 >= Display.x - 16 && x1 <= Display.x + 8 && z1 >= Display.z - 16 && z1 <= Display.z + 8){
+				if(x1 >= d.x - 16 && x1 <= d.x + 8 && z1 >= d.z - 16 && z1 <= d.z + 8){
 					e.chase = false;
 					e.attacking = true;
-					if(Display.HEALTH > 0){
-					Display.HEALTH --;
+					if(d.HEALTH > 0){
+					d.HEALTH --;
 					}
-					Display.enemiesattacking++;
+					d.enemiesattacking++;
 					
 					//TODO: needs fixing ->
 					/* Not relative to direction facing
 					 * Use sine/cosine? 
 					 * Remake but using xMove and yMove?
 					 */
-					if(x1 >= Display.x){
-						Display.collisionright = true;
+					if(x1 >= d.x){
+						d.collisionright = true;
 					}
-					if(x1 <= Display.x){
-						Display.collisionleft = true;
+					if(x1 <= d.x){
+						d.collisionleft = true;
 					}
-					if(z1 >= Display.z){
-						Display.collisionfront = true;
+					if(z1 >= d.z){
+						d.collisionfront = true;
 					}
-					if(z1 <= Display.z){
-						Display.collisionback = true;
+					if(z1 <= d.z){
+						d.collisionback = true;
 					}
 				}else{
 					e.chase = true;
@@ -132,9 +134,9 @@ public class Screen extends Render{
 					
 				if(x2 >= x1 && x2 <= x1 + 8 && z2 >= z1 && z2 <= z1 + 8 && y2 >= y1 -8 && y2 <= y1 +8 && e2.bullet){
 					if(e2.canhurt(e)){
-						double dmgtodo = (Display.WeaponDamage+(Math.random()*3)-1);
+						double dmgtodo = (d.WeaponDamage+(Math.random()*3)-1);
 						e.health-=dmgtodo;
-						Display.PlaySound("/audio/Enemy_Hit.wav");
+						d.PlaySound("/audio/Enemy_Hit.wav");
 					}
 					e2.canthurt(e);
 				}

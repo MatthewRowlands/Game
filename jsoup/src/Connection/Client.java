@@ -21,11 +21,13 @@ public class Client extends Thread{
 	int frames = 0;
 	int tickCount = 0;
 	public ArrayList<double[]> positions = new ArrayList<double[]>();
+	private Display d;
 
-	public Client(int port, String ip, String name) {
+	public Client(int port, String ip, String name, Display d) {
 		this.port = port;
 		this.ip = ip;
 		this.name = name;
+		this.d = d;
 		
 		try {
 		socket = new Socket(ip, port);
@@ -36,7 +38,7 @@ public class Client extends Thread{
 		inStream = new ObjectInputStream(socket.getInputStream());//recieve client number
 		clientnumber = (int) inStream.readObject();
 		
-		Display.BeginNetworkUpdate();
+		d.BeginNetworkUpdate();
 		
 		}catch (Exception e) {
 			System.err.println("Client Error: " + e.getMessage());
@@ -89,7 +91,7 @@ public class Client extends Thread{
 	@SuppressWarnings("unchecked")
 	public synchronized ArrayList<double[]> networkUpdate() {
 		try {
-			v3f = new Vector3f(Display.x, Display.y, Display.z);
+			v3f = new Vector3f(d.x, d.y, d.z);
 			
 			double x = v3f.x;
 			double y = v3f.y;
@@ -106,7 +108,7 @@ public class Client extends Thread{
 			
 			inStream = new ObjectInputStream(socket.getInputStream());//recieve position(s)	
 			ArrayList<double[]> players = (ArrayList<double[]>) inStream.readObject();
-			Display.ping = (int) players.get(clientnumber-1)[3];
+			d.ping = (int) players.get(clientnumber-1)[3];
 			return players;
 		
 		} catch (Exception e) {

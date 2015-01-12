@@ -57,7 +57,7 @@ public class Launcher extends Canvas implements Runnable{
 		frame.setResizable(false);
 		frame.setVisible(true);
 		window.setLayout(null);	
-		InputHandler input = new InputHandler();
+		InputHandler input = new InputHandler(null);
 		addKeyListener(input);
 		addFocusListener(input);
 		addMouseListener(input);

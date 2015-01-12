@@ -12,9 +12,9 @@ public class Game {
 	public Level level;
 	public boolean spectator = false;
 
-	public Game() {
-		controls = new Controller();
-		level = new Level(0,0);
+	public Game(Display display) {
+		controls = new Controller(display);
+		level = new Level(0,0, display);
 	}
 
 	public void tick(boolean[] key) {

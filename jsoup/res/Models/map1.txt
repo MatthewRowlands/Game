@@ -1,6 +1,6 @@
 # This cube has a different material
 # applied to each of its faces.
-	mtllib Concrete.mtl
+	mtllib Wood_Dark.mtl
 	v   0.000000    2.000000    2.000000
 	v	0.000000	0.000000	2.000000
 	v	2.000000	0.000000	2.000000

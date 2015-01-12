@@ -10,7 +10,7 @@ public class Level {
 	public final int height;
 
 	
-	public Level (int width, int height){
+	public Level (int width, int height, Display d){
 		this.width = width;
 		this.height = height;
 		blocks = new Block[width * height];
@@ -22,7 +22,7 @@ public class Level {
 				
 				if(random.nextInt(10) == 0){
 					block = new SolidBlock();
-					Display.blockcount++;
+					d.blockcount++;
 				}else{
 					block = new Block();
 				}

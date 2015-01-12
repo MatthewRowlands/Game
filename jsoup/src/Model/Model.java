@@ -9,12 +9,12 @@ import java.util.ArrayList;
 public class Model {
 
 	public ArrayList<Face> model = new ArrayList<Face>();
-	String cfile = "Concrete";
+	String cfile = "Wood_Dark";
 	int texloc = 0;
 	
 	@SuppressWarnings("deprecation")
 	public ArrayList<Face> LoadModel(String file) {
-		String filepath = "res/Models/" + file + ".txt";
+		String filepath = "res/Models/" + file + ".obj";
 		FileInputStream fis = null;
 		BufferedInputStream bis = null;
 		DataInputStream dis = null;

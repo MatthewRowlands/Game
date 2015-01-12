@@ -1,20 +1,27 @@
 package Main;
 
 import java.awt.AWTException;
+import java.awt.BufferCapabilities;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.DisplayMode;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.awt.image.VolatileImage;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
@@ -34,7 +41,6 @@ import Launcher.Launcher;
 import Launcher.Options;
 import Log.Dump;
 import Log.Log;
-import Main.GraphicsTest.AnimationThread;
 import Model.Model;
 
 public class Display extends Canvas implements Runnable {
@@ -80,12 +86,12 @@ public class Display extends Canvas implements Runnable {
 	public static String DEFAULT_PORT = "12500";
 	public static boolean WINDOW_FIX_MOUSE = false;
 	public static int PING = 0;
-	public static int ping = 0;
-	public static double[] pings = new double[16];
-	public static boolean canUpdate = false;
-	public static double floorpos = 8;
-	public static double ceilingpos = 2048;
-	public static boolean flymode = true;
+	public int ping = 0;
+	public double[] pings = new double[16];
+	public boolean canUpdate = false;
+	public double floorpos = 8;
+	public double ceilingpos = 2048;
+	public boolean flymode = false;
 	int time = 0;
 	
 	public static Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
@@ -95,15 +101,15 @@ public class Display extends Canvas implements Runnable {
 	public static int width = w / 2;
 	public static int height = h / 2;
 
-	public static JFrame f;
-	public static String title = "3D Game";
+	public JFrame f;
+	public String title = "3D Game";
 
 	private Thread thread;
-	public static Client client;
+	public Client client;
 	public Screen screen;
 	private Game game;
 	private BufferedImage img;
-	public static boolean run = false;
+	public boolean run = false;
 	private int[] pixels;
 	private InputHandler input;
 	private int newmX = 0;
@@ -111,48 +117,50 @@ public class Display extends Canvas implements Runnable {
 	
 	int tickCount = 0;
 	int frames = 0;
-	public static int fps = 0;
+	public int ups = 0;
+	public float fps = 0;
+	long fpstime = 0;
 	
-	public static double MouseChangex;
-	public static double MouseChangey;
-	public static int selection = 0;
-	static Robot r;
-	public static int blockcount=0;
+	public double MouseChangex;
+	public double MouseChangey;
+	public int selection = 0;
+	protected Robot r;
+	public int blockcount=0;
 	
-	public static int x = 0;
-	public static int y = 0;
-	public static int z = 0;
+	public int x = 0;
+	public int y = 0;
+	public int z = 0;
 
 	public static Launcher launcher;
 
 	public static double MoveSpeed = 1;
 	public static double JumpHeight = 1;
 	public static double MouseSpeed = 5;
-	public static int RenderDist = 500000;
-	public static boolean Pause = false;
+	public int RenderDist = 500000;
+	public boolean Pause = false;
 	
-	static BufferedImage cursor = new BufferedImage(16, 16,
+	BufferedImage cursor = new BufferedImage(16, 16,
 			BufferedImage.TYPE_INT_ARGB);
-	static Cursor blank = Toolkit.getDefaultToolkit().createCustomCursor(
+	Cursor blank = Toolkit.getDefaultToolkit().createCustomCursor(
 			cursor, new Point(0, 0), "blank");
 
-	public static long t1=0;
-	public static long t2=0;
+	public long t1=0;
+	public long t2=0;
 	
-	static boolean MousePressed = false;
-	static boolean canfire = true;
+	boolean MousePressed = false;
+	boolean canfire = true;
 
-	public static double rotationcos = 0;
-	public static double rotationsin = 0;
-	public static double rotation = 0;
-	public static double rotationy = 0;
+	public double rotationcos = 0;
+	public double rotationsin = 0;
+	public double rotation = 0;
+	public double rotationy = 0;
 
-	public static double StartHEALTH = 300;
-	public static double HEALTH = 300;
+	public double StartHEALTH = 300;
+	public double HEALTH = 300;
 	
 	public static Weapon w1 = new Weapon(1);
 	public static Weapon w2 = new Weapon(3);
-	static int wep = 1;
+	int wep = 1;
 	
 	public static double initialaccuracy = w1.accuracy;
 	public static double startaccuracy = initialaccuracy;
@@ -160,73 +168,99 @@ public class Display extends Canvas implements Runnable {
 	public static double firerate = w1.firerate;
 	public static double WeaponDamage = w1.WeaponDamage;
 	public static int firemode = w1.firemode;
-	public static int sFlashAmmo = 3;
+	public int sFlashAmmo = 3;
 	public static int sWeaponAmmo = w1.WeaponAmmo;
-	public static int FlashAmmo = sFlashAmmo;
+	public int FlashAmmo = sFlashAmmo;
 	public static int WeaponAmmo = sWeaponAmmo;
 	
-	public static int activebullets = 0;
-	public static boolean Reload = false;
+	public int activebullets = 0;
+	public boolean Reload = false;
 
 	
 	long guntime = System.currentTimeMillis();
 	long flashtime = System.currentTimeMillis();
-	public static long reloadtime = System.currentTimeMillis();
+	public long reloadtime = System.currentTimeMillis();
 	public static double reloadspeed = w1.reloadspeed*1000;
-	public static boolean reloading = false;
-	public static boolean donereloadsound = false;
+	public boolean reloading = false;
+	public boolean donereloadsound = false;
 
-	public static int enemiesattacking = 0;
+	public int enemiesattacking = 0;
 	
-	public static boolean collisionleft = false;
-	public static boolean collisionfront = false;
-	public static boolean collisionright = false;
-	public static boolean collisionback = false;
+	public boolean collisionleft = false;
+	public boolean collisionfront = false;
+	public boolean collisionright = false;
+	public boolean collisionback = false;
 
-	public static int ScrollLevel = 8;
-	public static int brightness = 200;
+	public int ScrollLevel = 8;
+	public int brightness = 200;
 
-	public static boolean fullscreen = false;
+	public static boolean fullscreen = true;
 	boolean alreadydone = false;
-
+	boolean acc = false;
+	
 	NetworkThread nw;
 	AnimationThread a;
-	GraphicsTest gt;
+	GraphicsDevice gd = GraphicsEnvironment
+			.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+	GraphicsConfiguration gc = gd.getDefaultConfiguration();
+	BufferCapabilities bufferCapabilities;
+	BufferStrategy bufferStrategy;	
 	
-	public Display() {
+	public Display(JFrame f) {
+		try{
+			
+		this.f = f;
+		if (gd.isFullScreenSupported() && fullscreen) {
+			gd.setFullScreenWindow(f);
+			DisplayMode dm = new DisplayMode(Display.width, Display.height, 32,
+					DisplayMode.REFRESH_RATE_UNKNOWN);
+			gd.setDisplayMode(dm);
+			WINDOW_FIX_MOUSE = false;
+		} else {
+			f.setSize(getGameWidth(), getGameHeight());
+			f.setUndecorated((Display.WINDOW_TEST_MODE == 0));
+			f.setTitle(title+" ");
+			f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			f.setLocationRelativeTo(null);
+			f.setVisible(true);
+		}
+		
+		f.getContentPane().setCursor(blank);
+		
 		Dimension size = new Dimension(WIDTH, HEIGHT);
 		setPreferredSize(size);
 		setMinimumSize(size);
 		setMaximumSize(size);
-		screen = new Screen(getGameWidth(), getGameHeight());
-		game = new Game();
-		img = new BufferedImage(getGameWidth(), getGameHeight(),
-				BufferedImage.TYPE_INT_RGB);
+		screen = new Screen(getGameWidth(), getGameHeight(), this);
+		game = new Game(this);
+		img = gc.createCompatibleImage(getGameWidth(), getGameHeight());
+		VolatileImage vimg = gc.createCompatibleVolatileImage(getGameWidth(), getGameHeight());//?????????????????????????????????????????????????????
 		pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
+		input = new InputHandler(this);
+		f.addKeyListener(input);
+		f.addFocusListener(input);
+		f.addMouseListener(input);
+		f.addMouseMotionListener(input);
+		f.addMouseWheelListener(input);
 
-		input = new InputHandler();
-		addKeyListener(input);
-		addFocusListener(input);
-		addMouseListener(input);
-		addMouseMotionListener(input);
-		addMouseWheelListener(input);
+		r = new Robot();
 		
-		try {
-			r = new Robot();
-		} catch (AWTException e) {
-			e.printStackTrace();
-			Log.Log(e.toString(), false);
-			System.exit(1);
-		}
-		
+		f.createBufferStrategy(3);
+		bufferStrategy = f.getBufferStrategy();
+		bufferCapabilities = gc.getBufferCapabilities();
+		acc = gc.getBufferCapabilities().getBackBufferCapabilities()
+				.isAccelerated();
 
 		nw = new NetworkThread();
 		if(canUpdate)nw.start();
-		gt = new GraphicsTest(this);
-		a = gt.new AnimationThread();
+		a = new AnimationThread();
 		a.start();
+		f.requestFocus();
+		
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 	}
-
 	class NetworkThread extends Thread {
 		int ticks = 0;
 		public void run(){
@@ -245,22 +279,33 @@ public class Display extends Canvas implements Runnable {
 			timer.start();
 		}
 	}
-	
 	public static Launcher getLauncherInstance() {
 		if (launcher == null) {
 			launcher = new Launcher();
 		}
 		return launcher;
 	}
-	
-	public static JFrame getFrame() {
+	public void drawGraphics() {
+		try {
+			Graphics2D g2 = null;
+			try {
+				g2 = (Graphics2D) bufferStrategy.getDrawGraphics();
+				render(g2);
+			} finally {
+				if (g2 != null)
+					g2.dispose();
+			}
+			bufferStrategy.show();
+		} catch (Exception err) {
+		}
+	}
+	public JFrame getFrame() {
 		if (f == null) {
 			f = new JFrame();
 		}
 		return f;
 	}
-
-	public static void pause() {
+	public void pause() {
 		Pause ^= true;
 		if (Pause) {
 			getFrame().getContentPane().setCursor(Cursor.getDefaultCursor());
@@ -268,15 +313,12 @@ public class Display extends Canvas implements Runnable {
 			getFrame().getContentPane().setCursor(blank);
 		}
 	}
-
-	public static int getGameWidth() {
+	public int getGameWidth() {
 		return width;
 	}
-
-	public static int getGameHeight() {
+	public int getGameHeight() {
 		return height;
 	}
-
 	public synchronized void start() {
 		if (run)
 			return;
@@ -284,7 +326,6 @@ public class Display extends Canvas implements Runnable {
 		thread = new Thread(this);
 		thread.start();
 	}
-	
 	public synchronized void stop() {
 		if (!run)
 			return;
@@ -297,7 +338,6 @@ public class Display extends Canvas implements Runnable {
 			System.exit(1);
 		}
 	}
-
 	@Override
 	public void run() {
 		double unprocessedSeconds = 0;
@@ -307,14 +347,7 @@ public class Display extends Canvas implements Runnable {
 		r.mouseMove((w / 2), (h / 2));
 		
 		while (run && !thread.isInterrupted()) {
-			/*if(fullscreen && !alreadydone){
-				a.setFullscreen();
-				width=ss.width;
-				height=ss.height;
-				alreadydone = true;
-			}*/
 			if(!WINDOW_USE_VSYNC){
-			//render();
 			}
 			screen.CheckCollision();
 			frames++;
@@ -326,16 +359,15 @@ public class Display extends Canvas implements Runnable {
 			
 			while (unprocessedSeconds > secondsPerTick) {
 				if(WINDOW_USE_VSYNC){
-				//render();
 				}
 				tick();
 				unprocessedSeconds -= secondsPerTick;
 				ticked = true;
-				
+				fps = 1e9f / fpstime;
 				if (tickCount % WINDOW_TICK_RATE == 0) {
-					screen.enemies.add(new Enemy((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
+					//screen.enemies.add(new Enemy((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
 					PING = ping;
-					fps = frames;
+					ups = frames;
 					previousTime += 1000;
 					frames = 0;
 					time++;
@@ -344,13 +376,11 @@ public class Display extends Canvas implements Runnable {
 				}
 			}
 		}
-		gt.frame.dispose();
+		f.dispose();
 	}
-	
 	private void networkUpdate() {
 		screen.positions = client.positions;
 	}
-
 	public static void setMoveSpeed(int movespeed){
 		MoveSpeed = movespeed;
 	}
@@ -360,14 +390,13 @@ public class Display extends Canvas implements Runnable {
 	public static void setMouseSpeed(int mousespeed) {
 		MouseSpeed = mousespeed;
 	}
-
 	public void tick() {
 		tickCount++;
 		game.tick(input.key);
 		
 		if(!Pause){
 			newmX = InputHandler.mouseX;
-			newmY = InputHandler.mouseY-15;
+			newmY = InputHandler.mouseY;
 	
 			if (newmX > w/2 && WINDOW_TEST_MODE != 1) {
 				Controller.turnright = true;
@@ -391,29 +420,27 @@ public class Display extends Canvas implements Runnable {
 			}
 	
 			MouseChangex = (width/2) - newmX;
-			MouseChangey = (height/2) - newmY+ ((!WINDOW_FIX_MOUSE)? -15 : 0);
-			
+			if(getGameHeight() != ss.height)
+				MouseChangey = (height/2) - newmY + (fullscreen? 0 : 15);
+			else
+				MouseChangey = Math.abs((height/2) - newmY + (fullscreen? 0 : 15));
 			
 			if(WINDOW_TEST_MODE != 1){
-				if(WINDOW_FIX_MOUSE)
+				if(!fullscreen)
 					r.mouseMove((w / 2), (h / 2));
-				else
-					r.mouseMove((width / 2), (height / 2));	
-			}	
-		}
-		ShootingMechanism();
-		if(HEALTH < StartHEALTH){
-		HEALTH+=0.01;
-		}else{
-			HEALTH = StartHEALTH;
-		}
-		if(HEALTH < 0){
-			HEALTH = 0;
-			//you died
+			    else
+					r.mouseMove((width / 2), (height / 2));
+			}
+			ShootingMechanism();
+			if(HEALTH < StartHEALTH && HEALTH > 0){
+			HEALTH+=0.01;
+			}else{
+				if(HEALTH > StartHEALTH)
+				HEALTH = StartHEALTH;
+			}
 		}
 		screen.tick();
 	}
-
 	private void ShootingMechanism() {
 		if(WeaponAmmo > 0 && !reloading){
 			if(MousePressed && firemode == 1 && InputHandler.MouseButton == 1){
@@ -456,8 +483,7 @@ public class Display extends Canvas implements Runnable {
 			MousePressed = false;
 		}		
 	}
-
-	public static void Reload() {
+	public void Reload() {
 		if(!reloading){
 			reloadtime = System.currentTimeMillis();
 			reloading = true;
@@ -475,23 +501,21 @@ public class Display extends Canvas implements Runnable {
 			}
 		}
 	}
-
 	private void ThrowFlashBang() {
 		long checktime = System.currentTimeMillis();
 		if((checktime - flashtime) > (5000)){
-			screen.bullets.add(new Objects(x,y,z));
+			screen.bullets.add(new Objects(x,y,z,this));
 			screen.bullets.get(screen.bullets.size()-1).UseFlashMechanism(rotationsin, rotationcos, rotationy);
 			flashtime = System.currentTimeMillis();
 			FlashAmmo--;
 		}
 	}
-	
 	private void Circle(double timedelay) {
 		long checktime = System.currentTimeMillis();
 		if((checktime - guntime) > (timedelay * 1000)){
 			for(int i = 0; i < 180; i++){
 				if(WeaponAmmo > 0){
-				screen.bullets.add(new Objects(x,y,z));
+				screen.bullets.add(new Objects(x,y,z,this));
 				screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(Math.sin(i), Math.cos(i), 1);
 				WeaponAmmo--;
 				}
@@ -503,12 +527,11 @@ public class Display extends Canvas implements Runnable {
 			getCurrentWeapon().remainingammo = WeaponAmmo;
 		}
 	}
-	
 	private void SemiAutoFire(double timedelay) {
 		if(canfire){
 			long checktime = System.currentTimeMillis();
 			if((checktime - guntime) > (timedelay * 1000)){
-			screen.bullets.add(new Objects(x,y,z));
+			screen.bullets.add(new Objects(x,y,z,this));
 			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos, rotationy);
 			guntime = System.currentTimeMillis();
 			canfire = false;
@@ -520,11 +543,10 @@ public class Display extends Canvas implements Runnable {
 			}
 		}
 	}
-	
 	private void FullAutoFire(double timedelay) {
 		long checktime = System.currentTimeMillis();
 		if((checktime - guntime) > (timedelay * 1000)){
-			screen.bullets.add(new Objects(x,y,z));
+			screen.bullets.add(new Objects(x,y,z,this));
 			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos, rotationy);
 			guntime = System.currentTimeMillis();
 			accuracy += startaccuracy/4;
@@ -534,12 +556,11 @@ public class Display extends Canvas implements Runnable {
 			getCurrentWeapon().remainingammo = WeaponAmmo;
 		}
 	}
-	
 	private void ShotgunFullFire(double timedelay) {
 		long checktime = System.currentTimeMillis();
 		if((checktime - guntime) > (timedelay * 1000)){
 			for(int i = 0; i < firemode; i++){
-				screen.bullets.add(new Objects(x,y,z));
+				screen.bullets.add(new Objects(x,y,z,this));
 				screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos, rotationy);
 			}
 			guntime = System.currentTimeMillis();
@@ -549,14 +570,13 @@ public class Display extends Canvas implements Runnable {
 			WeaponAmmo--;
 			getCurrentWeapon().remainingammo = WeaponAmmo;
 		}
-	}
-	
+	}	
 	private void ShotgunSemiFire(double timedelay) {
 		if(canfire){
 			long checktime = System.currentTimeMillis();
 			if((checktime - guntime) > (timedelay * 1000)){
 			for(int i = 0; i < firemode; i++){
-				screen.bullets.add(new Objects(x,y,z));
+				screen.bullets.add(new Objects(x,y,z,this));
 				screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos, rotationy);
 			}
 			guntime = System.currentTimeMillis();
@@ -569,7 +589,6 @@ public class Display extends Canvas implements Runnable {
 			}
 		}
 	}
-
 	public static void PlaySound(String file) {
 		Clip clip = null;
 	    try {
@@ -580,9 +599,8 @@ public class Display extends Canvas implements Runnable {
 	    } catch(Exception e) {
 	    	Log.Log(e.toString(), false);
 	    }
-	}
-	
-	public static void ChangeWeapon(int weaponnum){
+	}	
+	public void ChangeWeapon(int weaponnum){
 		reloading = false;
 		if(weaponnum == 1){
 			wep = 1;
@@ -610,8 +628,7 @@ public class Display extends Canvas implements Runnable {
 		WeaponDamage = w.WeaponDamage;
 		WeaponAmmo = w.getRemainingAmmo();
 	}
-
-	public static Weapon getCurrentWeapon(){
+	public Weapon getCurrentWeapon(){
 		if(wep == 1){
 			return w1;
 		}
@@ -622,25 +639,25 @@ public class Display extends Canvas implements Runnable {
 			return null;
 		}
 	}
-	
 	public void render(Graphics2D g) {
-		//BufferStrategy bufferStrategy = this.getBufferStrategy();
-
-		//if (bufferStrategy == null) {
-		//	this.createBufferStrategy(2);
-		//	return;
-		//}
-
 		screen.render(game);
 		
 		for (int i = 0; i < getGameWidth() * getGameHeight(); i++) {
 			pixels[i] = screen.pixels[i];
 		}
 
-		//g = bufferStrategy.getDrawGraphics();
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, w, h);
 		g.drawImage(img, 0, 0, getGameWidth() + 10, getGameHeight() + 10, null);
+		
+		if(HEALTH <= 0){
+			HEALTH = 0;
+			g.setColor(Color.RED);
+			g.setFont(new Font("Chiller", Font.PLAIN, 72));
+			g.drawString("YOU DIED", width/2-100, height/2+40);
+			if(!Pause)
+			pause();
+		}
 		
 		if(!Pause){	
 		drawInfoBoardNorth(g);
@@ -649,17 +666,16 @@ public class Display extends Canvas implements Runnable {
 		//drawMiniMap(g);
 		//drawRotationMap(g);
 		}
-		if (Pause && !fullscreen)
+		if (Pause && !(HEALTH <= 0))
 			drawPauseMenu(g);
 
 		//g.dispose();
 		//bufferStrategy.show();
 	}
-
 	private void drawInfoBoardNorth(Graphics2D g) {
 		g.setFont(new Font("Verdana", Font.PLAIN, 10));
 		g.setColor(Color.WHITE);
-		g.drawString("UPS: " + fps+" Ping: "+PING+" Threads: "+Thread.activeCount(), 20, 20);
+		g.drawString("UPS: " + ups+" Ping: "+PING+" Threads: "+Thread.activeCount(), 20, 20);
 		g.drawString("X/Y/Z: "+x+","+y+","+z+" Rotation C/S: "+rotationsin+"/"+rotationcos, 20, 30);
 		g.drawString("Textures: "+blockcount, 20, 40);
 		g.drawString("VSYNC: "+WINDOW_USE_VSYNC, 20, 50);
@@ -686,10 +702,14 @@ public class Display extends Canvas implements Runnable {
 			+v3f[2]+" Ping: "+pings[i], 
 			20, 150+(i*10));
 		}	
+		
+		g.setColor((fps > 60? Color.GREEN : Color.RED));
+		g.drawString("FPS: " +(int)fps, 20, 200);
+		g.setColor((acc? Color.GREEN : Color.RED));
+		g.drawString("Accelerated: "+(acc? "Yes" : "No"), 80, 200);
 	}
-
 	private void drawCrosshair(Graphics2D g) {
-		double accuracy = Display.accuracy * 30;
+		double accuracy = this.accuracy * 30;
 		
 		g.setColor(Color.BLACK); 
 		g.fillRect((int) (width / 2 + accuracy * 10) - 1, height / 2 - 2, 12, 4); 
@@ -703,14 +723,13 @@ public class Display extends Canvas implements Runnable {
 		g.fillRect((int) (width / 2 - 10 - accuracy * 10), height / 2 - 1, 10, 2); 
 		g.fillRect(width / 2 - 1, (int) (height / 2 - 10 - accuracy * 10), 2, 10);	
 		
-		/*g.setColor(Color.BLACK); 
+		g.setColor(Color.BLACK); 
 		g.drawLine(width/2, height/2, (int)(width/2-MouseChangex), (int)(height/2-MouseChangey));
 		g.setColor(Color.BLUE);
 		g.fillOval(width/2-5, height/2-5, 10,10);
 		g.setColor(Color.RED);
-		g.fillOval((int)(width/2-MouseChangex)-5, (int)(height/2-MouseChangey)-5, 10,10);*/
+		g.fillOval((int)(width/2-MouseChangex)-5, (int)(height/2-MouseChangey)-5, 10,10);
 	}
-
 	private void drawInfoBoardSouth(Graphics2D g) {
 		int centrex = width - 100;
 		int centrey = height - 100;
@@ -742,9 +761,8 @@ public class Display extends Canvas implements Runnable {
 			g.drawString("Firemode: CIRCLE", centrex-100, centrey-125);
 		}
 	}
-
 	@SuppressWarnings("unused")
-	private void drawMiniMap(Graphics2D g) {
+	private void drawMiniMap(Graphics2D g) {//this is extremely inefficient
 		int centrex = width - 100;
 		int centrey = height - 100;
 		int minimapscale = ScrollLevel*width/1000;
@@ -828,7 +846,6 @@ public class Display extends Canvas implements Runnable {
 			}
 		}
 	}
-
 	@SuppressWarnings("unused")
 	private void drawRotationMap(Graphics2D g) {
 		int centrey = height - 100;
@@ -882,7 +899,6 @@ public class Display extends Canvas implements Runnable {
 			g.setColor(Color.RED);
 			g.fillOval((int)((rotation*4+100) % 200)-4, centrey-(int)(rotationy*16)+11, 10, 10);
 	}
-
 	private void drawPauseMenu(Graphics g) {
 		int MousePressed = InputHandler.MouseButton;
 
@@ -938,25 +954,47 @@ public class Display extends Canvas implements Runnable {
 			}
 		}
 	}
-	
+	class AnimationThread extends Thread {
+
+		@Override
+		public void run() {
+			while (run) {
+				long start = System.nanoTime();
+				drawGraphics();
+				long stop = System.nanoTime();
+				fpstime = stop - start;
+			}
+		}
+
+		public void drawGraphics() {
+			try {
+				Graphics2D g2 = null;
+				try {
+					g2 = (Graphics2D) bufferStrategy.getDrawGraphics();
+					render(g2);
+				} finally {
+					if (g2 != null)
+						g2.dispose();
+				}
+				bufferStrategy.show();
+			} catch (Exception err) {
+			}
+		}
+	}
 	public static void main(String args[]) {
 		getLauncherInstance().startMenu();
 	}
-
-	public static void startMultiplayer(int port, String ip, String un) {
-		client = new Client(port, ip, un);
+	public void startMultiplayer(int port, String ip, String un) {
+		client = new Client(port, ip, un, this);
 		client.start();
 	}
-
-	public static void BeginNetworkUpdate() {
+	public void BeginNetworkUpdate() {
 		canUpdate = true;		
 	}
-
-	public static void MousePressed() {
+	public void MousePressed() {
 		MousePressed = true;
 	}
-
-	public static void MouseReleased() {
+	public void MouseReleased() {
 		MousePressed = false;		
 	}
 }

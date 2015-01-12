@@ -20,11 +20,13 @@ public class Enemy implements Serializable{
 	public boolean attacking = false;
 	public double health = 100;
 	public double displayhealth = health/100;
+	private Display d;
 	
-	public Enemy(double x, double y, double z){
+	public Enemy(double x, double y, double z, Display d){
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		this.d = d;
 	}
 
 	public void tick() {
@@ -41,9 +43,9 @@ public class Enemy implements Serializable{
 	}
 
 	private void chasePlayer() {
-		double dx = (Display.x) - x;
+		double dx = (d.x) - x;
 		//double dy = (Display.y) - y;
-		double dz = (Display.z) - z;
+		double dz = (d.z) - z;
 		
 		double distance = Math.sqrt((dx*dx)+(dz*dz));
 		

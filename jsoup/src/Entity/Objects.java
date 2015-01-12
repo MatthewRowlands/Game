@@ -34,11 +34,13 @@ public class Objects implements Serializable{
 	double rotationsin=0;
 	double rotationcos=0;
 	double rotationy = 0;
-	double accuracy = Display.accuracy;
+	double accuracy = 0;
 	public boolean maxdistreached = false;
 	ArrayList<Enemy> hurtenemies = new ArrayList<Enemy>();
 
-	public Objects(double x, double y, double z) {
+	private Display d;
+
+	public Objects(double x, double y, double z, Display d) {
 		//super(x, y, z);
 		this.x = x;
 		this.y = y+heightstep;
@@ -46,6 +48,8 @@ public class Objects implements Serializable{
 		this.initialx = x;
 		this.initialy = y+heightstep;
 		this.initialz = z;
+		this.d = d;
+		accuracy = d.accuracy;
 	}
 	
 	public void tick() {
@@ -70,9 +74,9 @@ public class Objects implements Serializable{
 			bullet = false;
 			maxdistreached = true;
 		}
-		if(y <= -Display.floorpos/2 || y >= Display.ceilingpos/2){
+		if(y <= -d.floorpos/2 || y >= d.ceilingpos/2){
 			//make a bullet impact
-			Display.PlaySound("/audio/Hard_Hit.wav");
+			d.PlaySound("/audio/Hard_Hit.wav");
 			bullet = false;
 			maxdistreached = true;
 		}
@@ -83,7 +87,7 @@ public class Objects implements Serializable{
 			z+=rotationcos*flashspeed;
 			rotationy-=flashdrop;
 			if(y < -4){
-				Display.PlaySound("/Audio/Flashbang.wav");
+				d.PlaySound("/Audio/Flashbang.wav");
 				flash = false;
 				bullet = false;
 				maxdistreached = true;
@@ -93,7 +97,7 @@ public class Objects implements Serializable{
 	
 	public void UseBulletMechanism(double rotationsin, double rotationcos, double rotationy){
 		this.bullet = true;
-		this.accuracy = Display.accuracy;
+		this.accuracy = d.accuracy;
 		this.rotationsin = rotationsin+(Math.random()*accuracy)-accuracy/2;
 		this.rotationcos = rotationcos+(Math.random()*accuracy)-accuracy/2;
 		this.rotationy  = rotationy/4+((Math.random()*accuracy/2)-accuracy/4)-0.25;
@@ -101,7 +105,7 @@ public class Objects implements Serializable{
 
 	public void UseFlashMechanism(double rotationsin, double rotationcos, double rotationy) {
 		this.flash = true;
-		this.accuracy = Display.accuracy;
+		this.accuracy = d.accuracy;
 		this.rotationsin = rotationsin+(Math.random()*accuracy)-accuracy/2;
 		this.rotationcos = rotationcos+(Math.random()*accuracy)-accuracy/2;
 		this.rotationy = rotationy/4+((Math.random()*accuracy/2)-accuracy/4)-0.25;

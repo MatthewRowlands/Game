@@ -16,6 +16,7 @@ public class InputHandler extends Thread implements KeyListener, FocusListener, 
 		MouseMotionListener, MouseWheelListener {
 
 	public boolean[] key = new boolean[68836];
+	public boolean[] keyhold = new boolean[68836];
 	public static int mouseX;
 	public static int mouseY;
 	public static int mouseDX;//d=drag
@@ -27,7 +28,15 @@ public class InputHandler extends Thread implements KeyListener, FocusListener, 
 	public static boolean dragged = false;
 	public static int keyCode = 1;
 	public static boolean MouseClick = false;
-
+	Display d;
+	
+	public InputHandler(Display d){
+		this.d = d;
+		for (int i = 0; i < keyhold.length; i++) {
+		keyhold[i] = true;
+		}
+	}
+	
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		mouseDX = e.getX();
@@ -60,7 +69,8 @@ public class InputHandler extends Thread implements KeyListener, FocusListener, 
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		Display.MousePressed();
+		if(d != null)
+		d.MousePressed();
 		MouseButton = e.getButton();
 		
 		mousePX = e.getX();
@@ -71,7 +81,8 @@ public class InputHandler extends Thread implements KeyListener, FocusListener, 
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		Display.MouseReleased();
+		if(d != null)
+		d.MouseReleased();
 		MouseButton = 0;
 		dragged = false;
 	}
@@ -83,33 +94,42 @@ public class InputHandler extends Thread implements KeyListener, FocusListener, 
 
 	@Override
 	public void focusLost(FocusEvent e) {
-		for (int i = 0; i < key.length; i++) {
+		/*for (int i = 0; i < key.length; i++) {
 			key[i] = false;
-		}
+		}*/
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
 		keyCode = e.getKeyCode();
 		
-		if (keyCode > 0 && keyCode < key.length) {
-			key[keyCode] = true;
+		if(keyhold[keyCode] == true){
+			if (keyCode > 0 && keyCode < key.length) {
+				key[keyCode] = true;
+			}
+		}else{
+			if (keyCode > 0 && keyCode < key.length) {
+				key[keyCode] ^= true;
+			}
 		}
 		
 		if(keyCode == KeyEvent.VK_ESCAPE){
-			Display.pause();
+			if(d != null)
+			d.pause();
 		}
-		//if(keyCode == KeyEvent.VK_F12){
-		//	Display.fullscreen = true;
-		//}
+		if(keyCode == KeyEvent.VK_F12){
+
+		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		keyCode = e.getKeyCode();
-
-		if (keyCode > 0 && keyCode < key.length) {
-			key[keyCode] = false;
+		
+		if(keyhold[keyCode] == true){
+			if (keyCode > 0 && keyCode < key.length) {
+				key[keyCode] = false;
+			}
 		}
 	}
 
@@ -122,8 +142,10 @@ public class InputHandler extends Thread implements KeyListener, FocusListener, 
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		int increment = e.getScrollAmount();
 		int amount = e.getUnitsToScroll()/increment;
-		if(Display.ScrollLevel < 80 && Display.ScrollLevel+amount > 0){
-		Display.ScrollLevel += amount;
+		if(d != null){
+			if(d.ScrollLevel < 80 && d.ScrollLevel+amount > 0){
+			d.ScrollLevel += amount;
+			}
 		}
 	}
 }

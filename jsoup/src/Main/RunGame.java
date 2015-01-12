@@ -19,23 +19,11 @@ public class RunGame {
 		
 		this.ip = ip;
 		this.username = un;
-		
-		BufferedImage cursor = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-		Cursor blank = Toolkit.getDefaultToolkit().createCustomCursor(cursor, new Point(0, 0), "blank");
-		Display game = new Display();
-		JFrame f = Display.getFrame();
-		f.add(game);
-		f.setSize(Display.getGameWidth(), Display.getGameHeight());
-		f.setUndecorated((Display.WINDOW_TEST_MODE == 0));
-		f.setAlwaysOnTop(!bool);
-		f.getContentPane().setCursor(blank);
-		f.setTitle(Display.title+" "+un);
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setLocationRelativeTo(null);
-		f.setVisible(true);
 
+		JFrame f = new JFrame();
+		Display game = new Display(f);
 		if(multiplayer){
-		Display.startMultiplayer(port, ip, un);
+		game.startMultiplayer(port, ip, un);
 		}
 		game.start();
 		stopMenuThread();
