@@ -22,8 +22,8 @@ public class Render3D extends Render {
 	int c = 0;
 	int num = 1;
 	
-	public Texture floor = new Texture("/textures/Ground3.png");
-	public Texture roof = new Texture("/textures/Sky.png");
+	public Texture floor = new Texture("/textures/Fire.png");
+	public Texture roof = new Texture("/textures/Night Sky.png");
 	private Display d;
 	
 	public Render3D(int width, int height, Display d) {
@@ -114,7 +114,7 @@ public class Render3D extends Render {
 					else
 						pixels[x + y * width] = 0;
 				}
-				if (z > renderDistance/5) {
+				if (z > renderDistance*50000) {
 					pixels[x + y * width] = 0x7EC0EE;
 				}
 			}
@@ -232,7 +232,7 @@ public class Render3D extends Render {
 					Log.Log(e.toString(), false);
 					continue;
 				}
-				zBuffer[x + y * width] = 1 / (tex1 + (tex2 - tex1) * pixelRotation) * 10/(renderDistance/5000);
+				zBuffer[x + y * width] = 1 / (tex1 + (tex2 - tex1) * pixelRotation) * 10/(renderDistance);
 			}
 		}
 	}
@@ -383,7 +383,7 @@ public class Render3D extends Render {
 					Log.Log(e.toString(), false);
 					continue;
 				}
-				zBuffer[x + y * width] = 1 / (tex1 + (tex2 - tex1) * pixelRotation) * 10/(renderDistance/5000);
+				zBuffer[x + y * width] = 1 / (tex1 + (tex2 - tex1) * pixelRotation) * 10/(renderDistance);
 			}
 		}
 	}

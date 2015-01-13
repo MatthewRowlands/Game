@@ -136,7 +136,7 @@ public class Display extends Canvas implements Runnable {
 	public static double MoveSpeed = 1;
 	public static double JumpHeight = 1;
 	public static double MouseSpeed = 5;
-	public int RenderDist = 500000;
+	public int RenderDist = 50000;
 	public boolean Pause = false;
 	
 	BufferedImage cursor = new BufferedImage(16, 16,
@@ -192,7 +192,7 @@ public class Display extends Canvas implements Runnable {
 	public boolean collisionback = false;
 
 	public int ScrollLevel = 8;
-	public int brightness = 200;
+	public int brightness = 5;
 
 	public static boolean fullscreen = true;
 	boolean alreadydone = false;
@@ -210,6 +210,7 @@ public class Display extends Canvas implements Runnable {
 		try{
 			
 		this.f = f;
+		f.setUndecorated((Display.WINDOW_TEST_MODE == 0));
 		if (gd.isFullScreenSupported() && fullscreen) {
 			gd.setFullScreenWindow(f);
 			DisplayMode dm = new DisplayMode(Display.width, Display.height, 32,
@@ -218,13 +219,14 @@ public class Display extends Canvas implements Runnable {
 			WINDOW_FIX_MOUSE = false;
 		} else {
 			f.setSize(getGameWidth(), getGameHeight());
-			f.setUndecorated((Display.WINDOW_TEST_MODE == 0));
 			f.setTitle(title+" ");
 			f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			f.setLocationRelativeTo(null);
 			f.setVisible(true);
 		}
 		
+
+		f.setVisible(true);
 		f.getContentPane().setCursor(blank);
 		
 		Dimension size = new Dimension(WIDTH, HEIGHT);
@@ -234,7 +236,7 @@ public class Display extends Canvas implements Runnable {
 		screen = new Screen(getGameWidth(), getGameHeight(), this);
 		game = new Game(this);
 		img = gc.createCompatibleImage(getGameWidth(), getGameHeight());
-		VolatileImage vimg = gc.createCompatibleVolatileImage(getGameWidth(), getGameHeight());//?????????????????????????????????????????????????????
+		//VolatileImage vimg = gc.createCompatibleVolatileImage(getGameWidth(), getGameHeight());//?????????????????????????????????????????????????????
 		pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
 		input = new InputHandler(this);
 		f.addKeyListener(input);
@@ -711,24 +713,27 @@ public class Display extends Canvas implements Runnable {
 	private void drawCrosshair(Graphics2D g) {
 		double accuracy = this.accuracy * 30;
 		
-		g.setColor(Color.BLACK); 
+/*		g.setColor(Color.BLACK); 
 		g.fillRect((int) (width / 2 + accuracy * 10) - 1, height / 2 - 2, 12, 4); 
 		g.fillRect(width / 2 - 2, (int) (height / 2 + accuracy * 10) - 1, 4, 12);
 		g.fillRect((int) (width / 2 - 11 - accuracy * 10), height / 2 - 2, 12, 4); 
 		g.fillRect(width / 2 - 2, (int) (height / 2 - 11 - accuracy * 10), 4, 12);
-		 
-		g.setColor(Color.WHITE); 
-		g.fillRect((int) (width / 2 + accuracy * 10), height / 2 - 1, 10, 2); 
-		g.fillRect(width / 2 - 1, (int) (height / 2 + accuracy * 10), 2, 10); 
-		g.fillRect((int) (width / 2 - 10 - accuracy * 10), height / 2 - 1, 10, 2); 
-		g.fillRect(width / 2 - 1, (int) (height / 2 - 10 - accuracy * 10), 2, 10);	
+		 */
 		
-		g.setColor(Color.BLACK); 
+		g.setColor(Color.GREEN); 
+		int xSize = 5;
+		int ySize = 1;
+		g.fillRect((int) (width / 2 + accuracy * 10), height / 2 - 1, xSize, ySize); 
+		g.fillRect(width / 2 - 1, (int) (height / 2 + accuracy * 10), ySize, xSize); 
+		g.fillRect((int) (width / 2 - accuracy * 10), height / 2 - 1, 5, 1); 
+		g.fillRect(width / 2 - 1, (int) (height / 2 - accuracy * 10), 1, 5);	
+		
+		/*g.setColor(Color.BLACK); 
 		g.drawLine(width/2, height/2, (int)(width/2-MouseChangex), (int)(height/2-MouseChangey));
 		g.setColor(Color.BLUE);
 		g.fillOval(width/2-5, height/2-5, 10,10);
 		g.setColor(Color.RED);
-		g.fillOval((int)(width/2-MouseChangex)-5, (int)(height/2-MouseChangey)-5, 10,10);
+		g.fillOval((int)(width/2-MouseChangex)-5, (int)(height/2-MouseChangey)-5, 10,10);*/
 	}
 	private void drawInfoBoardSouth(Graphics2D g) {
 		int centrex = width - 100;
