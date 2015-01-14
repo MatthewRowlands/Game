@@ -42,7 +42,7 @@ public class Screen extends Render{
 		
 		d.activebullets = 0;
 		render.floor(game);
-		RenderObjects();
+		//RenderObjects();
 		render.renderDistanceLimiter();
 		draw(render, 0, 0);
 	}

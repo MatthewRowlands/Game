@@ -1,9 +1,10 @@
 package Main;
 
-import java.awt.AWTException;
+import java.awt.BorderLayout;
 import java.awt.BufferCapabilities;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
@@ -14,6 +15,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -21,14 +23,20 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.awt.image.VolatileImage;
+import java.io.File;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 
 import Connection.Client;
 import Entity.Enemy;
@@ -197,6 +205,8 @@ public class Display extends Canvas implements Runnable {
 	public static boolean fullscreen = true;
 	boolean alreadydone = false;
 	boolean acc = false;
+	long totalfps = 0;
+	public float averagefps = 0;
 	
 	NetworkThread nw;
 	AnimationThread a;
@@ -204,16 +214,15 @@ public class Display extends Canvas implements Runnable {
 			.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 	GraphicsConfiguration gc = gd.getDefaultConfiguration();
 	BufferCapabilities bufferCapabilities;
-	BufferStrategy bufferStrategy;	
+	public BufferStrategy bufferStrategy;	
 	
-	public Display(JFrame f) {
-		try{
+	public Display(JFrame f, int width, int height) {
 			
 		this.f = f;
 		f.setUndecorated((Display.WINDOW_TEST_MODE == 0));
 		if (gd.isFullScreenSupported() && fullscreen) {
 			gd.setFullScreenWindow(f);
-			DisplayMode dm = new DisplayMode(Display.width, Display.height, 32,
+			DisplayMode dm = new DisplayMode(width, height, 32,
 					DisplayMode.REFRESH_RATE_UNKNOWN);
 			gd.setDisplayMode(dm);
 			WINDOW_FIX_MOUSE = false;
@@ -227,38 +236,41 @@ public class Display extends Canvas implements Runnable {
 		
 
 		f.setVisible(true);
-		f.getContentPane().setCursor(blank);
-		
-		Dimension size = new Dimension(WIDTH, HEIGHT);
-		setPreferredSize(size);
-		setMinimumSize(size);
-		setMaximumSize(size);
-		screen = new Screen(getGameWidth(), getGameHeight(), this);
-		game = new Game(this);
-		img = gc.createCompatibleImage(getGameWidth(), getGameHeight());
-		//VolatileImage vimg = gc.createCompatibleVolatileImage(getGameWidth(), getGameHeight());//?????????????????????????????????????????????????????
-		pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
-		input = new InputHandler(this);
-		f.addKeyListener(input);
-		f.addFocusListener(input);
-		f.addMouseListener(input);
-		f.addMouseMotionListener(input);
-		f.addMouseWheelListener(input);
-
-		r = new Robot();
 		
 		f.createBufferStrategy(3);
 		bufferStrategy = f.getBufferStrategy();
 		bufferCapabilities = gc.getBufferCapabilities();
 		acc = gc.getBufferCapabilities().getBackBufferCapabilities()
 				.isAccelerated();
+	}
+	public void startgame(){
+		try{
+			f.getContentPane().setCursor(blank);
+			
+			Dimension size = new Dimension(WIDTH, HEIGHT);
+			setPreferredSize(size);
+			setMinimumSize(size);
+			setMaximumSize(size);
+			screen = new Screen(getGameWidth(), getGameHeight(), this);
+			game = new Game(this);
+			img = gc.createCompatibleImage(getGameWidth(), getGameHeight());
+			//VolatileImage vimg = gc.createCompatibleVolatileImage(getGameWidth(), getGameHeight());//?????????????????????????????????????????????????????
+			pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
+			
+			input = new InputHandler(this);
+			f.addKeyListener(input);
+			f.addFocusListener(input);
+			f.addMouseListener(input);
+			f.addMouseMotionListener(input);
+			f.addMouseWheelListener(input);
 
-		nw = new NetworkThread();
-		if(canUpdate)nw.start();
-		a = new AnimationThread();
-		a.start();
-		f.requestFocus();
+			r = new Robot();
 		
+			nw = new NetworkThread();
+			if(canUpdate)nw.start();
+			a = new AnimationThread();
+			a.start();
+			f.requestFocus();
 		}catch (Exception e){
 			e.printStackTrace();
 		}
@@ -286,20 +298,6 @@ public class Display extends Canvas implements Runnable {
 			launcher = new Launcher();
 		}
 		return launcher;
-	}
-	public void drawGraphics() {
-		try {
-			Graphics2D g2 = null;
-			try {
-				g2 = (Graphics2D) bufferStrategy.getDrawGraphics();
-				render(g2);
-			} finally {
-				if (g2 != null)
-					g2.dispose();
-			}
-			bufferStrategy.show();
-		} catch (Exception err) {
-		}
 	}
 	public JFrame getFrame() {
 		if (f == null) {
@@ -365,9 +363,14 @@ public class Display extends Canvas implements Runnable {
 				tick();
 				unprocessedSeconds -= secondsPerTick;
 				ticked = true;
+				
 				fps = 1e9f / fpstime;
+				
 				if (tickCount % WINDOW_TICK_RATE == 0) {
 					//screen.enemies.add(new Enemy((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
+					/*totalfps+=fps;
+					averagefps = totalfps / game.time;
+					System.out.println(averagefps);*/
 					PING = ping;
 					ups = frames;
 					previousTime += 1000;
@@ -486,6 +489,7 @@ public class Display extends Canvas implements Runnable {
 		}		
 	}
 	public void Reload() {
+		accuracy-= 0.015;
 		if(!reloading){
 			reloadtime = System.currentTimeMillis();
 			reloading = true;
@@ -720,13 +724,15 @@ public class Display extends Canvas implements Runnable {
 		g.fillRect(width / 2 - 2, (int) (height / 2 - 11 - accuracy * 10), 4, 12);
 		 */
 		
+
+		int xSize = 10;
+		int ySize = 3;
+		Rectangle left, right, top, bottom;
+		left = new Rectangle((int)(width/2 - accuracy * xSize),(int)(height/2), xSize, ySize);
 		g.setColor(Color.GREEN); 
-		int xSize = 5;
-		int ySize = 1;
-		g.fillRect((int) (width / 2 + accuracy * 10), height / 2 - 1, xSize, ySize); 
-		g.fillRect(width / 2 - 1, (int) (height / 2 + accuracy * 10), ySize, xSize); 
-		g.fillRect((int) (width / 2 - accuracy * 10), height / 2 - 1, 5, 1); 
-		g.fillRect(width / 2 - 1, (int) (height / 2 - accuracy * 10), 1, 5);	
+		g.fill(left);	
+		g.setColor(Color.BLACK); 
+		g.draw(left);	
 		
 		/*g.setColor(Color.BLACK); 
 		g.drawLine(width/2, height/2, (int)(width/2-MouseChangex), (int)(height/2-MouseChangey));
@@ -987,8 +993,63 @@ public class Display extends Canvas implements Runnable {
 		}
 	}
 	public static void main(String args[]) {
+		//firstTimeSetup();
 		getLauncherInstance().startMenu();
 	}
+	private static void firstTimeSetup() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}catch (Exception e){
+		}
+		int result = JOptionPane.showConfirmDialog((Component) null, "This appears to be first time setup, please select a location to install",
+		        "Warning!", JOptionPane.OK_CANCEL_OPTION);
+		if(result == JOptionPane.CANCEL_OPTION){
+			System.exit(0);
+		}
+		JFileChooser jf2 = new JFileChooser();
+		int returnVal = jf2.showSaveDialog(null);
+
+		String saveTo = jf2.getSelectedFile().getPath();
+		File f = new File(saveTo);
+		f.mkdirs();
+		
+        int num = 0;
+        JProgressBar current = new JProgressBar(0, 10000);
+        current.setStringPainted(true);
+        current.setForeground(Color.green);
+        current.setValue(0);
+        JDialog dlg = new JDialog();
+        JLabel info = new JLabel("Progress: "+(num % 10000));
+        dlg.pack();
+        dlg.setTitle("Installing...");
+        dlg.add(BorderLayout.SOUTH, current);
+        dlg.add(BorderLayout.NORTH, info);
+        dlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        dlg.setSize(300, 100);
+        dlg.setLocationRelativeTo(null);
+        dlg.setVisible(true);
+        iterate(num, current, info);
+        dlg.dispose();
+		int done = JOptionPane.showConfirmDialog((Component) null, "Done!",
+		        "Installation Complete", JOptionPane.OK_CANCEL_OPTION);
+		if(result == JOptionPane.CANCEL_OPTION){
+			System.exit(0);
+		}
+	}
+    public static void iterate(int num, JProgressBar current, JLabel info) {
+       	int fakenum = 0;
+       	double accel = 1;
+        while (num <= 10000) {
+        	fakenum += 1000*(Math.random()/100);
+            current.setValue(num);
+            info.setText("Progress: "+(fakenum));
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) { }
+            num += accel;
+            accel+=0.001;
+        }
+    }
 	public void startMultiplayer(int port, String ip, String un) {
 		client = new Client(port, ip, un, this);
 		client.start();

@@ -21,7 +21,7 @@ public class RunGame {
 		this.username = un;
 
 		JFrame f = new JFrame();
-		Display game = new Display(f);
+		Display game = new Display(f,640, 480);
 		if(multiplayer){
 		game.startMultiplayer(port, ip, un);
 		}

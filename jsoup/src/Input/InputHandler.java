@@ -117,8 +117,8 @@ public class InputHandler extends Thread implements KeyListener, FocusListener, 
 			if(d != null)
 			d.pause();
 		}
-		if(keyCode == KeyEvent.VK_F12){
-
+		if(keyCode == KeyEvent.VK_F1){
+			System.exit(0);
 		}
 	}
 
