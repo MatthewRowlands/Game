@@ -35,6 +35,7 @@ public class Launcher2 implements Runnable {
 	double startmenuxpos = -200;
 	int ticks = 0;
 	public long fpstime;
+	AnimationThread a;
 	
 	public Launcher2() {
 		display = new Display(f, Display.w, Display.h);
@@ -47,7 +48,8 @@ public class Launcher2 implements Runnable {
 		f.addMouseWheelListener(input);
 
 		startMenu();
-		new AnimationThread().start();
+		a = new AnimationThread();
+		a.start();
 	}
 	
 	public void run(){
@@ -55,7 +57,7 @@ public class Launcher2 implements Runnable {
 		long previousTime = System.nanoTime();
 		double secondsPerTick = 1 / 600;
 		
-		while (true) {
+		while (running) {
 			long currentTime = System.nanoTime();
 			long passedTime = currentTime - previousTime;
 			previousTime = currentTime;
@@ -79,8 +81,12 @@ public class Launcher2 implements Runnable {
 		}
 		if(renderstartmenu && startmenuxpos >= 100){ 
 			display.startgame();
-			stopMenu();
+			display.width = 200;
+			display.height = 100;
+			running = false;
 			renderstartmenu = false;
+			a.end();
+			stopMenu();
 		}
 	}
 	
@@ -123,6 +129,10 @@ public class Launcher2 implements Runnable {
 				display.bufferStrategy.show();
 			} catch (Exception err) {
 			}
+		}
+		
+		public void end(){
+			this.stop();
 		}
 	}
 
