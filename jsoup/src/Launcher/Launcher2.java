@@ -77,6 +77,10 @@ public class Launcher2 implements Runnable {
 		if(renderstartmenu && startmenuxpos < 100){
 			startmenuxpos+=0.0000005;
 		}
+		if(renderstartmenu && startmenuxpos >= 100){ 
+			display.startgame();
+			renderstartmenu = false;
+		}
 	}
 	
 	public void startMenu() {

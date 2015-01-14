@@ -233,7 +233,6 @@ public class Display extends Canvas implements Runnable {
 			f.setLocationRelativeTo(null);
 			f.setVisible(true);
 		}
-		
 
 		f.setVisible(true);
 		
@@ -349,7 +348,7 @@ public class Display extends Canvas implements Runnable {
 		while (run && !thread.isInterrupted()) {
 			if(!WINDOW_USE_VSYNC){
 			}
-			screen.CheckCollision();
+			screen.CheckCollision(1);
 			frames++;
 			long currentTime = System.nanoTime();
 			long passedTime = currentTime - previousTime;
