@@ -76,6 +76,10 @@ public class Display extends Canvas implements Runnable {
 	 * -Player collision detection not aligned with direction facing
 	 * -Flash grenades make screen white no matter which direction facing
 	 * -Minimap is inverted
+	 * 
+	 * 
+	 * FIX CROSSHAIR
+	 * ADD SPRITES
 	 */
 	
 	public static double WINDOW_FAST_JOIN = 1.0;
@@ -351,7 +355,7 @@ public class Display extends Canvas implements Runnable {
 		while (run && !thread.isInterrupted()) {
 			if(!WINDOW_USE_VSYNC){
 			}
-			screen.CheckCollision();
+			screen.CheckCollision(1);
 			frames++;
 			long currentTime = System.nanoTime();
 			long passedTime = currentTime - previousTime;
@@ -367,7 +371,7 @@ public class Display extends Canvas implements Runnable {
 				ticked = true;
 				fps = 1e9f / fpstime;
 				if (tickCount % WINDOW_TICK_RATE == 0) {
-					//screen.enemies.add(new Enemy((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
+					screen.enemies.add(new Enemy((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250, this));
 					PING = ping;
 					ups = frames;
 					previousTime += 1000;
@@ -663,7 +667,7 @@ public class Display extends Canvas implements Runnable {
 		
 		if(!Pause){	
 		drawInfoBoardNorth(g);
-		drawCrosshair(g);
+		drawHUD(g);
 		drawInfoBoardSouth(g);
 		//drawMiniMap(g);
 		//drawRotationMap(g);
@@ -710,16 +714,9 @@ public class Display extends Canvas implements Runnable {
 		g.setColor((acc? Color.GREEN : Color.RED));
 		g.drawString("Accelerated: "+(acc? "Yes" : "No"), 80, 200);
 	}
-	private void drawCrosshair(Graphics2D g) {
+	private void drawHUD(Graphics2D g) {
 		double accuracy = this.accuracy * 30;
-		
-/*		g.setColor(Color.BLACK); 
-		g.fillRect((int) (width / 2 + accuracy * 10) - 1, height / 2 - 2, 12, 4); 
-		g.fillRect(width / 2 - 2, (int) (height / 2 + accuracy * 10) - 1, 4, 12);
-		g.fillRect((int) (width / 2 - 11 - accuracy * 10), height / 2 - 2, 12, 4); 
-		g.fillRect(width / 2 - 2, (int) (height / 2 - 11 - accuracy * 10), 4, 12);
-		 */
-		
+
 		g.setColor(Color.GREEN); 
 		int xSize = 5;
 		int ySize = 1;
@@ -728,12 +725,12 @@ public class Display extends Canvas implements Runnable {
 		g.fillRect((int) (width / 2 - accuracy * 10), height / 2 - 1, 5, 1); 
 		g.fillRect(width / 2 - 1, (int) (height / 2 - accuracy * 10), 1, 5);	
 		
-		/*g.setColor(Color.BLACK); 
-		g.drawLine(width/2, height/2, (int)(width/2-MouseChangex), (int)(height/2-MouseChangey));
-		g.setColor(Color.BLUE);
-		g.fillOval(width/2-5, height/2-5, 10,10);
 		g.setColor(Color.RED);
-		g.fillOval((int)(width/2-MouseChangex)-5, (int)(height/2-MouseChangey)-5, 10,10);*/
+		g.fillRect(width/2 - 100, height-(height/20), 200, height/20);
+		g.setColor(Color.GREEN);
+		g.fillRect(width/2 - 100, height-(height/20), (int) ((HEALTH / StartHEALTH) * 200), (height/20));
+		g.setColor(Color.BLACK);
+		g.drawString("Health: "+(int)HEALTH, width/2 - (6*5), height - (height/20)/2 + 5);
 	}
 	private void drawInfoBoardSouth(Graphics2D g) {
 		int centrex = width - 100;

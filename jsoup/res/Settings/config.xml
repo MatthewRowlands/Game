@@ -2,6 +2,6 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <comment>Resolution</comment>
-<entry key="Width">1680</entry>
-<entry key="Height">1050</entry>
+<entry key="Width">640</entry>
+<entry key="Height">480</entry>
 </properties>

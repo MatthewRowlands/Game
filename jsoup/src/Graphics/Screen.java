@@ -81,7 +81,7 @@ public class Screen extends Render{
 		}
 	}
 
-	public void CheckCollision() {
+	public void CheckCollision(int p) {
 		d.enemiesattacking = 0;
 		d.collisionright = false;
 		d.collisionback = false;
@@ -98,7 +98,7 @@ public class Screen extends Render{
 				if(x1 >= d.x - 16 && x1 <= d.x + 8 && z1 >= d.z - 16 && z1 <= d.z + 8){
 					e.chase = false;
 					e.attacking = true;
-					if(d.HEALTH > 0){
+					if(d.HEALTH > 0 && p != 1){
 					d.HEALTH --;
 					}
 					d.enemiesattacking++;
@@ -151,7 +151,7 @@ public class Screen extends Render{
 		for(Objects e : bullets){
 			e.tick();
 		}
-		CheckCollision();
+		CheckCollision(0);
 	}
 	
 	public void renderBlock(double x, double y, double z, double sizex, double sizey, double sizez, Texture t){	
