@@ -25,7 +25,7 @@ public class RunGame {
 		if(multiplayer){
 		game.startMultiplayer(port, ip, un);
 		}
-		//game.start();
+		game.startgame();
 		stopMenuThread();
 	}
 	

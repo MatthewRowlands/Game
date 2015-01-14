@@ -273,6 +273,7 @@ public class Display extends Canvas implements Runnable {
 		}catch (Exception e){
 			e.printStackTrace();
 		}
+		start();
 	}
 	class NetworkThread extends Thread {
 		int ticks = 0;
