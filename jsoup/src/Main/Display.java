@@ -16,7 +16,9 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Robot;
+import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,6 +51,7 @@ import Launcher.Launcher;
 import Launcher.Options;
 import Log.Dump;
 import Log.Log;
+import Logic.WeaponLogic;
 import Model.Model;
 
 public class Display extends Canvas implements Runnable {
@@ -156,7 +159,7 @@ public class Display extends Canvas implements Runnable {
 	public long t2=0;
 	
 	boolean MousePressed = false;
-	boolean canfire = true;
+	public boolean canfire = true;
 
 	public double rotationcos = 0;
 	public double rotationsin = 0;
@@ -185,8 +188,8 @@ public class Display extends Canvas implements Runnable {
 	public boolean Reload = false;
 
 	
-	long guntime = System.currentTimeMillis();
-	long flashtime = System.currentTimeMillis();
+	public long guntime = System.currentTimeMillis();
+	public long flashtime = System.currentTimeMillis();
 	public long reloadtime = System.currentTimeMillis();
 	public static double reloadspeed = w1.reloadspeed*1000;
 	public boolean reloading = false;
@@ -208,6 +211,7 @@ public class Display extends Canvas implements Runnable {
 	long totalfps = 0;
 	public float averagefps = 0;
 	
+	WeaponLogic wl = new WeaponLogic(this);
 	NetworkThread nw;
 	AnimationThread a;
 	GraphicsDevice gd = GraphicsEnvironment
@@ -217,7 +221,8 @@ public class Display extends Canvas implements Runnable {
 	public BufferStrategy bufferStrategy;	
 	
 	public Display(JFrame f, int width, int height) {
-			
+		Display.width = width; 
+		Display.height = height;
 		this.f = f;
 		f.setUndecorated((Display.WINDOW_TEST_MODE == 0));
 		if (gd.isFullScreenSupported() && fullscreen) {
@@ -244,6 +249,18 @@ public class Display extends Canvas implements Runnable {
 	}
 	public void startgame(){
 		try{
+			DisplayMode dm = new DisplayMode(width, height, 32,
+					DisplayMode.REFRESH_RATE_UNKNOWN);
+			gd.setDisplayMode(dm);
+
+
+			f.setVisible(true);
+			
+			f.createBufferStrategy(3);
+			bufferStrategy = f.getBufferStrategy();
+			bufferCapabilities = gc.getBufferCapabilities();
+			acc = gc.getBufferCapabilities().getBackBufferCapabilities()
+					.isAccelerated();
 			f.getContentPane().setCursor(blank);
 			
 			Dimension size = new Dimension(WIDTH, HEIGHT);
@@ -367,10 +384,9 @@ public class Display extends Canvas implements Runnable {
 				fps = 1e9f / fpstime;
 				
 				if (tickCount % WINDOW_TICK_RATE == 0) {
-					//screen.enemies.add(new Enemy((int)(Math.random()*500)+x-250,0,(int)(Math.random()*500)+z-250));
-					/*totalfps+=fps;
-					averagefps = totalfps / game.time;
-					System.out.println(averagefps);*/
+					double x = this.x + Math.sin(Math.random()*500)*500;
+					double z = this.z + Math.sin(Math.random()*500)*500;
+					screen.enemies.add(new Enemy(x,0,z, this));
 					PING = ping;
 					ups = frames;
 					previousTime += 1000;
@@ -449,20 +465,20 @@ public class Display extends Canvas implements Runnable {
 	private void ShootingMechanism() {
 		if(WeaponAmmo > 0 && !reloading){
 			if(MousePressed && firemode == 1 && InputHandler.MouseButton == 1){
-				SemiAutoFire(1/firerate);
+				wl.SemiAutoFire(1/firerate);
 			}
 			if(MousePressed && firemode > 4 && firemode != 200 && InputHandler.MouseButton == 1){
 				if(firerate < 3){
-					ShotgunSemiFire(1/firerate);
+					wl.ShotgunSemiFire(1/firerate);
 				}else{
-					ShotgunFullFire(1/firerate);
+					wl.ShotgunFullFire(1/firerate);
 				}
 			}
 			if(MousePressed && firemode == 2 && InputHandler.MouseButton == 1){
-				FullAutoFire(1/firerate);
+				wl.FullAutoFire(1/firerate);
 			}
 			if(MousePressed && firemode == 200 && InputHandler.MouseButton == 1){
-				Circle(1/firerate);
+				wl.Circle(1/firerate);
 			}
 			WeaponAmmo = getCurrentWeapon().getRemainingAmmo();
 		}else{
@@ -470,7 +486,7 @@ public class Display extends Canvas implements Runnable {
 		}
 		if(FlashAmmo > 0){
 			if(MousePressed && InputHandler.MouseButton == 3 && FlashAmmo > 0){
-				ThrowFlashBang();
+				wl.ThrowFlashBang();
 			}
 		}
 		if(!MousePressed){
@@ -504,94 +520,6 @@ public class Display extends Canvas implements Runnable {
 				donereloadsound = false;
 				WeaponAmmo = sWeaponAmmo;
 				getCurrentWeapon().remainingammo = WeaponAmmo;
-			}
-		}
-	}
-	private void ThrowFlashBang() {
-		long checktime = System.currentTimeMillis();
-		if((checktime - flashtime) > (5000)){
-			screen.bullets.add(new Objects(x,y,z,this));
-			screen.bullets.get(screen.bullets.size()-1).UseFlashMechanism(rotationsin, rotationcos, rotationy);
-			flashtime = System.currentTimeMillis();
-			FlashAmmo--;
-		}
-	}
-	private void Circle(double timedelay) {
-		long checktime = System.currentTimeMillis();
-		if((checktime - guntime) > (timedelay * 1000)){
-			for(int i = 0; i < 180; i++){
-				if(WeaponAmmo > 0){
-				screen.bullets.add(new Objects(x,y,z,this));
-				screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(Math.sin(i), Math.cos(i), 1);
-				WeaponAmmo--;
-				}
-			}
-			guntime = System.currentTimeMillis();
-			accuracy += startaccuracy/4;
-			PlaySound(getCurrentWeapon().filepath);
-			PlaySound("/Audio/whiz.wav");
-			getCurrentWeapon().remainingammo = WeaponAmmo;
-		}
-	}
-	private void SemiAutoFire(double timedelay) {
-		if(canfire){
-			long checktime = System.currentTimeMillis();
-			if((checktime - guntime) > (timedelay * 1000)){
-			screen.bullets.add(new Objects(x,y,z,this));
-			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos, rotationy);
-			guntime = System.currentTimeMillis();
-			canfire = false;
-			accuracy += startaccuracy;
-			PlaySound(getCurrentWeapon().filepath);
-			PlaySound("/Audio/whiz.wav");
-			WeaponAmmo--;
-			getCurrentWeapon().remainingammo = WeaponAmmo;
-			}
-		}
-	}
-	private void FullAutoFire(double timedelay) {
-		long checktime = System.currentTimeMillis();
-		if((checktime - guntime) > (timedelay * 1000)){
-			screen.bullets.add(new Objects(x,y,z,this));
-			screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos, rotationy);
-			guntime = System.currentTimeMillis();
-			accuracy += startaccuracy/4;
-			PlaySound(getCurrentWeapon().filepath);
-			//PlaySound("/Audio/whiz.wav");
-			WeaponAmmo--;
-			getCurrentWeapon().remainingammo = WeaponAmmo;
-		}
-	}
-	private void ShotgunFullFire(double timedelay) {
-		long checktime = System.currentTimeMillis();
-		if((checktime - guntime) > (timedelay * 1000)){
-			for(int i = 0; i < firemode; i++){
-				screen.bullets.add(new Objects(x,y,z,this));
-				screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos, rotationy);
-			}
-			guntime = System.currentTimeMillis();
-			accuracy += startaccuracy;
-			PlaySound(getCurrentWeapon().filepath);
-			PlaySound("/Audio/whiz.wav");
-			WeaponAmmo--;
-			getCurrentWeapon().remainingammo = WeaponAmmo;
-		}
-	}	
-	private void ShotgunSemiFire(double timedelay) {
-		if(canfire){
-			long checktime = System.currentTimeMillis();
-			if((checktime - guntime) > (timedelay * 1000)){
-			for(int i = 0; i < firemode; i++){
-				screen.bullets.add(new Objects(x,y,z,this));
-				screen.bullets.get(screen.bullets.size()-1).UseBulletMechanism(rotationsin, rotationcos, rotationy);
-			}
-			guntime = System.currentTimeMillis();
-			canfire = false;
-			accuracy += startaccuracy;
-			PlaySound(getCurrentWeapon().filepath);
-			PlaySound("/Audio/whiz.wav");
-			WeaponAmmo--;
-			getCurrentWeapon().remainingammo = WeaponAmmo;
 			}
 		}
 	}
@@ -667,7 +595,7 @@ public class Display extends Canvas implements Runnable {
 		
 		if(!Pause){	
 		drawInfoBoardNorth(g);
-		drawCrosshair(g);
+		drawHUD(g);
 		drawInfoBoardSouth(g);
 		//drawMiniMap(g);
 		//drawRotationMap(g);
@@ -714,32 +642,24 @@ public class Display extends Canvas implements Runnable {
 		g.setColor((acc? Color.GREEN : Color.RED));
 		g.drawString("Accelerated: "+(acc? "Yes" : "No"), 80, 200);
 	}
-	private void drawCrosshair(Graphics2D g) {
-		double accuracy = this.accuracy * 30;
-		
-/*		g.setColor(Color.BLACK); 
-		g.fillRect((int) (width / 2 + accuracy * 10) - 1, height / 2 - 2, 12, 4); 
-		g.fillRect(width / 2 - 2, (int) (height / 2 + accuracy * 10) - 1, 4, 12);
-		g.fillRect((int) (width / 2 - 11 - accuracy * 10), height / 2 - 2, 12, 4); 
-		g.fillRect(width / 2 - 2, (int) (height / 2 - 11 - accuracy * 10), 4, 12);
-		 */
-		
-
-		int xSize = 10;
-		int ySize = 3;
+	private void drawHUD(Graphics2D g) {
+		double accuracy = startaccuracy * 30;
+		double acc = this.accuracy * 30;
+		Color cc = Color.CYAN;
+		int xSize = 5;
+		int ySize = 1;
 		Rectangle left, right, top, bottom;
-		left = new Rectangle((int)(width/2 - accuracy * xSize),(int)(height/2), xSize, ySize);
-		g.setColor(Color.GREEN); 
-		g.fill(left);	
-		g.setColor(Color.BLACK); 
-		g.draw(left);	
-		
-		/*g.setColor(Color.BLACK); 
-		g.drawLine(width/2, height/2, (int)(width/2-MouseChangex), (int)(height/2-MouseChangey));
-		g.setColor(Color.BLUE);
-		g.fillOval(width/2-5, height/2-5, 10,10);
-		g.setColor(Color.RED);
-		g.fillOval((int)(width/2-MouseChangex)-5, (int)(height/2-MouseChangey)-5, 10,10);*/
+		left = new Rectangle((int) (width/2 - accuracy * xSize)-xSize,(int)(height/2), xSize, ySize);
+		right = new Rectangle((int)(width/2 + accuracy * xSize)+1,      (int)(height/2), xSize, ySize);
+		top = new Rectangle((int) (width/2),(int)(height/2 - accuracy * xSize)-xSize, ySize, xSize);
+		bottom = new Rectangle((int) (width/2),(int)(height/2 + accuracy * xSize)+1,       ySize, xSize);
+		g.setColor(cc); 
+		g.fill(left);
+		g.fill(right);
+		g.fill(top);
+		g.fill(bottom);
+		g.setColor(cc);
+		g.fillRect(width/2, height/2, 1, 1);
 	}
 	private void drawInfoBoardSouth(Graphics2D g) {
 		int centrex = width - 100;
@@ -982,6 +902,9 @@ public class Display extends Canvas implements Runnable {
 				Graphics2D g2 = null;
 				try {
 					g2 = (Graphics2D) bufferStrategy.getDrawGraphics();
+			        g2.setRenderingHint(
+			                RenderingHints.KEY_ANTIALIASING,
+			                RenderingHints.VALUE_ANTIALIAS_ON);
 					render(g2);
 				} finally {
 					if (g2 != null)

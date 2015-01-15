@@ -24,7 +24,10 @@ public class Launcher2 implements Runnable {
 	Display display;
 	InputHandler input;
 	Thread thread;
+	Configuration config = new Configuration();
+	Save save = new Save();
 	private boolean running = false;
+	private boolean drawgraphics = true;
 	double num = 0;
 	double amount = 1;
 	double time = 0;
@@ -38,8 +41,8 @@ public class Launcher2 implements Runnable {
 	AnimationThread a;
 	
 	public Launcher2() {
-		display = new Display(f, Display.w, Display.h);
-
+		display = new Display(f, display.w, display.h);
+		
 		input = new InputHandler(null);
 		f.addKeyListener(input);
 		f.addFocusListener(input);
@@ -77,12 +80,13 @@ public class Launcher2 implements Runnable {
 	
 	public void tick() {
 		if(renderstartmenu && startmenuxpos < 100){
-			startmenuxpos+=0.0000005;
+			startmenuxpos+=0.000002;
 		}
 		if(renderstartmenu && startmenuxpos >= 100){ 
+			drawgraphics = false;
+			config.loadConfiguration("res/settings/config.xml");
+			save.loadConfiguration("res/settings/loadout.xml");
 			display.startgame();
-			display.width = 200;
-			display.height = 100;
 			running = false;
 			renderstartmenu = false;
 			a.end();
@@ -117,17 +121,19 @@ public class Launcher2 implements Runnable {
 		}
 
 		public void drawGraphics() {
-			try {
-				Graphics g = null;
+			if(drawgraphics){
 				try {
-					g = (Graphics) display.bufferStrategy.getDrawGraphics();
-					render(g);
-				} finally {
-					if (g != null)
-						g.dispose();
+					Graphics g = null;
+					try {
+						g = (Graphics) display.bufferStrategy.getDrawGraphics();
+						render(g);
+					} finally {
+						if (g != null)
+							g.dispose();
+					}
+					display.bufferStrategy.show();
+				} catch (Exception err) {
 				}
-				display.bufferStrategy.show();
-			} catch (Exception err) {
 			}
 		}
 		
@@ -147,8 +153,8 @@ public class Launcher2 implements Runnable {
 	
 	private void renderStartMenu(Graphics g) {
 		try {
-			g.drawImage(ImageIO.read(Launcher2.class.getResource("/StartMenuBackground.jpg")), 0, 0, display.w, display.h, null);
-		} catch (IOException e) {
+			//g.drawImage(ImageIO.read(Launcher2.class.getResource("/StartMenuBackground.jpg")), 0, 0, display.w, display.h, null);
+		} catch (Exception e) {
 		}
 		Color c=new Color(1f,1f,1f,.6f);
 		g.setColor(c);
@@ -156,8 +162,6 @@ public class Launcher2 implements Runnable {
 	}
 
 	private void renderLoadScreen(Graphics g) {
-		g.setColor(Color.BLACK);
-		g.fillOval(display.w/2-48, display.h/2-48, 96, 96);
 		loadbar(g, display.w - 220, display.h - 20, 200, 10, num, 400);
 		
 		if(num <= 395){

@@ -191,7 +191,6 @@ public class Controller extends Thread{
 		mousespeed = d.MouseSpeed;
 		}
 		if (F1) {
-			System.err.println("Average: " +d.averagefps+ " fps");
 			System.exit(0);
 		}
 	}
