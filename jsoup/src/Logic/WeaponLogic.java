@@ -28,7 +28,7 @@ public class WeaponLogic {
 				}
 			}
 			d.guntime = System.currentTimeMillis();
-			d.accuracy += d.startaccuracy/4;
+			d.accuracy += d.recoil;
 			d.PlaySound(d.getCurrentWeapon().filepath);
 			d.PlaySound("/Audio/whiz.wav");
 			d.getCurrentWeapon().remainingammo = d.WeaponAmmo;
@@ -42,7 +42,7 @@ public class WeaponLogic {
 				d.screen.bullets.get(d.screen.bullets.size()-1).UseBulletMechanism(d.rotationsin, d.rotationcos, d.rotationy);
 				d.guntime = System.currentTimeMillis();
 			d.canfire = false;
-			d.accuracy += d.startaccuracy;
+			d.accuracy += d.recoil;
 			d.PlaySound(d.getCurrentWeapon().filepath);
 			d.PlaySound("/Audio/whiz.wav");
 			d.WeaponAmmo--;
@@ -56,7 +56,7 @@ public class WeaponLogic {
 			d.screen.bullets.add(new Objects(d.x,d.y,d.z,d));
 			d.screen.bullets.get(d.screen.bullets.size()-1).UseBulletMechanism(d.rotationsin, d.rotationcos, d.rotationy);
 			d.guntime = System.currentTimeMillis();
-			d.accuracy += d.startaccuracy/4;
+			d.accuracy += d.recoil;
 			d.PlaySound(d.getCurrentWeapon().filepath);
 			//PlaySound("/Audio/whiz.wav");
 			d.WeaponAmmo--;
@@ -71,7 +71,7 @@ public class WeaponLogic {
 				d.screen.bullets.get(d.screen.bullets.size()-1).UseBulletMechanism(d.rotationsin, d.rotationcos, d.rotationy);
 			}
 			d.guntime = System.currentTimeMillis();
-			d.accuracy += d.startaccuracy;
+			d.accuracy += d.recoil;
 			d.PlaySound(d.getCurrentWeapon().filepath);
 			d.PlaySound("/Audio/whiz.wav");
 			Display.WeaponAmmo--;
@@ -88,7 +88,7 @@ public class WeaponLogic {
 			}
 			d.guntime = System.currentTimeMillis();
 			d.canfire = false;
-			Display.accuracy += Display.startaccuracy;
+			Display.accuracy += d.recoil;
 			Display.PlaySound(d.getCurrentWeapon().filepath);
 			Display.PlaySound("/Audio/whiz.wav");
 			Display.WeaponAmmo--;

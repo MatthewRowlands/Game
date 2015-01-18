@@ -9,6 +9,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.Font;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
@@ -20,12 +21,15 @@ import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.Shape;
 import java.awt.Toolkit;
+import java.awt.Transparency;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.awt.image.VolatileImage;
 import java.io.File;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
@@ -78,9 +82,10 @@ public class Display extends Canvas implements Runnable {
 	 * -Develop multiplayer
 	 * -Use only one ArrayList of type entity
 	 * -Develop model loader
-	 * -Sprites
+	 * -Sprites *
 	 * -Render Face
-	 * -Use GPU
+	 * -Use GPU *
+	 * -Make collision detection and object movements on their own thread so that can be much more accurate
 	 * 
 	 * KNOWN BUGS:
 	 * -Look too far up or down and goes WIERD (stretches texture?)
@@ -101,7 +106,7 @@ public class Display extends Canvas implements Runnable {
 	public double[] pings = new double[16];
 	public boolean canUpdate = false;
 	public double floorpos = 8;
-	public double ceilingpos = 2048;
+	public double ceilingpos = 2048/2;
 	public boolean flymode = false;
 	int time = 0;
 	
@@ -147,7 +152,7 @@ public class Display extends Canvas implements Runnable {
 	public static double MoveSpeed = 1;
 	public static double JumpHeight = 1;
 	public static double MouseSpeed = 5;
-	public int RenderDist = 50000;
+	public int RenderDist = 4000000;
 	public boolean Pause = false;
 	
 	BufferedImage cursor = new BufferedImage(16, 16,
@@ -166,8 +171,8 @@ public class Display extends Canvas implements Runnable {
 	public double rotation = 0;
 	public double rotationy = 0;
 
-	public double StartHEALTH = 300;
-	public double HEALTH = 300;
+	public double StartHEALTH = 30000;
+	public double HEALTH = 30000;
 	
 	public static Weapon w1 = new Weapon(1);
 	public static Weapon w2 = new Weapon(3);
@@ -218,7 +223,15 @@ public class Display extends Canvas implements Runnable {
 			.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 	GraphicsConfiguration gc = gd.getDefaultConfiguration();
 	BufferCapabilities bufferCapabilities;
-	public BufferStrategy bufferStrategy;	
+	public BufferStrategy bufferStrategy;
+
+	public double recoil = (startaccuracy * startaccuracy)*getCurrentWeapon().recoil;	
+	public double maxrecoil = recoil * 4;
+	int Armor = 100;
+	int StartArmor = 100;
+
+	public int kills = 0;
+	
 	
 	public Display(JFrame f, int width, int height) {
 		Display.width = width; 
@@ -261,6 +274,7 @@ public class Display extends Canvas implements Runnable {
 			bufferCapabilities = gc.getBufferCapabilities();
 			acc = gc.getBufferCapabilities().getBackBufferCapabilities()
 					.isAccelerated();
+			
 			f.getContentPane().setCursor(blank);
 			
 			Dimension size = new Dimension(WIDTH, HEIGHT);
@@ -384,9 +398,11 @@ public class Display extends Canvas implements Runnable {
 				fps = 1e9f / fpstime;
 				
 				if (tickCount % WINDOW_TICK_RATE == 0) {
-					double x = this.x + Math.sin(Math.random()*500)*500;
-					double z = this.z + Math.sin(Math.random()*500)*500;
-					screen.enemies.add(new Enemy(x,0,z, this));
+					/*double x = this.x + Math.sin(Math.random()*500)*500;
+					double z = this.z + Math.sin(Math.random()*500)*500;*/
+					for(Objects o : screen.objects){
+					screen.enemies.add(new Enemy(o.x,o.y,o.z, this));
+					}
 					PING = ping;
 					ups = frames;
 					previousTime += 1000;
@@ -412,6 +428,10 @@ public class Display extends Canvas implements Runnable {
 		MouseSpeed = mousespeed;
 	}
 	public void tick() {
+		if(Math.abs(accuracy) > maxrecoil+startaccuracy) accuracy = maxrecoil+startaccuracy;
+		recoil = Math.abs((startaccuracy/64) - (initialaccuracy/32))*getCurrentWeapon().recoil;	
+		maxrecoil = recoil * 3;
+		
 		tickCount++;
 		game.tick(input.key);
 		
@@ -454,7 +474,7 @@ public class Display extends Canvas implements Runnable {
 			}
 			ShootingMechanism();
 			if(HEALTH < StartHEALTH && HEALTH > 0){
-			HEALTH+=0.01;
+			HEALTH+=0.1;
 			}else{
 				if(HEALTH > StartHEALTH)
 				HEALTH = StartHEALTH;
@@ -484,28 +504,29 @@ public class Display extends Canvas implements Runnable {
 		}else{
 			Reload();
 		}
-		if(FlashAmmo > 0){
+		//if(FlashAmmo > 0){
 			if(MousePressed && InputHandler.MouseButton == 3 && FlashAmmo > 0){
-				wl.ThrowFlashBang();
+				//wl.ThrowFlashBang();
+				screen.objects.add(new Objects(x, y, z, this));
 			}
-		}
+		//}
 		if(!MousePressed){
 			canfire = true;
 			if(accuracy > startaccuracy){
-				accuracy-= 0.015;
+				accuracy-= 0.005;
 			}else{
 				accuracy = startaccuracy;
 			}
 		}	
-		if(accuracy > 0.25){
-			accuracy-= startaccuracy/4;
-		}
 		if(InputHandler.MouseButton == 0){
 			MousePressed = false;
 		}		
 	}
 	public void Reload() {
-		accuracy-= 0.015;
+		if(accuracy > startaccuracy)
+			accuracy-= 0.015;
+		else
+			accuracy = startaccuracy;
 		if(!reloading){
 			reloadtime = System.currentTimeMillis();
 			reloading = true;
@@ -588,7 +609,7 @@ public class Display extends Canvas implements Runnable {
 			HEALTH = 0;
 			g.setColor(Color.RED);
 			g.setFont(new Font("Chiller", Font.PLAIN, 72));
-			g.drawString("YOU DIED", width/2-100, height/2+40);
+			g.drawString("YOU DIED", width/2-100, height/2-240);
 			if(!Pause)
 			pause();
 		}
@@ -596,11 +617,11 @@ public class Display extends Canvas implements Runnable {
 		if(!Pause){	
 		drawInfoBoardNorth(g);
 		drawHUD(g);
-		drawInfoBoardSouth(g);
-		//drawMiniMap(g);
+		//drawInfoBoardSouth(g);
+		drawMiniMap(g);
 		//drawRotationMap(g);
 		}
-		if (Pause && !(HEALTH <= 0))
+		if (Pause)
 			drawPauseMenu(g);
 
 		//g.dispose();
@@ -641,10 +662,19 @@ public class Display extends Canvas implements Runnable {
 		g.drawString("FPS: " +(int)fps, 20, 200);
 		g.setColor((acc? Color.GREEN : Color.RED));
 		g.drawString("Accelerated: "+(acc? "Yes" : "No"), 80, 200);
+		
+		g.setColor((screen.enemies.size() < 1000? Color.GREEN : Color.RED));
+		g.drawString("Enemies Size: " +screen.enemies.size(), 20, 240);
+		g.setColor((screen.objects.size() < 1000? Color.GREEN : Color.RED));
+		g.drawString("Objects Size: " +screen.objects.size(), 20, 260);
+		g.setColor((screen.bullets.size() < 1000? Color.GREEN : Color.RED));
+		g.drawString("Bullets Size: " +screen.bullets.size(), 20, 280);
+		g.setColor((screen.models.size() < 1000? Color.GREEN : Color.RED));
+		g.drawString("Models Size: " +screen.models.size(), 20, 300);	
 	}
 	private void drawHUD(Graphics2D g) {
-		double accuracy = startaccuracy * 30;
-		double acc = this.accuracy * 30;
+		double accuracy = initialaccuracy * 100;
+		double acc = this.accuracy * 300;
 		Color cc = Color.CYAN;
 		int xSize = 5;
 		int ySize = 1;
@@ -659,7 +689,66 @@ public class Display extends Canvas implements Runnable {
 		g.fill(top);
 		g.fill(bottom);
 		g.setColor(cc);
-		g.fillRect(width/2, height/2, 1, 1);
+		g.fillRect(width/2, height/2, 1, 1);//middle dot
+		g.fillRect(width/2 - 2, (int) (height/2 -3 -acc), 5, 1);//top
+		g.fillRect(width/2 - 2, (int) (height/2 +3 +acc), 5, 1);//bottom
+		g.fillRect((int)(width/2 - 3 -acc), height/2 -2, 1, 5);
+		g.fillRect((int)(width/2 + 3 +acc), height/2 -2, 1, 5);
+		
+        g.setPaint(new GradientPaint(
+        	     new Point(0, height - 60), 
+        	     new Color(0.0f, 0.0f, 0.0f, 0.8f), 
+        	     new Point(300 + width/7, height - 60), 
+        	     new Color(0.0f, 0.0f, 0.0f, 0.0f)));
+        g.fillRect(0, height - 50, 300 + width/7, 50);
+        
+		g.setColor((HEALTH/StartHEALTH)*100 <= 34 ? Color.BLACK : Color.GRAY);
+		g.fillRect(22, height-40, 12, 36);
+		g.fillRect(10, height-28, 36, 12);
+		g.setColor((HEALTH/StartHEALTH)*100 <= 34 ? Color.RED : Color.WHITE);
+		g.fillRect(24, height-38, 8, 32);
+		g.fillRect(12, height-26, 32, 8);
+		g.setFont(new Font("Verdana", Font.BOLD, 24));
+		g.drawString(""+(int)((HEALTH/StartHEALTH)*100), 65-(""+(int)((HEALTH/StartHEALTH)*100)).length()*4, height-13);
+		bar(g, 120, height - 26, width/14, height/90, HEALTH, StartHEALTH, g.getColor());
+		
+		try {
+			g.drawImage(ImageIO.read(Display.class.getResource((Armor <= 0)?"/Textures/sheildbroke.png" : "/Textures/sheild.png")), 120 + width/14 + 10, height-48, 48, 48, null);
+		} catch (IOException e) {}
+		g.setColor((Armor/StartArmor)*100 <= 0 ? Color.GRAY : Color.WHITE);
+		g.setFont(new Font("Verdana", Font.BOLD, 24));
+		g.drawString(""+(int)((Armor/StartArmor)*100), 120 + width/14 + 76-(""+(int)((Armor/StartArmor)*100)).length()*4, height-13);
+		bar(g, 120 + width/14 + 140, height - 26, width/14, height/90, Armor, StartArmor, g.getColor());
+		
+		int heightt = height/2-100;
+		if(wep==2) heightt = height/2-20;
+        g.setPaint(new GradientPaint(
+       	     new Point(width, heightt), 
+       	     new Color(0.2f, 0.2f, 0.2f, 0.4f), 
+       	     new Point(width-500, heightt), 
+       	     new Color(0.2f, 0.2f, 0.2f, 0.0f)));
+        g.fillRect(width-500, heightt, 500, 80);
+        g.setFont(new Font("Verdana", Font.PLAIN, 18));
+        g.setColor(Color.WHITE);
+        g.drawString("1", width-20, height/2-80);
+        g.drawString("2", width-20, height/2);
+        if(wep == 1)
+        	g.drawString(""+w1.name, width-(w1.name.length()*18)+10, heightt+70);
+        else if (wep == 2)
+        	g.drawString(""+w2.name, width-(w2.name.length()*18)+10, heightt+70);
+        
+		try {
+			g.drawImage(ImageIO.read(Display.class.getResource("/Textures/skullbanner.png")), width - 202, 200, 180, 180, null);
+		} catch (IOException e) {}
+		g.setFont(new Font("Chiller", Font.BOLD, 20));
+		g.setColor(Color.RED);
+    	g.drawString("x"+kills, width-150, 325);
+	}
+	public void bar(Graphics g, int x, int y, int xSize, int ySize, double numcurrent, double nummax, Color c){
+		g.setColor((c.equals(Color.WHITE))? Color.GRAY : Color.BLACK);
+		g.fillRect(x-(int)(ySize/5), y-(int)(ySize/5), xSize+(int)(ySize/2.5), ySize+(int)(ySize/2.5));
+		g.setColor(c);
+		g.fillRect(x, y, (int)((numcurrent/nummax) * xSize), ySize);
 	}
 	private void drawInfoBoardSouth(Graphics2D g) {
 		int centrex = width - 100;
@@ -692,28 +781,37 @@ public class Display extends Canvas implements Runnable {
 			g.drawString("Firemode: CIRCLE", centrex-100, centrey-125);
 		}
 	}
+	private VolatileImage createVolatileImage(int width, int height, int transparency) {	
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
+		VolatileImage image = null;
+	 
+		image = gc.createCompatibleVolatileImage(width, height, transparency);
+	 
+		int valid = image.validate(gc);
+	 
+		if (valid == VolatileImage.IMAGE_INCOMPATIBLE) {
+			image = this.createVolatileImage(width, height, transparency);
+			return image;
+		}
+	 
+		return image;
+	}
 	@SuppressWarnings("unused")
 	private void drawMiniMap(Graphics2D g) {//this is extremely inefficient
 		int centrex = width - 100;
-		int centrey = height - 100;
-		int minimapscale = ScrollLevel*width/1000;
+		int centrey = 100;
+		int minimapscale = ScrollLevel*width/1000;				
 
-		BufferedImage img2 = null;
-		try {
-			img2 = ImageIO.read(Display.class.getResource(screen.render.floor.file));
-		} catch (Exception e) {
-			Log.Log(e.getStackTrace()+"\n"+e.getMessage(), false);
-		}
 		float percentage = .4f;
-		g.drawImage(img2, centrex - 100, centrey - 100, 200, 200, this);
         int brightness = (int)(256 - 256 * percentage);
         g.setColor(new Color(0,0,0,brightness));
-        g.fillRect(centrex - 100, centrey - 100, getWidth(), getHeight());
+        g.fillRect(centrex - 100, 0, 200, 200);
 		
 		g.setColor(Color.GREEN);
 		g.fillRect(centrex, centrey, (16)/minimapscale+3, (16)/minimapscale+3);
 		
-		g.drawLine(centrex+(int)(10*rotationsin), centrey+(int)(10*rotationcos), centrex-(int)(2*rotationsin), centrey-(int)(2*rotationcos));
+		//g.drawLine(centrex+(int)(10*rotationsin), centrey+(int)(10*rotationcos), centrex-(int)(2*rotationsin), centrey-(int)(2*rotationcos));
 		
 		for(Enemy e : screen.enemies){
 			int posx = (int)(e.x-x)/minimapscale+centrex;
@@ -744,12 +842,12 @@ public class Display extends Canvas implements Runnable {
 			}
 		}
 		for(Objects e : screen.bullets){
-			int posx = (int)(e.x-x)/minimapscale+centrex;
-			int posy = (int)(e.z-z)/minimapscale+centrey;
+			double posx = (e.x-x)/minimapscale+centrex;
+			double posy = (e.z-z)/minimapscale+centrey;
 			
 			if(posx > centrex - 100 && posx < centrex + 100 && posy > centrey - 100 && posy < centrey + 100 && !e.maxdistreached){
 			g.setColor(Color.YELLOW);
-			g.fillRect(posx, posy, 1, 1);
+			g.fillRect((int)posx, (int)posy, 1, 1);
 			}
 			
 			if(e.flash){
@@ -780,13 +878,6 @@ public class Display extends Canvas implements Runnable {
 	@SuppressWarnings("unused")
 	private void drawRotationMap(Graphics2D g) {
 		int centrey = height - 100;
-		
-		g.setColor(Color.BLACK); 
-		g.fillRect(width/2-150, 0, 300, 20);
-		g.setColor(Color.GREEN); 
-		g.fillRect(width/2-150, 0, (int) (HEALTH), 20);
-		g.setColor(Color.BLACK);
-		g.drawString("Health: "+(int)HEALTH/3, width/2 - 100, 13);
 		
 		g.setColor(Color.BLACK);
 		g.fillRect(0, centrey - 100, 200, 200);
@@ -835,8 +926,9 @@ public class Display extends Canvas implements Runnable {
 
 		g.setFont(new Font("Arial", Font.PLAIN, 30));
 		Color c = new Color(255, 255, 255, 90);
-		g.setColor(Color.GRAY);
+		g.setColor(!(HEALTH <= 0)? Color.WHITE : Color.GRAY);
 		g.drawString("Resume", width/2 - 55, height/2 - 90);
+		g.setColor(Color.WHITE);
 		g.drawString("Options", width/2 - 50, height/2 - 30);
 		g.drawString("Main Menu", width/2 - 68, height/2 + 30);
 		g.drawString("Exit", width/2 - 25, height/2 + 90);
@@ -845,9 +937,9 @@ public class Display extends Canvas implements Runnable {
 			if (InputHandler.mouseY > height/2 - 110 && InputHandler.mouseY <= height/2 - 70) {
 				g.setColor(c);
 				g.fillRect(width/2 - 85, height/2 - 115, 180, 30);
-				g.setColor(Color.white);
+				g.setColor(!(HEALTH <= 0)? Color.CYAN : Color.GRAY);
 				g.drawString("Resume", width/2 - 55, height/2 - 90);
-				if (MousePressed == 1) {
+				if (MousePressed == 1 && !(HEALTH <= 0)) {
 					InputHandler.MouseButton = 0;
 					pause();
 				}
@@ -855,7 +947,7 @@ public class Display extends Canvas implements Runnable {
 			if (InputHandler.mouseY > height/2 - 50 && InputHandler.mouseY <= height/2 - 10) {
 				g.setColor(c);
 				g.fillRect(width/2 - 85, height/2 - 55, 180, 30);
-				g.setColor(Color.white);
+				g.setColor(Color.cyan);
 				g.drawString("Options", width/2 - 50, height/2 - 30);
 				if (MousePressed == 1) {
 					f.dispose();
@@ -865,7 +957,7 @@ public class Display extends Canvas implements Runnable {
 			if (InputHandler.mouseY > height/2 + 10 && InputHandler.mouseY <= height/2 + 50) {
 				g.setColor(c);
 				g.fillRect(width/2 - 85, height/2 + 5, 180, 30);
-				g.setColor(Color.white);
+				g.setColor(Color.cyan);
 				g.drawString("Main Menu", width/2 - 68, height/2 + 30);
 				if (MousePressed == 1) {
 					InputHandler.MouseButton = 0;
@@ -877,7 +969,7 @@ public class Display extends Canvas implements Runnable {
 			if (InputHandler.mouseY > height/2 + 70 && InputHandler.mouseY <= height/2 + 110) {
 				g.setColor(c);
 				g.fillRect(width/2 - 85, height/2 + 65 , 180, 30);
-				g.setColor(Color.white);
+				g.setColor(Color.cyan);
 				g.drawString("Exit", width/2 - 25, height/2 + 90);
 				if (MousePressed == 1) {
 					System.exit(0);

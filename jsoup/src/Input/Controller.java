@@ -122,19 +122,33 @@ public class Controller extends Thread{
 				if(y > d.floorpos/2)
 				y-=5*d.MoveSpeed;
 			}
+			d.startaccuracy = d.initialaccuracy/4;
 		}
-		if (prone && y <= 0) {
-			walkSpeed = 0.1 * d.MoveSpeed;
-			y += bumheight;
-			pronewalk=true;
+		if(!sprint && !crouch && !jump && !prone){
+			if(forward || left || back || right)
+				d.startaccuracy = d.initialaccuracy*8;
+			else
+				d.startaccuracy = d.initialaccuracy/3;
+		}
+		if (prone) {
+			if(y > -3.7){
+				walkSpeed = 0.1 * d.MoveSpeed;
+				y += bumheight;
+				pronewalk=true;
+			}else{
+				y = -3.9;
+			}
+			if(d.startaccuracy >= d.initialaccuracy/8){
+				d.startaccuracy -= 0.15*d.accuracy;
+			}
 		}
 		if (sprint && !crouch && !jump && !prone) {
-			walkSpeed = 1 * d.MoveSpeed;
-			walk = true;
+			walkSpeed = 0.3 * d.MoveSpeed;
 			sprintwalk = true;
-			d.startaccuracy=d.initialaccuracy*2;
-		}else{
-			d.startaccuracy=d.initialaccuracy;
+			if(forward || left || back || right)
+				d.startaccuracy=d.initialaccuracy*2;
+			else
+				d.startaccuracy = d.initialaccuracy/3;
 		}
 		
 

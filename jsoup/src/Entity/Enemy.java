@@ -18,6 +18,7 @@ public class Enemy implements Serializable{
 	public boolean chase = true;
 	public boolean dead = false;
 	public boolean attacking = false;
+	public double maxhealth = 100;
 	public double health = 100;
 	public double displayhealth = health/100;
 	private Display d;
@@ -34,6 +35,7 @@ public class Enemy implements Serializable{
 			displayhealth = health/100;
 			if(health <= 0){
 				health = 0;
+				d.kills++;
 				dead = true;
 			}
 			if(chase){

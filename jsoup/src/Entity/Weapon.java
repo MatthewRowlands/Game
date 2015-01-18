@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Weapon {
+	public double recoil = 32;
 	public double accuracy = 0.05;
 	public double firerate = 15;
 	public double WeaponDamage = 0;
@@ -45,7 +46,7 @@ public class Weapon {
 	      
 	      String gun = text.get(id);
 
-	      String name, firerate, damage, accuracy, ammo, firemode, reloadtime, filepath;
+	      String name, firerate, damage, accuracy, ammo, firemode, reloadtime, filepath, recoil;
 	      String[] split = gun.split(" ");
 	      name = split[1];
 	      firerate = split[2];
@@ -55,6 +56,7 @@ public class Weapon {
 	      firemode = split[6];
 	      reloadtime = split[7];
 	      filepath = split[8];
+	      recoil = split[9];
 	      
 	      this.name = name;
 	      this.firerate = Double.parseDouble(firerate);
@@ -64,6 +66,7 @@ public class Weapon {
 	      this.WeaponAmmo = Integer.parseInt(ammo);
 	      this.firemode = Integer.parseInt(firemode);
 	      this.filepath  = filepath;
+	      this.recoil = Integer.parseInt(recoil);
 	      remainingammo = WeaponAmmo;
 
 	    } catch (FileNotFoundException e) {

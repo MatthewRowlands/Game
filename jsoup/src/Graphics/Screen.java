@@ -1,6 +1,7 @@
 package Graphics;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import Connection.Client;
 import Entity.Enemy;
@@ -18,6 +19,8 @@ public class Screen extends Render{
 	public ArrayList<Objects> objects = new ArrayList<Objects>();
 	public ArrayList<Objects> bullets = new ArrayList<Objects>();
 	public ArrayList<Model> models = new ArrayList<Model>();
+	//public ArrayList<Sprite> sprites = new ArrayList<Sprite>();
+	
 	int width, height;
 	
 	Texture player = new Texture("/textures/Ground2.png");
@@ -31,6 +34,7 @@ public class Screen extends Render{
 		this.height = height;
 		this.d = d;
 		render = new Render3D(width, height, d);
+		objects.add(new Objects(10, 0, 10, d));
 		models.add(new Model());//TODO implement properly
 		models.get(models.size()-1).LoadModel("untitled");
 	}
@@ -47,7 +51,7 @@ public class Screen extends Render{
 		draw(render, 0, 0);
 	}
 	
-	private void RenderObjects() {
+	private synchronized void RenderObjects() {
 		for(double[] v3f : positions){
 			if(positions.indexOf(v3f) != Client.clientnumber-1){
 			renderBlock(v3f[0]/8,v3f[1]/8,v3f[2]/8, 1, 0.5, 1, player);
@@ -55,11 +59,13 @@ public class Screen extends Render{
 		}
 		for(Enemy e : enemies){
 			if(!e.dead){
-			renderBlock(e.x/8,e.y/8,e.z/8, 1, e.displayhealth, 1, enemy);
+			renderBlock(e.x/8,e.y/8,e.z/8, 1, 1, 1, enemy);
+			render.renderSprite(e.x/8+0.5,e.y/8 - 2,e.z/8+0.5, 400, 40, 0x7cfc00, (int) ((e.health / e.maxhealth) * 400)-200);
+			render.renderSprite(e.x/8+0.5,e.y/8 - 2,e.z/8+0.5, 400, 40, 0xFF0000, 200);
 			}
 		}
 		for(Objects e : objects){
-			renderBlock(e.x/8,e.y/8,e.z/8, 1, 1, 1, object);
+			renderBlock(e.x/8,e.y/8,e.z/8, 1, 0.5, 1, bullet);
 		}
 		for(Objects e : bullets){
 			if(!e.flash){
@@ -68,9 +74,9 @@ public class Screen extends Render{
 			if(e.maxdistreached){
 			d.activebullets--;
 			}else{
-				if(e.bullet)
+				if(e.bullet){
 					renderBlock(e.x/8,e.y/8,e.z/8, 0.05, 0.025, 0.05, bullet);
-				else if(e.flash)
+				}else if(e.flash)
 					renderBlock(e.x/8,e.y/8,e.z/8, 0.1, 0.1, 0.1, bullet);
 			}
 		}	
@@ -136,7 +142,6 @@ public class Screen extends Render{
 					if(e2.canhurt(e)){
 						double dmgtodo = (d.WeaponDamage+(Math.random()*3)-1);
 						e.health-=dmgtodo;
-						d.PlaySound("/audio/Enemy_Hit.wav");
 					}
 					e2.canthurt(e);
 				}
@@ -144,7 +149,7 @@ public class Screen extends Render{
 		}
 	}
 	
-	public void tick(){
+	public synchronized void tick(){
 		for(Enemy e : enemies){
 			e.tick();
 		}

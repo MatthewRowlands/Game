@@ -22,8 +22,8 @@ public class Render3D extends Render {
 	int c = 0;
 	int num = 1;
 	
-	public Texture floor = new Texture("/textures/Fire.png");
-	public Texture roof = new Texture("/textures/Night Sky.png");
+	public Texture floor = new Texture("/textures/Ground2.png");
+	public Texture roof = new Texture("/textures/Sky.png");
 	private Display d;
 	
 	public Render3D(int width, int height, Display d) {
@@ -59,7 +59,7 @@ public class Render3D extends Render {
 		d.rotation = rotation;
 		
 		for (int y = 0; y < height; y++) {
-			double ceiling = (y - height*(rotationy) / 2.0) / height;
+			double ceiling = (y - height * (rotationy) / 2.0) / height;
 			double z = (floorpos + up) / ceiling;
 			c = 0;
 			
@@ -72,7 +72,7 @@ public class Render3D extends Render {
 				z = (floorpos + up + walking) / ceiling;
 			}
 			if (Controller.sprintwalk && Controller.walk) {
-				walking = Math.sin(game.time / 6.0) * 0.8;
+				walking = Math.sin(game.time / 6.0) * 0;
 				z = (floorpos + up + walking) / ceiling;
 			}
 			if (Controller.pronewalk && Controller.walk) {
@@ -99,8 +99,8 @@ public class Render3D extends Render {
 					xPix = (int) ((xx + right)*16);
 					yPix = (int) ((yy + forward)*16);
 				}else{
-					xPix = (int) ((xx + right)/32);
-					yPix = (int) ((yy + forward)/32);	
+					xPix = (int) ((xx + right)/16);
+					yPix = (int) ((yy + forward)/16);	
 				}
 				zBuffer[x + y * width] = z;
 				if(c == 0){
@@ -114,7 +114,7 @@ public class Render3D extends Render {
 					else
 						pixels[x + y * width] = 0;
 				}
-				if (z > renderDistance*50000) {
+				if (z > renderDistance/32) {
 					pixels[x + y * width] = 0x7EC0EE;
 				}
 			}
@@ -232,7 +232,7 @@ public class Render3D extends Render {
 					Log.Log(e.toString(), false);
 					continue;
 				}
-				zBuffer[x + y * width] = 1 / (tex1 + (tex2 - tex1) * pixelRotation) * 10/(renderDistance);
+				zBuffer[x + y * width] = 1 / (tex1 + (tex2 - tex1) * pixelRotation) * 10/(renderDistance/100000);
 			}
 		}
 	}
@@ -353,10 +353,10 @@ public class Render3D extends Render {
 			double pixelRotation = (x - xPixelLeft) / (xPixelRight - xPixelLeft);
 			double zWall = (tex1 + (tex2 - tex1) * pixelRotation);
 			
-			/*if(zBufferWall[x] > zWall){
+			if(zBufferWall[x] > zWall){
 				continue;
 			}
-			zBufferWall[x] = zWall;*/
+			zBufferWall[x] = zWall;
 			
 			int xTexture = (int)((tex3 + tex4 * pixelRotation) / zWall *4);
 
@@ -387,11 +387,62 @@ public class Render3D extends Render {
 			}
 		}
 	}
+	public void renderSprite(double x, double y, double z, int sizex, int sizey, int color, int varsize){
+		
+		int spritesizex = sizex;//two variables for the x and y size of the 2D spprite (int 3D space)
+		int spritesizey = sizey;
+		
+		double upCorrect = -0.125;//these variables are to correct the alignment of the object, to make it stay in the same place
+		double rightCorrect = 0.0625;
+		double forwardCorrect = 0.0625;
+		double walkCorrect = 0.0625;
+		
+		double xc = ((x / 2) - (right * rightCorrect)) * 2;
+		double yc = ((y / 2) - (up * upCorrect))+(walking * walkCorrect)*2;
+		double zc = ((z / 2) - (forward * forwardCorrect)) * 2;
+		
+		double rotX = xc * cosine - zc * sine;//calculate the x rotation using sine, cosine and 
+		double rotY = yc;
+		double rotZ = zc * cosine + xc * sine;
+		
+		double xCentre = d.width/2;
+		double yCentre = d.height/2;
+		
+		double xPixel = rotX / rotZ * height + xCentre;
+		double yPixel = (rotY / rotZ * height + yCentre)  * (rotationy);
+		
+		double xPixelL = xPixel - spritesizex / rotZ;
+		double xPixelR = xPixel + varsize / rotZ;
+		
+		double yPixelL = yPixel - spritesizey / rotZ;
+		double yPixelR = yPixel + spritesizey / rotZ;
+		
+		int xpl = (int)xPixelL;
+		int xpr = (int)xPixelR;
+		int ypl = (int)yPixelL;
+		int ypr = (int)yPixelR;
+		
+		if(xpl < 0) xpl = 0;
+		if(xpr > width) xpr = width;
+		if(ypl < 0) ypl = 0;
+		if(ypr > height) ypr = height;
+		
+		//rotZ *= 8;
+		
+		for(int yp = ypl; yp < ypr; yp++){
+			for(int xp = xpl; xp < xpr; xp++){
+				if(zBuffer[xp + yp * width] > rotZ){
+					pixels[xp+yp*width] = color;
+					zBuffer[xp+yp*width] = rotZ;
+				}
+			}			
+		}
+	}
 	
 	public void renderDistanceLimiter() {
 		for (int i = 0; i < width * height; i++) {
 			int colour = pixels[i];
-			int brightness = (int) (renderDistance / (zBuffer[i]));
+			int brightness = (int) ((renderDistance/128)/ (zBuffer[i]));
 
 			if (brightness < d.brightness) {
 				brightness = d.brightness;
@@ -404,9 +455,9 @@ public class Render3D extends Render {
 			int g = (colour >> 8) & 0xff;
 			int b = (colour) & 0xff;
 
-			r = r * brightness / 255;
-			g = g * brightness / 255;
-			b = b * brightness / 255;
+			r = r * brightness /(255+255-244);
+			g = g * brightness /(255+255-215);
+			b = b * brightness /(255+255-0);
 
 			pixels[i] = (r << 16 | g << 8 | b);
 		}

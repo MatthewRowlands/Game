@@ -19,7 +19,7 @@ public class Objects implements Serializable{
 	public double y;
 	public double z;
 	public double heightstep = 0.15;
-	public double speed = 10;
+	public double speed = 5;
 	public double flashspeed = 2;
 	public double drop = 0.000025;
 	public double flashdrop = 0.0025;
@@ -52,7 +52,7 @@ public class Objects implements Serializable{
 		accuracy = d.accuracy;
 	}
 	
-	public void tick() {
+	public synchronized void tick() {
 		if(bullet){
 		x+=rotationsin*speed;
 		y+=rotationy*speed;
@@ -61,24 +61,29 @@ public class Objects implements Serializable{
 		if(x - initialx > maxdistance){
 			bullet = false;
 			maxdistreached = true;
+			d.screen.bullets.remove(this);
 		}
 		if(z - initialz > maxdistance){
 			bullet = false;
 			maxdistreached = true;
+			d.screen.bullets.remove(this);
 		}
 		if(x - initialx < -maxdistance){
 			bullet = false;
 			maxdistreached = true;
+			d.screen.bullets.remove(this);
 		}
 		if(z - initialz < -maxdistance){
 			bullet = false;
 			maxdistreached = true;
+			d.screen.bullets.remove(this);
 		}
 		if(y <= -d.floorpos/2 || y >= d.ceilingpos/2){
 			//make a bullet impact
 			d.PlaySound("/audio/Hard_Hit.wav");
 			bullet = false;
 			maxdistreached = true;
+			d.screen.bullets.remove(this);
 		}
 		}
 		if(flash){

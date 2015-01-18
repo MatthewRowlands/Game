@@ -1,5 +1,6 @@
 package Input;
 
+import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -10,6 +11,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import Entity.Objects;
 import Main.Display;
 
 public class InputHandler extends Thread implements KeyListener, FocusListener, MouseListener,
@@ -114,7 +116,7 @@ public class InputHandler extends Thread implements KeyListener, FocusListener, 
 		}
 		
 		if(keyCode == KeyEvent.VK_ESCAPE){
-			if(d != null)
+			if(d != null && !(d.HEALTH <= 0))
 			d.pause();
 		}
 		if(keyCode == KeyEvent.VK_F1){
