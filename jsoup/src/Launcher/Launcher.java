@@ -121,7 +121,7 @@ public class Launcher extends Canvas implements Runnable{
 		
 		MousePressed = InputHandler.MouseButton;
 		try {
-			g.drawImage(ImageIO.read(Display.class.getResource("/Menuimg.jpg")), 0, 0, 800, 400, null);
+			g.drawImage(ImageIO.read(Display.class.getResource("/Textures/Menuimg.jpg")), 0, 0, 800, 400, null);
 			
 			Color c = new Color(255, 255, 255, 90 );
 			
@@ -141,7 +141,7 @@ public class Launcher extends Canvas implements Runnable{
 				if(InputHandler.mouseY > 85 && InputHandler.mouseY <= 125){
 					g.setColor(c);
 					g.fillRect(500,95,260,30);
-						g.drawImage(ImageIO.read(Display.class.getResource("/Menuarrow.png")), 760, 97, 40, 25, null);
+						g.drawImage(ImageIO.read(Display.class.getResource("/Textures/Menuarrow.png")), 760, 97, 40, 25, null);
 						g.setColor(Color.white);
 						g.drawString("Singleplayer", 600, 120);
 					if(MousePressed == 1){
@@ -153,7 +153,7 @@ public class Launcher extends Canvas implements Runnable{
 				if(InputHandler.mouseY > 125 && InputHandler.mouseY <= 165){
 					g.setColor(c);
 					g.fillRect(500,135,260,30);
-						g.drawImage(ImageIO.read(Display.class.getResource("/Menuarrow.png")), 760, 137, 40, 25, null);
+						g.drawImage(ImageIO.read(Display.class.getResource("/Textures/Menuarrow.png")), 760, 137, 40, 25, null);
 						g.setColor(Color.white);
 						g.drawString("Multiplayer", 600, 160);
 					if(MousePressed == 1){
@@ -162,10 +162,8 @@ public class Launcher extends Canvas implements Runnable{
 						String ip = "localHost";
 						String un = "TEST_PLAYER";
 						String port = Display.DEFAULT_PORT;
-						if(Display.WINDOW_FAST_JOIN == 0){
 						ip = JOptionPane.showInputDialog("Enter IP: ");
 						port = JOptionPane.showInputDialog("Enter Port: ");
-						}
 						un = JOptionPane.showInputDialog("Enter Username: ");
 						try{
 						StartGame(true, ip, un, Integer.parseInt(port));
@@ -179,7 +177,7 @@ public class Launcher extends Canvas implements Runnable{
 				if(InputHandler.mouseY > 165 && InputHandler.mouseY <= 205){
 					g.setColor(c);
 					g.fillRect(500,175,260,30);
-						g.drawImage(ImageIO.read(Display.class.getResource("/Menuarrow.png")), 760, 177, 40, 25, null);
+						g.drawImage(ImageIO.read(Display.class.getResource("/Textures/Menuarrow.png")), 760, 177, 40, 25, null);
 						g.setColor(Color.white);
 						g.drawString("Host Game", 600, 200);
 					if(MousePressed == 1){
@@ -188,9 +186,7 @@ public class Launcher extends Canvas implements Runnable{
 						Display.launcher = this;
 						try{
 							String port = Display.DEFAULT_PORT;
-							if(Display.WINDOW_FAST_JOIN != 1){
-							port = JOptionPane.showInputDialog("Enter Port: ");
-							}
+							port = JOptionPane.showInputDialog("Enter Port: ");				
 							new Server(Integer.parseInt(port)).start();
 						}catch (Exception e){
 							frame.dispose();
@@ -202,7 +198,7 @@ public class Launcher extends Canvas implements Runnable{
 				if(InputHandler.mouseY > 205 && InputHandler.mouseY <= 245){
 					g.setColor(c);
 					g.fillRect(500,215,260,30);
-						g.drawImage(ImageIO.read(Display.class.getResource("/Menuarrow.png")), 760, 217, 40, 25, null);
+						g.drawImage(ImageIO.read(Display.class.getResource("/Textures/Menuarrow.png")), 760, 217, 40, 25, null);
 						g.setColor(Color.white);
 						g.drawString("Loadout", 600, 240);
 					if(MousePressed == 1){
@@ -215,7 +211,7 @@ public class Launcher extends Canvas implements Runnable{
 				if(InputHandler.mouseY > 245 && InputHandler.mouseY <= 285){
 					g.setColor(c);
 					g.fillRect(500,255,260,30);
-						g.drawImage(ImageIO.read(Display.class.getResource("/Menuarrow.png")), 760, 257, 40, 25, null);
+						g.drawImage(ImageIO.read(Display.class.getResource("/Textures/Menuarrow.png")), 760, 257, 40, 25, null);
 						g.setColor(Color.white);
 						g.drawString("Options", 600, 280);
 					if(MousePressed == 1){
@@ -228,7 +224,7 @@ public class Launcher extends Canvas implements Runnable{
 				if(InputHandler.mouseY > 285 && InputHandler.mouseY <= 325){
 					g.setColor(c);
 					g.fillRect(500,295,260,30);
-						g.drawImage(ImageIO.read(Display.class.getResource("/Menuarrow.png")), 760, 297, 40, 25, null);
+						g.drawImage(ImageIO.read(Display.class.getResource("/Textures/Menuarrow.png")), 760, 297, 40, 25, null);
 						g.setColor(Color.white);
 						g.drawString("Exit", 600, 320);
 					if(MousePressed == 1){

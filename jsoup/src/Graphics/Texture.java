@@ -9,10 +9,17 @@ public class Texture {
 	public Render r;
 	public int texVar = 0;
 	public String file;
+	int color = 0xFFFFFF;
+	boolean issolid = false;
 	
 	public Texture(String file){
 		this.file = file;
 		r = loadBitmap(file);
+	}
+	
+	public Texture(int color){
+		this.color = color;
+		this.issolid  = true;
 	}
 	
 	public static Render loadBitmap(String fileName){

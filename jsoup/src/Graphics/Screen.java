@@ -1,6 +1,7 @@
 package Graphics;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import Connection.Client;
@@ -51,37 +52,42 @@ public class Screen extends Render{
 		draw(render, 0, 0);
 	}
 	
-	private synchronized void RenderObjects() {
-		for(double[] v3f : positions){
+	private void RenderObjects() {
+		for(Iterator<double[]> iterator = positions.iterator(); iterator.hasNext();){
+			double[] v3f = iterator.next();
 			if(positions.indexOf(v3f) != Client.clientnumber-1){
 			renderBlock(v3f[0]/8,v3f[1]/8,v3f[2]/8, 1, 0.5, 1, player);
 			}
 		}
-		for(Enemy e : enemies){
+		for(Iterator<Enemy> iterator = enemies.iterator(); iterator.hasNext();){
+			Enemy e = iterator.next();
 			if(!e.dead){
 			renderBlock(e.x/8,e.y/8,e.z/8, 1, 1, 1, enemy);
 			render.renderSprite(e.x/8+0.5,e.y/8 - 2,e.z/8+0.5, 400, 40, 0x7cfc00, (int) ((e.health / e.maxhealth) * 400)-200);
 			render.renderSprite(e.x/8+0.5,e.y/8 - 2,e.z/8+0.5, 400, 40, 0xFF0000, 200);
 			}
 		}
-		for(Objects e : objects){
-			renderBlock(e.x/8,e.y/8,e.z/8, 1, 0.5, 1, bullet);
+		for(Iterator<Objects> iterator = objects.iterator(); iterator.hasNext();){
+			Objects o = iterator.next();
+			renderBlock(o.x/8,o.y/8,o.z/8, 1, 0.5, 1, bullet);
 		}
-		for(Objects e : bullets){
-			if(!e.flash){
+		for(Iterator<Objects> iterator = bullets.iterator(); iterator.hasNext();){
+			Objects b = iterator.next();
+			if(!b.flash){
 			d.activebullets++;
 			}
-			if(e.maxdistreached){
+			if(b.maxdistreached){
 			d.activebullets--;
 			}else{
-				if(e.bullet){
-					renderBlock(e.x/8,e.y/8,e.z/8, 0.05, 0.025, 0.05, bullet);
-				}else if(e.flash)
-					renderBlock(e.x/8,e.y/8,e.z/8, 0.1, 0.1, 0.1, bullet);
+				if(b.bullet){
+					renderBlock(b.x/8,b.y/16,b.z/8, 0.05, 0.025, 0.05, bullet);
+				}else if(b.flash)
+					renderBlock(b.x/8,b.y/8,b.z/8, 0.1, 0.1, 0.1, bullet);
 			}
 		}	
-		for(Model m : models){
-			for(Face f : m.model){
+		for(Iterator<Model> iterator = models.iterator(); iterator.hasNext();){
+			for(Iterator<Face> iterator2 = iterator.next().model.iterator(); iterator2.hasNext();){
+				Face f = iterator2.next();
 				render.renderFace(f, f.t);
 			}
 		}
@@ -94,14 +100,15 @@ public class Screen extends Render{
 		d.collisionfront = false;
 		d.collisionleft = false;
 		
-		for(Enemy e : enemies){
+		for(Iterator<Enemy> iteratore = enemies.iterator(); iteratore.hasNext();){
+			Enemy e = iteratore.next();
 			double x1, y1, z1;
 			x1 = e.x;
 			y1 = e.y;
 			z1 = e.z;
 			
 			if(!e.dead){		
-				if(x1 >= d.x - 16 && x1 <= d.x + 8 && z1 >= d.z - 16 && z1 <= d.z + 8){
+				if(x1 >= d.x - 16 && x1 <= d.x + 8 && z1 >= d.z - 16 && z1 <= d.z + 8 && d.y < y1 + 32 && d.y + 32 > y1){
 					e.chase = false;
 					e.attacking = true;
 					if(d.HEALTH > 0 && p != 1){
@@ -132,29 +139,40 @@ public class Screen extends Render{
 				}
 			}
 			
-			for(Objects e2 : bullets){
+			for(Iterator<Objects> iteratorb = bullets.iterator(); iteratorb.hasNext();){
+				Objects b = iteratorb.next();
 				double x2, y2, z2;	
-				x2 = e2.x;
-				y2 = e2.y;
-				z2 = e2.z;
+				x2 = b.x;
+				y2 = b.y;
+				z2 = b.z;
 					
-				if(x2 >= x1 && x2 <= x1 + 8 && z2 >= z1 && z2 <= z1 + 8 && y2 >= y1 -8 && y2 <= y1 +8 && e2.bullet){
-					if(e2.canhurt(e)){
+				if(b.bullet && x2 >= x1 && x2 <= x1 + 8 && z2 >= z1 && z2 <= z1 + 8 && y2 >= y1 -8 && y2 <= y1 +8){
+					if(b.canhurt(e)){
 						double dmgtodo = (d.WeaponDamage+(Math.random()*3)-1);
 						e.health-=dmgtodo;
 					}
-					e2.canthurt(e);
+					b.canthurt(e);
 				}
 			}
 		}
 	}
 	
-	public synchronized void tick(){
-		for(Enemy e : enemies){
-			e.tick();
+	public void tick(int ups){
+		for(Iterator<Enemy> iterator = enemies.iterator(); iterator.hasNext();){
+			Enemy e = iterator.next();
+			if(!e.dead){
+				e.tick(ups);
+			}else{
+				iterator.remove();
+			}
 		}
-		for(Objects e : bullets){
-			e.tick();
+		for(Iterator<Objects> iterator = bullets.iterator(); iterator.hasNext();){
+			Objects b = iterator.next();
+			if(!b.maxdistreached){
+				b.tick(ups);
+			}else{
+				iterator.remove();
+			}
 		}
 		CheckCollision(0);
 	}

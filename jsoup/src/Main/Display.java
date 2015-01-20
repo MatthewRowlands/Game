@@ -30,6 +30,7 @@ import java.awt.image.DataBufferInt;
 import java.awt.image.VolatileImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
@@ -60,124 +61,77 @@ import Model.Model;
 
 public class Display extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
-
-	/**
-	 * @author Matthew
-	 * 
-	 * CX15-TR9Z-8UTY-6FNV
-	 * 
-	 * Changelog: 
-	 * Version 0.6 [25/11/14]
-	 * -Minimap
-	 * -Enemies
-	 * -Guns
-	 * -Vertical Rotation
-	 * -Multiplayer
-	 * -Fixed Stretching for objects (partially)
-	 * -Model Loader
-	 * 
-	 * TODO: 
-	 * -Add in actual maps 
-	 * -More guns
-	 * -Develop multiplayer
-	 * -Use only one ArrayList of type entity
-	 * -Develop model loader
-	 * -Sprites *
-	 * -Render Face
-	 * -Use GPU *
-	 * -Make collision detection and object movements on their own thread so that can be much more accurate
-	 * 
-	 * KNOWN BUGS:
-	 * -Look too far up or down and goes WIERD (stretches texture?)
-	 * -Player collision detection not aligned with direction facing
-	 * -Flash grenades make screen white no matter which direction facing
-	 * -Minimap is inverted
-	 */
 	
-	public static double WINDOW_FAST_JOIN = 1.0;
-	public static double WINDOW_TEST_MODE = 0.0;
-	public static double WINDOW_TICK_RATE = 60.0;
-	public static double WINDOW_NETWORK_TICK_RATE = 1.0;
-	public static boolean WINDOW_USE_VSYNC = false;
+	public static double gametickrate = 120.0;
+	public static double networktickrate = 1.0;
+	public boolean VSYNC = false;
 	public static String DEFAULT_PORT = "12500";
-	public static boolean WINDOW_FIX_MOUSE = false;
+	public boolean FIX_MOUSE = false;
+	public boolean flymode = false;
+	
 	public static int PING = 0;
 	public int ping = 0;
-	public double[] pings = new double[16];
-	public boolean canUpdate = false;
-	public double floorpos = 8;
-	public double ceilingpos = 2048/2;
-	public boolean flymode = false;
 	int time = 0;
+	int tickCount = 0;
+	int frames = 0;
+	int ups = 0;
+	float fps = 0;
+	long fpstime = 0;
+	long totalfps = 0;
+	public float averagefps = 0;
+	public long t1=0;
+	public long t2=0;
+	public double[] pings = new double[16];
+	
+	public boolean canUpdate = false;
 	
 	public static Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
 	public static int w = ss.width;
 	public static int h = ss.height;
-
 	public static int width = w / 2;
 	public static int height = h / 2;
-
+	public static Launcher launcher;
 	public JFrame f;
 	public String title = "3D Game";
-
-	private Thread thread;
 	public Client client;
 	public Screen screen;
-	private Game game;
-	private BufferedImage img;
 	public boolean run = false;
+	private Game game;
+	private Thread thread;
+	private BufferedImage img;
 	private int[] pixels;
+	
+	protected Robot r;
 	private InputHandler input;
 	private int newmX = 0;
 	private int newmY = 0;
-	
-	int tickCount = 0;
-	int frames = 0;
-	public int ups = 0;
-	public float fps = 0;
-	long fpstime = 0;
-	
 	public double MouseChangex;
 	public double MouseChangey;
 	public int selection = 0;
-	protected Robot r;
 	public int blockcount=0;
-	
 	public int x = 0;
 	public int y = 0;
 	public int z = 0;
-
-	public static Launcher launcher;
-
-	public static double MoveSpeed = 1;
-	public static double JumpHeight = 1;
-	public static double MouseSpeed = 5;
-	public int RenderDist = 4000000;
-	public boolean Pause = false;
-	
-	BufferedImage cursor = new BufferedImage(16, 16,
-			BufferedImage.TYPE_INT_ARGB);
-	Cursor blank = Toolkit.getDefaultToolkit().createCustomCursor(
-			cursor, new Point(0, 0), "blank");
-
-	public long t1=0;
-	public long t2=0;
-	
+	public boolean Pause = false;	
 	boolean MousePressed = false;
 	public boolean canfire = true;
+	boolean alreadydone = false;
+	boolean acc = false;
 
 	public double rotationcos = 0;
 	public double rotationsin = 0;
 	public double rotation = 0;
 	public double rotationy = 0;
-
-	public double StartHEALTH = 30000;
-	public double HEALTH = 30000;
+	public boolean collisionleft = false;
+	public boolean collisionfront = false;
+	public boolean collisionright = false;
+	public boolean collisionback = false;
 	
 	public static Weapon w1 = new Weapon(1);
 	public static Weapon w2 = new Weapon(3);
 	int wep = 1;
-	
+	public double recoil = (startaccuracy * startaccuracy)*getCurrentWeapon().recoil;	
+	public double maxrecoil = recoil * 4;
 	public static double initialaccuracy = w1.accuracy;
 	public static double startaccuracy = initialaccuracy;
 	public static double accuracy = startaccuracy;
@@ -188,11 +142,8 @@ public class Display extends Canvas implements Runnable {
 	public static int sWeaponAmmo = w1.WeaponAmmo;
 	public int FlashAmmo = sFlashAmmo;
 	public static int WeaponAmmo = sWeaponAmmo;
-	
 	public int activebullets = 0;
 	public boolean Reload = false;
-
-	
 	public long guntime = System.currentTimeMillis();
 	public long flashtime = System.currentTimeMillis();
 	public long reloadtime = System.currentTimeMillis();
@@ -200,22 +151,28 @@ public class Display extends Canvas implements Runnable {
 	public boolean reloading = false;
 	public boolean donereloadsound = false;
 
-	public int enemiesattacking = 0;
-	
-	public boolean collisionleft = false;
-	public boolean collisionfront = false;
-	public boolean collisionright = false;
-	public boolean collisionback = false;
-
 	public int ScrollLevel = 8;
-	public int brightness = 5;
-
+	public int brightness = 20000;
 	public static boolean fullscreen = true;
-	boolean alreadydone = false;
-	boolean acc = false;
-	long totalfps = 0;
-	public float averagefps = 0;
+	public double floorpos = 8;
+	public double ceilingpos = 2048/2;
+	public static double MoveSpeed = 1;
+	public static double JumpHeight = 1;
+	public static double MouseSpeed = 5;
+	public int RenderDist = 4000000;
+	public double gravity = 9.81;
+
+	int Armor = 100;
+	int StartArmor = 100;
+	public int enemiesattacking = 0;
+	public int kills = 0;
+	public double StartHEALTH = 30000;
+	public double HEALTH = 30000;
 	
+	BufferedImage cursor = new BufferedImage(16, 16,
+			BufferedImage.TYPE_INT_ARGB);
+	Cursor blank = Toolkit.getDefaultToolkit().createCustomCursor(
+			cursor, new Point(0, 0), "blank");
 	WeaponLogic wl = new WeaponLogic(this);
 	NetworkThread nw;
 	AnimationThread a;
@@ -224,26 +181,18 @@ public class Display extends Canvas implements Runnable {
 	GraphicsConfiguration gc = gd.getDefaultConfiguration();
 	BufferCapabilities bufferCapabilities;
 	public BufferStrategy bufferStrategy;
-
-	public double recoil = (startaccuracy * startaccuracy)*getCurrentWeapon().recoil;	
-	public double maxrecoil = recoil * 4;
-	int Armor = 100;
-	int StartArmor = 100;
-
-	public int kills = 0;
-	
 	
 	public Display(JFrame f, int width, int height) {
 		Display.width = width; 
 		Display.height = height;
 		this.f = f;
-		f.setUndecorated((Display.WINDOW_TEST_MODE == 0));
+		f.setUndecorated(true);
 		if (gd.isFullScreenSupported() && fullscreen) {
 			gd.setFullScreenWindow(f);
 			DisplayMode dm = new DisplayMode(width, height, 32,
 					DisplayMode.REFRESH_RATE_UNKNOWN);
 			gd.setDisplayMode(dm);
-			WINDOW_FIX_MOUSE = false;
+			FIX_MOUSE = false;
 		} else {
 			f.setSize(getGameWidth(), getGameHeight());
 			f.setTitle(title+" ");
@@ -262,10 +211,17 @@ public class Display extends Canvas implements Runnable {
 	}
 	public void startgame(){
 		try{
+			if (gd.isFullScreenSupported() && fullscreen) {
 			DisplayMode dm = new DisplayMode(width, height, 32,
 					DisplayMode.REFRESH_RATE_UNKNOWN);
 			gd.setDisplayMode(dm);
-
+			} else {
+				f.setSize(getGameWidth(), getGameHeight());
+				f.setTitle(title+" ");
+				f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				f.setLocationRelativeTo(null);
+				f.setVisible(true);
+			}
 
 			f.setVisible(true);
 			
@@ -314,13 +270,13 @@ public class Display extends Canvas implements Runnable {
 				public void actionPerformed(ActionEvent event) {
 					ticks += 1;
 					networkUpdate();
-					if (ticks == WINDOW_NETWORK_TICK_RATE) {
+					if (ticks == networktickrate) {
 						ticks = 0;
 					}
 				}
 			};
 
-			Timer timer = new Timer((int) (1000 / WINDOW_NETWORK_TICK_RATE), actListner);
+			Timer timer = new Timer((int) (1000 / networktickrate), actListner);
 			timer.start();
 		}
 	}
@@ -373,12 +329,12 @@ public class Display extends Canvas implements Runnable {
 	public void run() {
 		double unprocessedSeconds = 0;
 		long previousTime = System.nanoTime();
-		double secondsPerTick = 1 / WINDOW_TICK_RATE;
+		double secondsPerTick = 1 / gametickrate;
 		boolean ticked = false;
 		r.mouseMove((w / 2), (h / 2));
 		
 		while (run && !thread.isInterrupted()) {
-			if(!WINDOW_USE_VSYNC){
+			if(!VSYNC){
 			}
 			screen.CheckCollision(1);
 			frames++;
@@ -389,15 +345,15 @@ public class Display extends Canvas implements Runnable {
 			requestFocus();
 			
 			while (unprocessedSeconds > secondsPerTick) {
-				if(WINDOW_USE_VSYNC){
+				if(VSYNC){
 				}
-				tick();
+				tick(120);
 				unprocessedSeconds -= secondsPerTick;
 				ticked = true;
 				
 				fps = 1e9f / fpstime;
 				
-				if (tickCount % WINDOW_TICK_RATE == 0) {
+				if (tickCount % gametickrate == 0) {
 					/*double x = this.x + Math.sin(Math.random()*500)*500;
 					double z = this.z + Math.sin(Math.random()*500)*500;*/
 					for(Objects o : screen.objects){
@@ -427,35 +383,35 @@ public class Display extends Canvas implements Runnable {
 	public static void setMouseSpeed(int mousespeed) {
 		MouseSpeed = mousespeed;
 	}
-	public void tick() {
+	public void tick(int ups) {
 		if(Math.abs(accuracy) > maxrecoil+startaccuracy) accuracy = maxrecoil+startaccuracy;
 		recoil = Math.abs((startaccuracy/64) - (initialaccuracy/32))*getCurrentWeapon().recoil;	
 		maxrecoil = recoil * 3;
 		
 		tickCount++;
-		game.tick(input.key);
+		game.tick(input.key, ups);
 		
 		if(!Pause){
 			newmX = InputHandler.mouseX;
 			newmY = InputHandler.mouseY;
 	
-			if (newmX > w/2 && WINDOW_TEST_MODE != 1) {
+			if (newmX > w/2) {
 				Controller.turnright = true;
 			}
-			if (newmX < w/2 && WINDOW_TEST_MODE != 1) {
+			else if (newmX < w/2) {
 				Controller.turnleft = true;
 			}
-			if (newmX == w/2 && WINDOW_TEST_MODE != 1) {
+			else if (newmX == w/2) {
 				Controller.turnleft = false;
 				Controller.turnright = false;
 			}
-			if (newmY > h/2 && WINDOW_TEST_MODE != 1) {
+			if (newmY > h/2) {
 				Controller.turndown = true;
 			}
-			if (newmY < h/2 && WINDOW_TEST_MODE != 1) {
+			else if (newmY < h/2) {
 				Controller.turnup = true;
 			}
-			if (newmY == h/2 && WINDOW_TEST_MODE != 1) {
+			else if (newmY == h/2) {
 				Controller.turndown = false;
 				Controller.turnup = false;
 			}
@@ -466,21 +422,20 @@ public class Display extends Canvas implements Runnable {
 			else
 				MouseChangey = Math.abs((height/2) - newmY + (fullscreen? 0 : 15));
 			
-			if(WINDOW_TEST_MODE != 1){
-				if(!fullscreen)
-					r.mouseMove((w / 2), (h / 2));
-			    else
-					r.mouseMove((width / 2), (height / 2));
-			}
+			if(!fullscreen)
+				r.mouseMove((w / 2), (h / 2));
+			else
+				r.mouseMove((width / 2), (height / 2));
+			
 			ShootingMechanism();
 			if(HEALTH < StartHEALTH && HEALTH > 0){
-			HEALTH+=0.1;
+			HEALTH+=0.1/(ups/60);
 			}else{
 				if(HEALTH > StartHEALTH)
 				HEALTH = StartHEALTH;
 			}
 		}
-		screen.tick();
+		screen.tick(ups);
 	}
 	private void ShootingMechanism() {
 		if(WeaponAmmo > 0 && !reloading){
@@ -504,12 +459,12 @@ public class Display extends Canvas implements Runnable {
 		}else{
 			Reload();
 		}
-		//if(FlashAmmo > 0){
+		if(FlashAmmo > 0){
 			if(MousePressed && InputHandler.MouseButton == 3 && FlashAmmo > 0){
-				//wl.ThrowFlashBang();
-				screen.objects.add(new Objects(x, y, z, this));
+				wl.ThrowFlashBang();
+				//screen.objects.add(new Objects(x, y, z, this));
 			}
-		//}
+		}
 		if(!MousePressed){
 			canfire = true;
 			if(accuracy > startaccuracy){
@@ -618,7 +573,7 @@ public class Display extends Canvas implements Runnable {
 		drawInfoBoardNorth(g);
 		drawHUD(g);
 		//drawInfoBoardSouth(g);
-		drawMiniMap(g);
+		//drawMiniMap(g);
 		//drawRotationMap(g);
 		}
 		if (Pause)
@@ -633,7 +588,7 @@ public class Display extends Canvas implements Runnable {
 		g.drawString("UPS: " + ups+" Ping: "+PING+" Threads: "+Thread.activeCount(), 20, 20);
 		g.drawString("X/Y/Z: "+x+","+y+","+z+" Rotation C/S: "+rotationsin+"/"+rotationcos, 20, 30);
 		g.drawString("Textures: "+blockcount, 20, 40);
-		g.drawString("VSYNC: "+WINDOW_USE_VSYNC, 20, 50);
+		g.drawString("VSYNC: "+VSYNC, 20, 50);
 		g.drawString("Weapong Firerate: "+firerate, 20, 80);
 		g.drawString("Active Bullets: "+activebullets, 20, 90);
 		g.drawString("Flash Grenades: "+FlashAmmo, 20, 100);
@@ -647,7 +602,7 @@ public class Display extends Canvas implements Runnable {
 			v3f[1] = screen.positions.get(i)[1];
 			v3f[2] = screen.positions.get(i)[2];
 			v3f[3] = screen.positions.get(i)[3];
-			if(game.time % WINDOW_TICK_RATE == 0){
+			if(game.time % gametickrate == 0){
 				pings[i] = v3f[3];
 			}
 			
@@ -663,14 +618,31 @@ public class Display extends Canvas implements Runnable {
 		g.setColor((acc? Color.GREEN : Color.RED));
 		g.drawString("Accelerated: "+(acc? "Yes" : "No"), 80, 200);
 		
-		g.setColor((screen.enemies.size() < 1000? Color.GREEN : Color.RED));
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 220, 300, height-60 - 210);
+		
+		g.setColor((screen.enemies.size() < 1000? Color.CYAN : Color.RED));
 		g.drawString("Enemies Size: " +screen.enemies.size(), 20, 240);
-		g.setColor((screen.objects.size() < 1000? Color.GREEN : Color.RED));
+		g.setColor((screen.objects.size() < 1000? Color.CYAN : Color.RED));
 		g.drawString("Objects Size: " +screen.objects.size(), 20, 260);
-		g.setColor((screen.bullets.size() < 1000? Color.GREEN : Color.RED));
-		g.drawString("Bullets Size: " +screen.bullets.size(), 20, 280);
-		g.setColor((screen.models.size() < 1000? Color.GREEN : Color.RED));
-		g.drawString("Models Size: " +screen.models.size(), 20, 300);	
+		g.setColor((screen.models.size() < 1000? Color.CYAN : Color.RED));
+		g.drawString("Models Size: " +screen.models.size(), 20, 280);	
+		g.setColor((screen.bullets.size() < 1000? Color.CYAN : Color.RED));
+		g.drawString("Bullets Size: " +screen.bullets.size(), 20, 300);
+
+		for(Iterator<Objects> iterator = screen.bullets.iterator(); iterator.hasNext();){
+			Objects b = iterator.next();
+			int index = screen.bullets.indexOf(b)+1;
+			if(300+(index*10) < height-70){
+			g.setColor(Color.BLUE);
+			g.drawString("[Bullet - "+index+"] "+b.distancetravelled, 20, 300+(index*10));
+			}else{
+				b = screen.bullets.get(screen.bullets.size()-1);
+				g.setColor(Color.BLUE);
+				g.drawString("...", 20, height-70);
+				g.drawString("[Bullet - "+screen.bullets.size()+"] "+b.distancetravelled, 20, height-60);
+			}
+		}
 	}
 	private void drawHUD(Graphics2D g) {
 		double accuracy = initialaccuracy * 100;
@@ -680,9 +652,9 @@ public class Display extends Canvas implements Runnable {
 		int ySize = 1;
 		Rectangle left, right, top, bottom;
 		left = new Rectangle((int) (width/2 - accuracy * xSize)-xSize,(int)(height/2), xSize, ySize);
-		right = new Rectangle((int)(width/2 + accuracy * xSize)+1,      (int)(height/2), xSize, ySize);
+		right = new Rectangle((int)(width/2 + accuracy * xSize)+2,      (int)(height/2), xSize, ySize);
 		top = new Rectangle((int) (width/2),(int)(height/2 - accuracy * xSize)-xSize, ySize, xSize);
-		bottom = new Rectangle((int) (width/2),(int)(height/2 + accuracy * xSize)+1,       ySize, xSize);
+		bottom = new Rectangle((int) (width/2),(int)(height/2 + accuracy * xSize)+2,       ySize, xSize);
 		g.setColor(cc); 
 		g.fill(left);
 		g.fill(right);
@@ -691,17 +663,19 @@ public class Display extends Canvas implements Runnable {
 		g.setColor(cc);
 		g.fillRect(width/2, height/2, 1, 1);//middle dot
 		g.fillRect(width/2 - 2, (int) (height/2 -3 -acc), 5, 1);//top
-		g.fillRect(width/2 - 2, (int) (height/2 +3 +acc), 5, 1);//bottom
+		g.fillRect(width/2 - 2, (int) (height/2 +4 +acc), 5, 1);//bottom
 		g.fillRect((int)(width/2 - 3 -acc), height/2 -2, 1, 5);
-		g.fillRect((int)(width/2 + 3 +acc), height/2 -2, 1, 5);
+		g.fillRect((int)(width/2 + 4 +acc), height/2 -2, 1, 5);
 		
+        g.setColor(new Color(0, 0, 0, 0.8f));
+        g.fillRect(0, height - 50, (300 + width/7)/2, 50);
         g.setPaint(new GradientPaint(
-        	     new Point(0, height - 60), 
-        	     new Color(0.0f, 0.0f, 0.0f, 0.8f), 
-        	     new Point(300 + width/7, height - 60), 
-        	     new Color(0.0f, 0.0f, 0.0f, 0.0f)));
-        g.fillRect(0, height - 50, 300 + width/7, 50);
-        
+       	     new Point((300 + width/7)/2, height - 60), 
+       	     new Color(0.0f, 0.0f, 0.0f, 0.8f), 
+       	     new Point(300 + width/7, height - 60), 
+       	     new Color(0.0f, 0.0f, 0.0f, 0.0f)));
+        g.fillRect((300 + width/7)/2, height - 50, (300 + width/7)/2, 50);
+       
 		g.setColor((HEALTH/StartHEALTH)*100 <= 34 ? Color.BLACK : Color.GRAY);
 		g.fillRect(22, height-40, 12, 36);
 		g.fillRect(10, height-28, 36, 12);
@@ -712,9 +686,9 @@ public class Display extends Canvas implements Runnable {
 		g.drawString(""+(int)((HEALTH/StartHEALTH)*100), 65-(""+(int)((HEALTH/StartHEALTH)*100)).length()*4, height-13);
 		bar(g, 120, height - 26, width/14, height/90, HEALTH, StartHEALTH, g.getColor());
 		
-		try {
-			g.drawImage(ImageIO.read(Display.class.getResource((Armor <= 0)?"/Textures/sheildbroke.png" : "/Textures/sheild.png")), 120 + width/14 + 10, height-48, 48, 48, null);
-		} catch (IOException e) {}
+		//try {
+		//	//g.drawImage(ImageIO.read(Display.class.getResource((Armor <= 0)?"/Textures/sheildbroke.png" : "/Textures/sheild.png")), 120 + width/14 + 10, height-48, 48, 48, null);
+		//} catch (IOException e) {}
 		g.setColor((Armor/StartArmor)*100 <= 0 ? Color.GRAY : Color.WHITE);
 		g.setFont(new Font("Verdana", Font.BOLD, 24));
 		g.drawString(""+(int)((Armor/StartArmor)*100), 120 + width/14 + 76-(""+(int)((Armor/StartArmor)*100)).length()*4, height-13);
@@ -737,9 +711,9 @@ public class Display extends Canvas implements Runnable {
         else if (wep == 2)
         	g.drawString(""+w2.name, width-(w2.name.length()*18)+10, heightt+70);
         
-		try {
-			g.drawImage(ImageIO.read(Display.class.getResource("/Textures/skullbanner.png")), width - 202, 200, 180, 180, null);
-		} catch (IOException e) {}
+		//try {
+		//	g.drawImage(ImageIO.read(Display.class.getResource("/Textures/skullbanner.png")), width - 202, 200, 180, 180, null);
+		//} catch (IOException e) {}
 		g.setFont(new Font("Chiller", Font.BOLD, 20));
 		g.setColor(Color.RED);
     	g.drawString("x"+kills, width-150, 325);

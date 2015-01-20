@@ -19,9 +19,9 @@ public class Objects implements Serializable{
 	public double y;
 	public double z;
 	public double heightstep = 0.15;
-	public double speed = 5;
+	public double speed = 20;
 	public double flashspeed = 2;
-	public double drop = 0.000025;
+	public double drop = 0.00015;
 	public double flashdrop = 0.0025;
 	public double maxdistance = 500;
 	public boolean bullet = false;
@@ -35,6 +35,7 @@ public class Objects implements Serializable{
 	double rotationcos=0;
 	double rotationy = 0;
 	double accuracy = 0;
+	public double distancetravelled = 0;
 	public boolean maxdistreached = false;
 	ArrayList<Enemy> hurtenemies = new ArrayList<Enemy>();
 
@@ -52,38 +53,17 @@ public class Objects implements Serializable{
 		accuracy = d.accuracy;
 	}
 	
-	public synchronized void tick() {
+	public void tick(int ups) {
 		if(bullet){
-		x+=rotationsin*speed;
-		y+=rotationy*speed;
-		z+=rotationcos*speed;
-		rotationy-=drop;
-		if(x - initialx > maxdistance){
-			bullet = false;
-			maxdistreached = true;
-			d.screen.bullets.remove(this);
-		}
-		if(z - initialz > maxdistance){
-			bullet = false;
-			maxdistreached = true;
-			d.screen.bullets.remove(this);
-		}
-		if(x - initialx < -maxdistance){
-			bullet = false;
-			maxdistreached = true;
-			d.screen.bullets.remove(this);
-		}
-		if(z - initialz < -maxdistance){
-			bullet = false;
-			maxdistreached = true;
-			d.screen.bullets.remove(this);
-		}
+		x+=rotationsin*(speed)/(ups/60);
+		y+=rotationy*(speed)/(ups/60);
+		z+=rotationcos*(speed)/(ups/60);
+		rotationy-=drop/(ups/60);
+		distancetravelled = (x - initialx) + (y  -initialy) + (z - initialz);
 		if(y <= -d.floorpos/2 || y >= d.ceilingpos/2){
 			//make a bullet impact
 			d.PlaySound("/audio/Hard_Hit.wav");
-			bullet = false;
 			maxdistreached = true;
-			d.screen.bullets.remove(this);
 		}
 		}
 		if(flash){
@@ -93,8 +73,6 @@ public class Objects implements Serializable{
 			rotationy-=flashdrop;
 			if(y < -4){
 				d.PlaySound("/Audio/Flashbang.wav");
-				flash = false;
-				bullet = false;
 				maxdistreached = true;
 			}
 		}
@@ -103,16 +81,16 @@ public class Objects implements Serializable{
 	public void UseBulletMechanism(double rotationsin, double rotationcos, double rotationy){
 		this.bullet = true;
 		this.accuracy = d.accuracy;
-		this.rotationsin = rotationsin+(Math.random()*accuracy)-accuracy/2;
-		this.rotationcos = rotationcos+(Math.random()*accuracy)-accuracy/2;
+		this.rotationsin = rotationsin/2+(Math.random()*accuracy)-accuracy/2;
+		this.rotationcos = rotationcos/2+(Math.random()*accuracy)-accuracy/2;
 		this.rotationy  = rotationy/4+((Math.random()*accuracy/2)-accuracy/4)-0.25;
 	}
 
 	public void UseFlashMechanism(double rotationsin, double rotationcos, double rotationy) {
 		this.flash = true;
 		this.accuracy = d.accuracy;
-		this.rotationsin = rotationsin+(Math.random()*accuracy)-accuracy/2;
-		this.rotationcos = rotationcos+(Math.random()*accuracy)-accuracy/2;
+		this.rotationsin = rotationsin/2+(Math.random()*accuracy)-accuracy/2;
+		this.rotationcos = rotationcos/2+(Math.random()*accuracy)-accuracy/2;
 		this.rotationy = rotationy/4+((Math.random()*accuracy/2)-accuracy/4)-0.25;
 	}
 

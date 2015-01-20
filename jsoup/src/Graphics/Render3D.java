@@ -1,5 +1,6 @@
 package Graphics;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import Input.Controller;
@@ -24,6 +25,7 @@ public class Render3D extends Render {
 	
 	public Texture floor = new Texture("/textures/Ground2.png");
 	public Texture roof = new Texture("/textures/Sky.png");
+	public Texture test = new Texture(0xFF0000);
 	private Display d;
 	
 	public Render3D(int width, int height, Display d) {
@@ -49,7 +51,6 @@ public class Render3D extends Render {
 		cosine = Math.cos(rotation);
 		sine = Math.sin(rotation);
 		rotationy = game.controls.rotationy;
-		
 		d.x = (int) right;
 		d.y = (int) up;
 		d.z = (int) forward;
@@ -104,21 +105,27 @@ public class Render3D extends Render {
 				}
 				zBuffer[x + y * width] = z;
 				if(c == 0){
-					if(up > -d.floorpos/2)
-						pixels[x + y * width] = floor.r.pixels[(xPix & 1023)+floor.texVar+(yPix & 1023) * 1024];
-					else
-						pixels[x + y * width] = 0;
+						pixels[x + y * width] = (((xPix & 1023)<< 8) +((yPix & 1023)<< 8) * 1024);//pixelTexture((up > -d.floorpos/2)? floor : null, (xPix & 1023)+(yPix & 1023) * 1024);
 				}else{
-					if(up < d.ceilingpos)
-						pixels[x + y * width] = roof.r.pixels[(xPix & 1023)+roof.texVar+(yPix & 1023) * 1024];
-					else
-						pixels[x + y * width] = 0;
+						pixels[x + y * width] = (((xPix & 1023)<< 8) +((yPix & 1023)<< 8) * 1024);//pixelTexture((up < d.ceilingpos)? roof : null, (xPix & 1023)+(yPix & 1023) * 1024);
 				}
 				if (z > renderDistance/32) {
-					pixels[x + y * width] = 0x7EC0EE;
+					pixels[x + y * width] = 0x57AEDB;
 				}
 			}
 		}
+	}
+	
+	public int pixelTexture(Texture t, int imageindex){
+		if(t != null){
+			if(t.issolid)
+				return t.color;
+			else{
+				int pixel = t.r.pixels[imageindex];
+				return pixel;
+			}
+		}else
+			return 0;
 	}
 
 	public void renderWall(double xLeft, double xRight, double zDistanceLeft, double zDistanceRight, double yBottom, double yTop, Texture t) {
@@ -226,7 +233,7 @@ public class Render3D extends Render {
 				double pixelRotationY = (y - yPixelTop) / (yPixelBottom - yPixelTop);
 				int yTexture = (int)(8 * pixelRotationY * 4);
 				try {
-					pixels[x + y * width] = t.r.pixels[((xTexture) & 127)+t.texVar+((yTexture) & 127) * 128];
+					pixels[x + y * width] = xTexture << 16;//t.r.pixels[((xTexture) & 127)+((yTexture) & 127) * 128];
 				} catch (ArrayIndexOutOfBoundsException e) {
 					e.printStackTrace();
 					Log.Log(e.toString(), false);
@@ -377,7 +384,7 @@ public class Render3D extends Render {
 				double pixelRotationY = (y - yPixelTop) / (yPixelBottom - yPixelTop);
 				int yTexture = (int)(8 * pixelRotationY *32);
 				try {
-					pixels[x + y * width] = t.r.pixels[((xTexture) & 1023)+t.texVar+((yTexture) & 1023) * 1024];
+					pixels[x + y * width] = t.r.pixels[((xTexture) & 1023)+((yTexture) & 1023) * 1024];
 				} catch (ArrayIndexOutOfBoundsException e) {
 					e.printStackTrace();
 					Log.Log(e.toString(), false);
@@ -455,9 +462,9 @@ public class Render3D extends Render {
 			int g = (colour >> 8) & 0xff;
 			int b = (colour) & 0xff;
 
-			r = r * brightness /(255+255-244);
-			g = g * brightness /(255+255-215);
-			b = b * brightness /(255+255-0);
+			r = r * brightness /(255+255-244-11);
+			g = g * brightness /(255+255-215-40);
+			b = b * brightness /(255+255-0-255);
 
 			pixels[i] = (r << 16 | g << 8 | b);
 		}

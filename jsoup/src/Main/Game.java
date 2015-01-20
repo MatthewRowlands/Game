@@ -17,8 +17,8 @@ public class Game {
 		level = new Level(0,0, display);
 	}
 
-	public void tick(boolean[] key) {
-		time++;
+	public void tick(boolean[] key, int ups) {
+		time+=1/(ups/60);
 		if(!spectator){
 		boolean forward = key[KeyEvent.VK_W];
 		boolean back = key[KeyEvent.VK_S];
@@ -34,7 +34,7 @@ public class Game {
 		boolean changewep1 = key[KeyEvent.VK_1];
 		boolean changewep2 = key[KeyEvent.VK_2];
 
-		controls.tick(forward, back, left, right, jump, crouch, sprint, F1, MEGARUN, prone, reload, changewep1, changewep2);
+		controls.tick(ups, forward, back, left, right, jump, crouch, sprint, F1, MEGARUN, prone, reload, changewep1, changewep2);
 		}
 	}
 }

@@ -30,7 +30,7 @@ public class Enemy implements Serializable{
 		this.d = d;
 	}
 
-	public void tick() {
+	public void tick(int ups) {
 		if(!dead){
 			displayhealth = health/100;
 			if(health <= 0){
@@ -39,12 +39,15 @@ public class Enemy implements Serializable{
 				dead = true;
 			}
 			if(chase){
-			chasePlayer();
+			chasePlayer(ups);
 			}
 		}
+		if(y > 0){
+			y-=d.gravity/(ups/60);
+		}else y = 0;
 	}
 
-	private void chasePlayer() {
+	private void chasePlayer(int ups) {
 		double dx = (d.x) - x;
 		//double dy = (Display.y) - y;
 		double dz = (d.z) - z;
@@ -57,8 +60,8 @@ public class Enemy implements Serializable{
 			dx/=distance;
 			dz/=distance;
 			
-			x+=dx*speed;
-			z+=dz*speed;
+			x+=dx*(speed/(ups/60));
+			z+=dz*(speed/(ups/60));
 			//y=Display.y;
 		}
 	}	

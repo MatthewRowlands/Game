@@ -56,7 +56,7 @@ public class EchoThread extends Thread{
 	public void run(){
 		double unprocessedSeconds = 0;
 		long previousTime = System.nanoTime();
-		double secondsPerTick = 1 / Display.WINDOW_TICK_RATE;
+		double secondsPerTick = 1 / Display.gametickrate;
 		boolean ticked = false;
 		while (!finished) {
 			Update();			
@@ -71,11 +71,11 @@ public class EchoThread extends Thread{
 				ticked = true;
 				tickCount++;
 				
-				if(tickCount % Display.WINDOW_NETWORK_TICK_RATE == 0){
+				if(tickCount % Display.networktickrate == 0){
 				networkUpdate();
 				}
 				
-				if (tickCount % Display.WINDOW_TICK_RATE == 0) {
+				if (tickCount % Display.gametickrate == 0) {
 					PING = ping;
 					System.out.println("aaaaaaaaaaa");
 					previousTime += 1000;

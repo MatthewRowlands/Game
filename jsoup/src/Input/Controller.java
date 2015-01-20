@@ -31,36 +31,36 @@ public class Controller extends Thread{
 		rotationSpeedx = 0.0025 * d.MouseChangex;
 		rotationSpeedy = 0.0025 * d.MouseChangey;
 	}
-	public void tick(boolean forward, boolean back, boolean left,
+	public void tick(int ups, boolean forward, boolean back, boolean left,
 			boolean right, boolean jump, boolean crouch, boolean sprint, boolean F1, boolean MEGARUN, boolean prone, boolean reload, boolean changewep1, boolean changewep2) {
 		
 		if(!d.Pause){
 		rotationSpeedx = 0.0025 * d.MouseChangex;
 		rotationSpeedy = 0.0025 * d.MouseChangey;
 		walkSpeed = 0.5 * d.MoveSpeed;
-		jumpheight = 1 * d.JumpHeight;
+		jumpheight = 1 * d.JumpHeight/(ups/60);
 		crouchheight = -0.3;
 		bumheight = -0.75;
 		xMove = 0;
 		zMove = 0;
 
 		if (forward /*&& !d.collisionfront*/) {
-			zMove++;
+			zMove+=1;
 			walk = true;
 		}
 
 		if (back /*&& !d.collisionback*/) {
-			zMove--;
+			zMove-=1;
 			walk = true;
 		}
 
 		if (left /*&& !d.collisionleft*/) {
-			xMove--;
+			xMove-=1;
 			walk = true;
 		}
 
 		if (right /*&& !d.collisionright*/) {
-			xMove++;
+			xMove+=1;
 			walk = true;
 		}
 
@@ -73,22 +73,14 @@ public class Controller extends Thread{
 		}
 		
 		if (turnup) {
-			//if(rotationy <= 5){
 			rotationay += rotationSpeedy * (mousespeed/10);
-			//}else{
-			//	rotationy = 5;
-			//}
 		}
 
 		if (turndown) {
-			//if(rotationy >= 0){
 			rotationay -= rotationSpeedy * (mousespeed/10);
-			//}else{
-			//	rotationy = 0;
-			//}
 		}
 		
-		if (jump && !crouch && !prone) {
+		if (jump && !prone) {
 			if(!d.flymode){
 				if(y <= 0){
 				fall = false;
@@ -101,12 +93,14 @@ public class Controller extends Thread{
 
 		if(!d.flymode){
 			if(fall && y > 0){
-				y -= jumpheight/8;
+				d.startaccuracy = d.initialaccuracy*100;
+				y -= (jumpheight/8);
 			}
 			if(!fall && y < maxheight){
+				d.startaccuracy = d.initialaccuracy*100;
 				y += jumpheight;
 			}
-			if( y >= maxheight-jumpheight){
+			if(y >= maxheight){
 				fall = true;
 			}
 		}
@@ -125,10 +119,12 @@ public class Controller extends Thread{
 			d.startaccuracy = d.initialaccuracy/4;
 		}
 		if(!sprint && !crouch && !jump && !prone){
-			if(forward || left || back || right)
-				d.startaccuracy = d.initialaccuracy*8;
-			else
-				d.startaccuracy = d.initialaccuracy/3;
+			if(y <= 0){
+				if(forward || left || back || right)
+					d.startaccuracy = d.initialaccuracy*8;
+				else
+					d.startaccuracy = d.initialaccuracy/3;
+			}
 		}
 		if (prone) {
 			if(y > -3.7){
@@ -146,7 +142,7 @@ public class Controller extends Thread{
 			walkSpeed = 0.3 * d.MoveSpeed;
 			sprintwalk = true;
 			if(forward || left || back || right)
-				d.startaccuracy=d.initialaccuracy*2;
+				d.startaccuracy = d.initialaccuracy*2;
 			else
 				d.startaccuracy = d.initialaccuracy/3;
 		}
@@ -183,14 +179,16 @@ public class Controller extends Thread{
 
 
 		xa += (xMove * Math.cos(rotationx) + zMove * Math.sin(rotationx))
-				* walkSpeed;
+				* walkSpeed/(ups/60);
 		za += (zMove * Math.cos(rotationx) - xMove * Math.sin(rotationx))
-				* walkSpeed;
+				* walkSpeed/(ups/60);
 
 		x += xa;
 		z += za;
+		
 		if(!d.flymode){
-		y *= 0.9;
+			if(y <= 0)
+				y *= 0.9;
 		}
 
 		xa *= 0.1;
@@ -198,6 +196,8 @@ public class Controller extends Thread{
 		
 		rotationx += rotationax;
 		rotationy += rotationay;
+		if(rotationy < -1.5) rotationy = -1.5;
+		if(rotationy > 4) rotationy = 4;
 		
 		rotationax *= 0.8; 
 		rotationay *= 0.8; 

@@ -272,7 +272,7 @@ public class Server implements Runnable{
 		
 		double unprocessedSeconds = 0;
 		long previousTime = System.nanoTime();
-		double secondsPerTick = 1 / Display.WINDOW_TICK_RATE;
+		double secondsPerTick = 1 / Display.gametickrate;
 		boolean ticked = false;
 		while (run) {
 			Update();			
@@ -286,11 +286,11 @@ public class Server implements Runnable{
 				unprocessedSeconds -= secondsPerTick;
 				ticked = true;
 				
-				if(tickCount % Display.WINDOW_NETWORK_TICK_RATE == 0){
+				if(tickCount % Display.networktickrate == 0){
 				networkUpdate();
 				}
 				
-				if (tickCount % Display.WINDOW_TICK_RATE == 0) {
+				if (tickCount % Display.gametickrate == 0) {
 					previousTime += 1000;
 					frames = 0;
 				}
