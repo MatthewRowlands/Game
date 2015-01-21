@@ -109,9 +109,9 @@ public class Display extends Canvas implements Runnable {
 	public double MouseChangey;
 	public int selection = 0;
 	public int blockcount=0;
-	public int x = 0;
-	public int y = 0;
-	public int z = 0;
+	public double x = 0;
+	public double y = 0;
+	public double z = 0;
 	public boolean Pause = false;	
 	boolean MousePressed = false;
 	public boolean canfire = true;
@@ -619,8 +619,8 @@ public class Display extends Canvas implements Runnable {
 		g.setColor((acc? Color.GREEN : Color.RED));
 		g.drawString("Accelerated: "+(acc? "Yes" : "No"), 80, 200);
 		
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 220, 300, height-60 - 210);
+		//g.setColor(Color.BLACK);
+		//g.fillRect(0, 220, 300, height-60 - 210);
 		
 		g.setColor((screen.enemies.size() < 1000? Color.CYAN : Color.RED));
 		g.drawString("Enemies Size: " +screen.enemies.size(), 20, 240);
@@ -631,7 +631,7 @@ public class Display extends Canvas implements Runnable {
 		g.setColor((screen.bullets.size() < 1000? Color.CYAN : Color.RED));
 		g.drawString("Bullets Size: " +screen.bullets.size(), 20, 300);
 
-		for(Iterator<Objects> iterator = screen.bullets.iterator(); iterator.hasNext();){
+/*		for(Iterator<Objects> iterator = screen.bullets.iterator(); iterator.hasNext();){
 			Objects b = iterator.next();
 			int index = screen.bullets.indexOf(b)+1;
 			if(300+(index*10) < height-70){
@@ -643,7 +643,7 @@ public class Display extends Canvas implements Runnable {
 				g.drawString("...", 20, height-70);
 				g.drawString("[Bullet - "+screen.bullets.size()+"] "+b.distancetravelled, 20, height-60);
 			}
-		}
+		}*/
 	}
 	private void drawHUD(Graphics2D g) {
 		double accuracy = initialaccuracy * 100;

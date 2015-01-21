@@ -23,8 +23,8 @@ public class Render3D extends Render {
 	int c = 0;
 	int num = 1;
 	
-	public Texture floor = new Texture("/textures/Ground2.png");
-	public Texture roof = new Texture("/textures/Sky.png");
+	public Texture floor = new Texture("/textures/Fire.png");
+	public Texture roof = new Texture("/textures/Night Sky.png");
 	public Texture test = new Texture(0xFF0000);
 	private Display d;
 	
@@ -51,9 +51,9 @@ public class Render3D extends Render {
 		cosine = Math.cos(rotation);
 		sine = Math.sin(rotation);
 		rotationy = game.controls.rotationy;
-		d.x = (int) right;
-		d.y = (int) up;
-		d.z = (int) forward;
+		d.x = right;
+		d.y = up;
+		d.z = forward;
 		d.rotationsin = sine;
 		d.rotationcos = cosine;
 		d.rotationy = rotationy;
@@ -106,7 +106,7 @@ public class Render3D extends Render {
 				zBuffer[x + y * width] = z;
 				if(c == 0){
 						//pixels[x + y * width] = (((xPix & 4) << 12) +((yPix & 4) << 12) * 8);
-						pixels[x + y * width] = pixelTexture((up > -d.floorpos/2)? floor : null, (xPix & 255)+(yPix & 255) * 256);
+						pixels[x + y * width] = pixelTexture((up > -d.floorpos/2)? floor : null, (xPix & 1023)+(yPix & 1023) * 1024);
 				}else{
 						//pixels[x + y * width] = (((xPix & 4)) +((yPix & 4 )) * 8);
 						pixels[x + y * width] = pixelTexture((up < d.ceilingpos)? roof : null, (xPix & 1023)+(yPix & 1023) * 1024);

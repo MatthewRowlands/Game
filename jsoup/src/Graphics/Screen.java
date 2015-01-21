@@ -36,13 +36,21 @@ public class Screen extends Render{
 		this.d = d;
 		render = new Render3D(width, height, d);
 		objects.add(new Objects(-5, 4, 800, d, 16));
-		for(int i = 0; i < 100; i++){
-			objects.add(new Objects(-20, 0, i*8, d, 16));
-			objects.add(new Objects(10, 0, i*8, d, 16));
-			objects.add(new Objects(-20, 4, i*8, d, -1));
-			objects.add(new Objects(10, 4, i*8, d, -1));
-			objects.add(new Objects(-20, 8, i*8, d, 16));
-			objects.add(new Objects(10, 8, i*8, d, 16));
+		for(int x = 1; x <= 50; x++){
+			for(int y = 0; y <= 20; y+=4){
+				for(int z = 1; z <= 50; z++){
+					if(x == 1 || x == 50 || z == 1 || z == 50){
+						objects.add(new Objects(-(25*8)+(x*8), y, -(25*2)+(z*8), d, 16));
+					}
+				}
+			}
+		}
+		for(int x = 2; x <= 49; x++){
+			objects.add(new Objects(-(25*8)+(x*8), -1, 40, d, 16));
+			objects.get(objects.size()-1).setYSize(0.375);
+			objects.add(new Objects(-(25*8)+(x*8), 12, 40, d, 16));
+			objects.add(new Objects(-(25*8)+(x*8), 16, 40, d, 16));
+			objects.add(new Objects(-(25*8)+(x*8), 20, 40, d, 16));
 		}
 		//objects.get(objects.size()-1).spawner = true;
 		//models.add(new Model());//TODO implement properly
@@ -78,21 +86,21 @@ public class Screen extends Render{
 		}
 		for(Iterator<Objects> iterator = objects.iterator(); iterator.hasNext();){
 			Objects o = iterator.next();
-			renderBlock(o.x/8,o.y/8,o.z/8, 1, 0.5, 1, new Texture(o.color));
+			renderBlock(o.x/8,o.y/8,o.z/8, 1, o.ys, 1, new Texture(o.color));
 		}
 		for(Iterator<Objects> iterator = bullets.iterator(); iterator.hasNext();){
 			Objects b = iterator.next();
 			if(!b.flash){
 			d.activebullets++;
 			}
-			if(b.maxdistreached){
-			d.activebullets--;
-			}else{
+			//if(b.maxdistreached){
+			//d.activebullets--;
+			//}else{
 				if(b.bullet){
 					renderBlock(b.x/8,b.y/16,b.z/8, 0.05, 0.025, 0.05, bullet);
 				}else if(b.flash)
 					renderBlock(b.x/8,b.y/8,b.z/8, 0.1, 0.1, 0.1, bullet);
-			}
+			//}
 		}	
 		for(Iterator<Model> iterator = models.iterator(); iterator.hasNext();){
 			for(Iterator<Face> iterator2 = iterator.next().model.iterator(); iterator2.hasNext();){
@@ -180,8 +188,7 @@ public class Screen extends Render{
 			if(!b.maxdistreached){
 				b.tick(ups);
 			}else{
-				//b.y = ;
-				iterator.remove();
+				//iterator.remove();
 			}
 		}
 		CheckCollision(0);

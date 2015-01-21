@@ -11,7 +11,7 @@ public class WeaponLogic {
 	public void ThrowFlashBang() {
 		long checktime = System.currentTimeMillis();
 		if((checktime - d.flashtime) > (5000)){
-			d.screen.bullets.add(new Objects(d.x,d.y,d.z,d, 0xFF0000));
+			d.screen.bullets.add(new Objects(d.x,d.y,d.z,d, 8));
 			d.screen.bullets.get(d.screen.bullets.size()-1).UseFlashMechanism(d.rotationsin, d.rotationcos, d.rotationy);
 			d.flashtime = System.currentTimeMillis();
 			d.FlashAmmo--;
@@ -22,7 +22,7 @@ public class WeaponLogic {
 		if((checktime - d.guntime) > (timedelay * 1000)){
 			for(int i = 0; i < 180; i++){
 				if(d.WeaponAmmo > 0){
-					d.screen.bullets.add(new Objects(d.x,d.y,d.z,d, 0xFF0000));
+					d.screen.bullets.add(new Objects(d.x,d.y,d.z,d, 8));
 					d.screen.bullets.get(d.screen.bullets.size()-1).UseBulletMechanism(Math.sin(i), Math.cos(i), 1);
 					d.WeaponAmmo--;
 				}
@@ -38,7 +38,7 @@ public class WeaponLogic {
 		if(d.canfire){
 			long checktime = System.currentTimeMillis();
 			if((checktime - d.guntime) > (timedelay * 1000)){
-				d.screen.bullets.add(new Objects(d.x,d.y,d.z,d, 0xFF0000));
+				d.screen.bullets.add(new Objects(d.x,d.y,d.z,d, 8));
 				d.screen.bullets.get(d.screen.bullets.size()-1).UseBulletMechanism(d.rotationsin, d.rotationcos, d.rotationy);
 				d.guntime = System.currentTimeMillis();
 			d.canfire = false;
@@ -53,7 +53,7 @@ public class WeaponLogic {
 	public void FullAutoFire(double timedelay) {
 		long checktime = System.currentTimeMillis();
 		if((checktime - d.guntime) > (timedelay * 1000)){
-			d.screen.bullets.add(new Objects(d.x,d.y,d.z,d, 0xFF0000));
+			d.screen.bullets.add(new Objects(d.x,d.y,d.z,d, 8));
 			d.screen.bullets.get(d.screen.bullets.size()-1).UseBulletMechanism(d.rotationsin, d.rotationcos, d.rotationy);
 			d.guntime = System.currentTimeMillis();
 			d.accuracy += d.recoil;
@@ -67,7 +67,7 @@ public class WeaponLogic {
 		long checktime = System.currentTimeMillis();
 		if((checktime - d.guntime) > (timedelay * 1000)){
 			for(int i = 0; i < d.firemode; i++){
-				d.screen.bullets.add(new Objects(d.x,d.y,d.z,d, 0xFF0000));
+				d.screen.bullets.add(new Objects(d.x,d.y,d.z,d, 8));
 				d.screen.bullets.get(d.screen.bullets.size()-1).UseBulletMechanism(d.rotationsin, d.rotationcos, d.rotationy);
 			}
 			d.guntime = System.currentTimeMillis();
@@ -83,7 +83,7 @@ public class WeaponLogic {
 			long checktime = System.currentTimeMillis();
 			if((checktime - d.guntime) > (timedelay * 1000)){
 			for(int i = 0; i < Display.firemode; i++){
-				d.screen.bullets.add(new Objects(d.x,d.y,d.z,d, 0xFF0000));
+				d.screen.bullets.add(new Objects(d.x,d.y,d.z,d, 8));
 				d.screen.bullets.get(d.screen.bullets.size()-1).UseBulletMechanism(d.rotationsin, d.rotationcos, d.rotationy);
 			}
 			d.guntime = System.currentTimeMillis();

@@ -19,7 +19,7 @@ public class Objects implements Serializable{
 	public double y;
 	public double z;
 	public double heightstep = 0.15;
-	public double speed = 20;
+	public double speed = 10;
 	public double flashspeed = 2;
 	public double drop = 0.00015;
 	public double flashdrop = 0.0025;
@@ -41,6 +41,8 @@ public class Objects implements Serializable{
 	public int color = 0;
 	private Display d;
 
+	public double ys = 0.5;
+
 	public Objects(double x, double y, double z, Display d, int color) {
 		//super(x, y, z);
 		this.x = x;
@@ -61,8 +63,9 @@ public class Objects implements Serializable{
 		z+=rotationcos*(speed)/(ups/60);
 		rotationy-=drop/(ups/60);
 		distancetravelled = (x - initialx) + (y  -initialy) + (z - initialz);
-		if(y <= -d.floorpos/2 || y >= d.ceilingpos/2){
+		if(y <= -d.floorpos || y >= d.ceilingpos/2){
 			//make a bullet impact
+			y = -d.floorpos + 0.1;
 			d.PlaySound("/audio/Hard_Hit.wav");
 			maxdistreached = true;
 		}
@@ -111,5 +114,9 @@ public class Objects implements Serializable{
 			return false;
 		else
 			return true;
+	}
+
+	public void setYSize(double ys) {
+		this.ys  = ys;	
 	}
 }
