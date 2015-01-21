@@ -38,10 +38,10 @@ public class Objects implements Serializable{
 	public double distancetravelled = 0;
 	public boolean maxdistreached = false;
 	ArrayList<Enemy> hurtenemies = new ArrayList<Enemy>();
-
+	public int color = 0;
 	private Display d;
 
-	public Objects(double x, double y, double z, Display d) {
+	public Objects(double x, double y, double z, Display d, int color) {
 		//super(x, y, z);
 		this.x = x;
 		this.y = y+heightstep;
@@ -50,6 +50,7 @@ public class Objects implements Serializable{
 		this.initialy = y+heightstep;
 		this.initialz = z;
 		this.d = d;
+		this.color = color;
 		accuracy = d.accuracy;
 	}
 	

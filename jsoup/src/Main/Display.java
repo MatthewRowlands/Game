@@ -357,7 +357,8 @@ public class Display extends Canvas implements Runnable {
 					/*double x = this.x + Math.sin(Math.random()*500)*500;
 					double z = this.z + Math.sin(Math.random()*500)*500;*/
 					for(Objects o : screen.objects){
-					screen.enemies.add(new Enemy(o.x,o.y,o.z, this));
+						if(o.spawner)
+							screen.enemies.add(new Enemy(o.x,o.y,o.z, this));
 					}
 					PING = ping;
 					ups = frames;

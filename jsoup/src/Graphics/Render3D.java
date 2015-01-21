@@ -105,9 +105,11 @@ public class Render3D extends Render {
 				}
 				zBuffer[x + y * width] = z;
 				if(c == 0){
-						pixels[x + y * width] = (((xPix & 1023)<< 8) +((yPix & 1023)<< 8) * 1024);//pixelTexture((up > -d.floorpos/2)? floor : null, (xPix & 1023)+(yPix & 1023) * 1024);
+						//pixels[x + y * width] = (((xPix & 4) << 12) +((yPix & 4) << 12) * 8);
+						pixels[x + y * width] = pixelTexture((up > -d.floorpos/2)? floor : null, (xPix & 255)+(yPix & 255) * 256);
 				}else{
-						pixels[x + y * width] = (((xPix & 1023)<< 8) +((yPix & 1023)<< 8) * 1024);//pixelTexture((up < d.ceilingpos)? roof : null, (xPix & 1023)+(yPix & 1023) * 1024);
+						//pixels[x + y * width] = (((xPix & 4)) +((yPix & 4 )) * 8);
+						pixels[x + y * width] = pixelTexture((up < d.ceilingpos)? roof : null, (xPix & 1023)+(yPix & 1023) * 1024);
 				}
 				if (z > renderDistance/32) {
 					pixels[x + y * width] = 0x57AEDB;
@@ -233,7 +235,9 @@ public class Render3D extends Render {
 				double pixelRotationY = (y - yPixelTop) / (yPixelBottom - yPixelTop);
 				int yTexture = (int)(8 * pixelRotationY * 4);
 				try {
-					pixels[x + y * width] = xTexture << 16;//t.r.pixels[((xTexture) & 127)+((yTexture) & 127) * 128];
+					pixels[x + y * width] = (((xTexture & 1023) << t.color) +((yTexture & 1023) << t.color) * 1024);
+					//pixels[x + y * width] = xTexture << t.color;//t.r.pixels[((xTexture) & 127)+((yTexture) & 127) * 128];
+					//pixels[x + y * width] = pixelTexture(t, (xTexture & 1023)+(yTexture & 1023) * 1024);
 				} catch (ArrayIndexOutOfBoundsException e) {
 					e.printStackTrace();
 					Log.Log(e.toString(), false);

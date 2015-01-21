@@ -35,9 +35,18 @@ public class Screen extends Render{
 		this.height = height;
 		this.d = d;
 		render = new Render3D(width, height, d);
-		objects.add(new Objects(10, 0, 10, d));
-		models.add(new Model());//TODO implement properly
-		models.get(models.size()-1).LoadModel("untitled");
+		objects.add(new Objects(-5, 4, 800, d, 16));
+		for(int i = 0; i < 100; i++){
+			objects.add(new Objects(-20, 0, i*8, d, 16));
+			objects.add(new Objects(10, 0, i*8, d, 16));
+			objects.add(new Objects(-20, 4, i*8, d, -1));
+			objects.add(new Objects(10, 4, i*8, d, -1));
+			objects.add(new Objects(-20, 8, i*8, d, 16));
+			objects.add(new Objects(10, 8, i*8, d, 16));
+		}
+		//objects.get(objects.size()-1).spawner = true;
+		//models.add(new Model());//TODO implement properly
+		//models.get(models.size()-1).LoadModel("untitled");
 	}
 
 	public void render(Game game) {
@@ -69,7 +78,7 @@ public class Screen extends Render{
 		}
 		for(Iterator<Objects> iterator = objects.iterator(); iterator.hasNext();){
 			Objects o = iterator.next();
-			renderBlock(o.x/8,o.y/8,o.z/8, 1, 0.5, 1, bullet);
+			renderBlock(o.x/8,o.y/8,o.z/8, 1, 0.5, 1, new Texture(o.color));
 		}
 		for(Iterator<Objects> iterator = bullets.iterator(); iterator.hasNext();){
 			Objects b = iterator.next();
@@ -171,6 +180,7 @@ public class Screen extends Render{
 			if(!b.maxdistreached){
 				b.tick(ups);
 			}else{
+				//b.y = ;
 				iterator.remove();
 			}
 		}
