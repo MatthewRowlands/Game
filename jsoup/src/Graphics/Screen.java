@@ -93,14 +93,14 @@ public class Screen extends Render{
 			if(!b.flash){
 			d.activebullets++;
 			}
-			//if(b.maxdistreached){
-			//d.activebullets--;
-			//}else{
+			if(b.maxdistreached){
+			d.activebullets--;
+			}else{
 				if(b.bullet){
 					renderBlock(b.x/8,b.y/16,b.z/8, 0.05, 0.025, 0.05, bullet);
 				}else if(b.flash)
 					renderBlock(b.x/8,b.y/8,b.z/8, 0.1, 0.1, 0.1, bullet);
-			//}
+			}
 		}	
 		for(Iterator<Model> iterator = models.iterator(); iterator.hasNext();){
 			for(Iterator<Face> iterator2 = iterator.next().model.iterator(); iterator2.hasNext();){
@@ -188,7 +188,7 @@ public class Screen extends Render{
 			if(!b.maxdistreached){
 				b.tick(ups);
 			}else{
-				//iterator.remove();
+				iterator.remove();
 			}
 		}
 		CheckCollision(0);

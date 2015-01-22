@@ -105,11 +105,11 @@ public class Render3D extends Render {
 				}
 				zBuffer[x + y * width] = z;
 				if(c == 0){
-						//pixels[x + y * width] = (((xPix & 4) << 12) +((yPix & 4) << 12) * 8);
-						pixels[x + y * width] = pixelTexture((up > -d.floorpos/2)? floor : null, (xPix & 1023)+(yPix & 1023) * 1024);
+						pixels[x + y * width] = (((xPix & 1023) << 16) +((yPix & 1023) << 16) * 1024);
+						//pixels[x + y * width] = pixelTexture((up > -d.floorpos/2)? floor : null, (xPix & 1023)+(yPix & 1023) * 1024);
 				}else{
-						//pixels[x + y * width] = (((xPix & 4)) +((yPix & 4 )) * 8);
-						pixels[x + y * width] = pixelTexture((up < d.ceilingpos)? roof : null, (xPix & 1023)+(yPix & 1023) * 1024);
+						pixels[x + y * width] = (((xPix & 7)) +((yPix & 7)) * 8);
+						//pixels[x + y * width] = pixelTexture((up < d.ceilingpos)? roof : null, (xPix & 1023)+(yPix & 1023) * 1024);
 				}
 				if (z > renderDistance/32) {
 					pixels[x + y * width] = 0x57AEDB;

@@ -3,6 +3,7 @@ package Entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import Graphics.Texture;
 import Main.Display;
 
 public class Objects implements Serializable{
@@ -38,10 +39,12 @@ public class Objects implements Serializable{
 	public double distancetravelled = 0;
 	public boolean maxdistreached = false;
 	ArrayList<Enemy> hurtenemies = new ArrayList<Enemy>();
-	public int color = 0;
 	private Display d;
 
 	public double ys = 0.5;
+
+	public int color = 0;
+	public Texture t;
 
 	public Objects(double x, double y, double z, Display d, int color) {
 		//super(x, y, z);
@@ -53,6 +56,18 @@ public class Objects implements Serializable{
 		this.initialz = z;
 		this.d = d;
 		this.color = color;
+		accuracy = d.accuracy;
+	}
+	public Objects(double x, double y, double z, Display d, Texture t) {
+		//super(x, y, z);
+		this.x = x;
+		this.y = y+heightstep;
+		this.z = z;
+		this.initialx = x;
+		this.initialy = y+heightstep;
+		this.initialz = z;
+		this.d = d;
+		this.t = t;
 		accuracy = d.accuracy;
 	}
 	
