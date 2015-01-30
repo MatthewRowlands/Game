@@ -9,7 +9,7 @@ public class Texture {
 	public Render r;
 	public int texVar = 0;
 	public String file;
-	int color = 0xFFFFFF;
+	int color = 999999999;
 	boolean issolid = false;
 	
 	public Texture(String file){
@@ -21,7 +21,7 @@ public class Texture {
 		this.color = color;
 		this.issolid  = true;
 	}
-	
+
 	public static Render loadBitmap(String fileName){
 		try{
 			File file = new File("/textures");

@@ -35,23 +35,27 @@ public class Controller extends Thread{
 			boolean right, boolean jump, boolean crouch, boolean sprint, boolean F1, boolean MEGARUN, boolean prone, boolean reload, boolean changewep1, boolean changewep2) {
 		
 		if(!d.Pause){
-		rotationSpeedx = 0.0025 * d.MouseChangex;
-		rotationSpeedy = 0.0025 * d.MouseChangey;
-		walkSpeed = 0.5 * d.MoveSpeed;
+		rotationSpeedx = 0.03 * d.MouseChangex;
+		rotationSpeedy = 0.03 * d.MouseChangey;
+		walkSpeed = 5 * d.MoveSpeed;
 		jumpheight = 1 * d.JumpHeight/(ups/60);
 		crouchheight = -0.3;
 		bumheight = -0.75;
 		xMove = 0;
 		zMove = 0;
-
+		
 		if (forward /*&& !d.collisionfront*/) {
 			zMove+=1;
 			walk = true;
+			if(d.flymode)
+				y+=((rotationy-1)/32)*(walkSpeed*8);
 		}
 
 		if (back /*&& !d.collisionback*/) {
 			zMove-=1;
 			walk = true;
+			if(d.flymode)
+				y-=((rotationy-1)/32)*(walkSpeed*8);
 		}
 
 		if (left /*&& !d.collisionleft*/) {
@@ -65,19 +69,19 @@ public class Controller extends Thread{
 		}
 
 		if (turnleft) {
-			rotationax -= rotationSpeedx * (mousespeed/10);
+			rotationax = rotationSpeedx * (mousespeed/10);
 		}
 
 		if (turnright) {
-			rotationax -= rotationSpeedx * (mousespeed/10);
+			rotationax = rotationSpeedx * (mousespeed/10);
 		}
 		
 		if (turnup) {
-			rotationay += rotationSpeedy * (mousespeed/10);
+			rotationay = rotationSpeedy * (mousespeed/10);
 		}
 
 		if (turndown) {
-			rotationay -= rotationSpeedy * (mousespeed/10);
+			rotationay = rotationSpeedy * (mousespeed/10);
 		}
 		
 		if (jump && !prone) {
@@ -113,7 +117,6 @@ public class Controller extends Thread{
 					crouchwalk = true;
 				}
 			}else{
-				if(y > d.floorpos/2)
 				y-=5*d.MoveSpeed;
 			}
 			d.startaccuracy = d.initialaccuracy/4;
@@ -160,7 +163,7 @@ public class Controller extends Thread{
 			d.ChangeWeapon(2);
 		}
 		if (MEGARUN) {
-			walkSpeed = 5 * d.MoveSpeed;
+			walkSpeed = 50 * d.MoveSpeed;
 		}
 		
 		if(!forward && !back && !left && !right){
@@ -178,9 +181,9 @@ public class Controller extends Thread{
 		}
 
 
-		xa += (xMove * Math.cos(rotationx) + zMove * Math.sin(rotationx))
+		xa = (xMove * Math.cos(rotationx) + zMove * Math.sin(rotationx))
 				* walkSpeed/(ups/60);
-		za += (zMove * Math.cos(rotationx) - xMove * Math.sin(rotationx))
+		za = (zMove * Math.cos(rotationx) - xMove * Math.sin(rotationx))
 				* walkSpeed/(ups/60);
 
 		x += xa;
@@ -191,16 +194,16 @@ public class Controller extends Thread{
 				y *= 0.9;
 		}
 
-		xa *= 0.1;
-		za *= 0.1;
+		/*xa *= 0.1;
+		za *= 0.1;*/
 		
 		rotationx += rotationax;
 		rotationy += rotationay;
-		if(rotationy < -1.5) rotationy = -1.5;
+		if(rotationy < -2) rotationy = -2;
 		if(rotationy > 4) rotationy = 4;
 		
-		rotationax *= 0.8; 
-		rotationay *= 0.8; 
+		/*rotationax *= 0.8; 
+		rotationay *= 0.8;*/
 		
 		mousespeed = d.MouseSpeed;
 		}

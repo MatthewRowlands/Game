@@ -53,7 +53,7 @@ public class WeaponLogic {
 	public void FullAutoFire(double timedelay) {
 		long checktime = System.currentTimeMillis();
 		if((checktime - d.guntime) > (timedelay * 1000)){
-			d.screen.bullets.add(new Objects(d.x,d.y,d.z,d, 8));
+			d.screen.bullets.add(new Objects(d.x,d.y,d.z,d, 16));
 			d.screen.bullets.get(d.screen.bullets.size()-1).UseBulletMechanism(d.rotationsin, d.rotationcos, d.rotationy);
 			d.guntime = System.currentTimeMillis();
 			d.accuracy += d.recoil;

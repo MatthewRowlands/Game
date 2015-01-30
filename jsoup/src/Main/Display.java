@@ -30,6 +30,8 @@ import java.awt.image.DataBufferInt;
 import java.awt.image.VolatileImage;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
@@ -67,7 +69,7 @@ public class Display extends Canvas implements Runnable {
 	public boolean VSYNC = false;
 	public static String DEFAULT_PORT = "12500";
 	public boolean FIX_MOUSE = false;
-	public boolean flymode = false;
+	public boolean flymode = true;
 	
 	public static int PING = 0;
 	public int ping = 0;
@@ -166,8 +168,8 @@ public class Display extends Canvas implements Runnable {
 	int StartArmor = 100;
 	public int enemiesattacking = 0;
 	public int kills = 0;
-	public double StartHEALTH = 30000;
-	public double HEALTH = 30000;
+	public double StartHEALTH = 300;
+	public double HEALTH = 300;
 	
 	BufferedImage cursor = new BufferedImage(16, 16,
 			BufferedImage.TYPE_INT_ARGB);
@@ -202,7 +204,6 @@ public class Display extends Canvas implements Runnable {
 		}
 
 		f.setVisible(true);
-		
 		f.createBufferStrategy(3);
 		bufferStrategy = f.getBufferStrategy();
 		bufferCapabilities = gc.getBufferCapabilities();
@@ -354,13 +355,13 @@ public class Display extends Canvas implements Runnable {
 				fps = 1e9f / fpstime;
 				
 				if (tickCount % gametickrate == 0) {
-					/*double x = this.x + Math.sin(Math.random()*500)*500;
-					double z = this.z + Math.sin(Math.random()*500)*500;*/
+					//double x = this.x + Math.sin(Math.random()*500)*500;
+					//double z = this.z + Math.sin(Math.random()*500)*500;
 					/*for(Objects o : screen.objects){
 						if(o.spawner)
 							screen.enemies.add(new Enemy(o.x,o.y,o.z, this));
 					}*/
-					screen.enemies.add(new Enemy((Math.random()*8*48),0,(40*8), this));
+					//screen.enemies.add(new Enemy((Math.random()*8*48),0,(40*8), this));
 					PING = ping;
 					ups = frames;
 					previousTime += 1000;
@@ -418,7 +419,7 @@ public class Display extends Canvas implements Runnable {
 				Controller.turnup = false;
 			}
 	
-			MouseChangex = (width/2) - newmX;
+			MouseChangex = -((width/2) - newmX);
 			if(getGameHeight() != ss.height)
 				MouseChangey = (height/2) - newmY + (fullscreen? 0 : 15);
 			else
@@ -438,6 +439,13 @@ public class Display extends Canvas implements Runnable {
 			}
 		}
 		screen.tick(ups);
+	}
+	public static double round(double value, int places) {
+	    if (places < 0) throw new IllegalArgumentException();
+
+	    BigDecimal bd = new BigDecimal(value);
+	    bd = bd.setScale(places, RoundingMode.HALF_UP);
+	    return bd.doubleValue();
 	}
 	private void ShootingMechanism() {
 		if(WeaponAmmo > 0 && !reloading){
@@ -588,7 +596,6 @@ public class Display extends Canvas implements Runnable {
 		g.setFont(new Font("Verdana", Font.PLAIN, 10));
 		g.setColor(Color.WHITE);
 		g.drawString("UPS: " + ups+" Ping: "+PING+" Threads: "+Thread.activeCount(), 20, 20);
-		g.drawString("X/Y/Z: "+x+","+y+","+z+" Rotation C/S: "+rotationsin+"/"+rotationcos, 20, 30);
 		g.drawString("Textures: "+blockcount, 20, 40);
 		g.drawString("VSYNC: "+VSYNC, 20, 50);
 		g.drawString("Weapong Firerate: "+firerate, 20, 80);
@@ -597,7 +604,10 @@ public class Display extends Canvas implements Runnable {
 		g.drawString("Weapon Ammo: "+WeaponAmmo, 20, 110);
 		g.drawString("Reloading: "+reloading, 20, 120);
 		g.drawString("Enemies Attacking: "+enemiesattacking, 20, 130);
-		g.drawString("Right: "+collisionright+" Left: "+collisionleft+" Front: "+collisionfront+" Back: "+collisionback, 20, 140);
+		
+		g.drawString("Position: x:"+x+" y:"+y+" z:"+z, 20, 150);
+		g.drawString("Rotation: x:"+round(rotationsin,3)+" y:"+round(rotationy,3)+" z:"+round(rotationcos,3), 20, 160);
+		
 		for(int i = 0; i < screen.positions.size(); i++){
 			double[] v3f = new double[4];
 			v3f[0] = screen.positions.get(i)[0];	
@@ -798,12 +808,12 @@ public class Display extends Canvas implements Runnable {
 			g.fillRect(posx, posy, (16+(int)e.y)/minimapscale+3, (16+(int)e.y)/minimapscale+3);
 			}
 			
-			//double depth = (e.x - width / 2.0) / height;
-			//double xpos = depth * rotationcos + e.z * rotationsin;
-			//double ypos = e.z * rotationcos - depth * rotationsin;
-			//int zsize = (int) ((e.z-z)*rotationcos);
-			//g.setColor(Color.RED);
-			//g.fillRect((int) xpos, (int) ypos, 100, 20);
+			/*double depth = (e.x - width / 2.0) / height;
+			double xpos = depth * rotationcos + e.z * rotationsin;
+			double ypos = e.z * rotationcos - depth * rotationsin;
+			int zsize = (int) ((e.z-z)*rotationcos);
+			g.setColor(Color.RED);
+			g.fillRect((int) xpos, (int) ypos, 100, 20);*/
 		}
 		for(double[] d : screen.positions){
 			if(screen.positions.indexOf(d) != Client.clientnumber-1){
