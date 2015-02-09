@@ -60,6 +60,18 @@ public class Screen extends Render{
 			}
 		}*/
 		
+		newWave(0,0,0);
+		newWave(100,0,0);
+		newWave(200,0,0);
+		newWave(300,0,0);
+		newWave(400,0,0);
+		newWave(500,0,0);
+		objects.get(objects.size()-1).spawner = true;
+		models.add(new Model());//TODO implement properly
+		models.get(models.size()-1).LoadModel("untitled");
+	}
+
+	private void newWave(int xpos, int ypos, int zpos) {
 		int length = 1000;
 		int gapbetweenrings = 8;
 		int radius = 20;
@@ -79,13 +91,9 @@ public class Screen extends Render{
 				zz = z*gapbetweenrings;
 				double colorextension = (length/(numberofcolorsections/3));
 				double color = ((z%colorextension)*24)/colorextension;
-				objects.add(new Objects(xx, yy, zz, d, (int) color));
+				objects.add(new Objects(xx+xpos, yy+ypos, zz+zpos, d, (int) color));
 			}
-		}
-		
-		//objects.get(objects.size()-1).spawner = true;
-		//models.add(new Model());//TODO implement properly
-		//models.get(models.size()-1).LoadModel("untitled");
+		}	
 	}
 
 	public void render(Game game) {
