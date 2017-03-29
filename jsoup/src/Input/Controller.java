@@ -35,8 +35,8 @@ public class Controller extends Thread{
 			boolean right, boolean jump, boolean crouch, boolean sprint, boolean F1, boolean MEGARUN, boolean prone, boolean reload, boolean changewep1, boolean changewep2) {
 		
 		if(!d.Pause){
-		rotationSpeedx = 0.03 * d.MouseChangex;
-		rotationSpeedy = 0.03 * d.MouseChangey;
+		rotationSpeedx = 0.003 * d.MouseChangex;
+		rotationSpeedy = 0.003 * d.MouseChangey;
 		walkSpeed = 5 * d.MoveSpeed;
 		jumpheight = 1 * d.JumpHeight/(ups/60);
 		crouchheight = -0.3;

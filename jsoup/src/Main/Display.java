@@ -69,7 +69,7 @@ public class Display extends Canvas implements Runnable {
 	public boolean VSYNC = false;
 	public static String DEFAULT_PORT = "12500";
 	public boolean FIX_MOUSE = false;
-	public boolean flymode = true;
+	public boolean flymode = false;
 	
 	public static int PING = 0;
 	public int ping = 0;
@@ -85,7 +85,7 @@ public class Display extends Canvas implements Runnable {
 	public long t2=0;
 	public double[] pings = new double[16];
 	
-	public boolean canUpdate = false;
+	//public boolean canUpdate = false;
 	
 	public static Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
 	public static int w = ss.width;
@@ -129,7 +129,7 @@ public class Display extends Canvas implements Runnable {
 	public boolean collisionright = false;
 	public boolean collisionback = false;
 	
-	public static Weapon w1 = new Weapon(1);
+	public static Weapon w1 = new Weapon(7);
 	public static Weapon w2 = new Weapon(3);
 	int wep = 1;
 	public double recoil = (startaccuracy * startaccuracy)*getCurrentWeapon().recoil;	
@@ -241,7 +241,7 @@ public class Display extends Canvas implements Runnable {
 			screen = new Screen(getGameWidth(), getGameHeight(), this);
 			game = new Game(this);
 			img = gc.createCompatibleImage(getGameWidth(), getGameHeight());
-			//VolatileImage vimg = gc.createCompatibleVolatileImage(getGameWidth(), getGameHeight());//?????????????????????????????????????????????????????
+			//VolatileImage vimg = gc.createCompatibleVolatileImage(getGameWidth(), getGameHeight());
 			pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
 			
 			input = new InputHandler(this);
@@ -254,7 +254,7 @@ public class Display extends Canvas implements Runnable {
 			r = new Robot();
 		
 			nw = new NetworkThread();
-			if(canUpdate)nw.start();
+			//if(canUpdate)nw.start();
 			a = new AnimationThread();
 			a.start();
 			f.requestFocus();
@@ -355,13 +355,9 @@ public class Display extends Canvas implements Runnable {
 				fps = 1e9f / fpstime;
 				
 				if (tickCount % gametickrate == 0) {
-					//double x = this.x + Math.sin(Math.random()*500)*500;
-					//double z = this.z + Math.sin(Math.random()*500)*500;
-					/*for(Objects o : screen.objects){
-						if(o.spawner)
-							screen.enemies.add(new Enemy(o.x,o.y,o.z, this));
-					}*/
-					//screen.enemies.add(new Enemy((Math.random()*8*48),0,(40*8), this));
+					double x = this.x + Math.sin(Math.random()*500)*500;
+					double z = this.z + Math.sin(Math.random()*500)*500;
+					screen.enemies.add(new Enemy(x, 0, z, this));
 					PING = ping;
 					ups = frames;
 					previousTime += 1000;
@@ -589,8 +585,8 @@ public class Display extends Canvas implements Runnable {
 		if (Pause)
 			drawPauseMenu(g);
 
-		//g.dispose();
-		//bufferStrategy.show();
+		g.dispose();
+		bufferStrategy.show();
 	}
 	private void drawInfoBoardNorth(Graphics2D g) {
 		g.setFont(new Font("Verdana", Font.PLAIN, 10));
@@ -642,7 +638,7 @@ public class Display extends Canvas implements Runnable {
 		g.setColor((screen.bullets.size() < 1000? Color.CYAN : Color.RED));
 		g.drawString("Bullets Size: " +screen.bullets.size(), 20, 300);
 
-/*		for(Iterator<Objects> iterator = screen.bullets.iterator(); iterator.hasNext();){
+		for(Iterator<Objects> iterator = screen.bullets.iterator(); iterator.hasNext();){
 			Objects b = iterator.next();
 			int index = screen.bullets.indexOf(b)+1;
 			if(300+(index*10) < height-70){
@@ -654,7 +650,7 @@ public class Display extends Canvas implements Runnable {
 				g.drawString("...", 20, height-70);
 				g.drawString("[Bullet - "+screen.bullets.size()+"] "+b.distancetravelled, 20, height-60);
 			}
-		}*/
+		}
 	}
 	private void drawHUD(Graphics2D g) {
 		double accuracy = initialaccuracy * 100;
@@ -1055,9 +1051,9 @@ public class Display extends Canvas implements Runnable {
 		client = new Client(port, ip, un, this);
 		client.start();
 	}
-	public void BeginNetworkUpdate() {
+	/*public void BeginNetworkUpdate() {
 		canUpdate = true;		
-	}
+	}*/
 	public void MousePressed() {
 		MousePressed = true;
 	}

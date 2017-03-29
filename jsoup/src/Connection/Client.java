@@ -38,7 +38,7 @@ public class Client extends Thread{
 		inStream = new ObjectInputStream(socket.getInputStream());//recieve client number
 		clientnumber = (int) inStream.readObject();
 		
-		d.BeginNetworkUpdate();
+		//d.BeginNetworkUpdate();
 		
 		}catch (Exception e) {
 			System.err.println("Client Error: " + e.getMessage());
